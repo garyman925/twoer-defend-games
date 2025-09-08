@@ -1,0 +1,227 @@
+{
+  "playerUpgrades": {
+    "weaponDamage": {
+      "name": "武器傷害",
+      "description": "增加玩家武器的傷害",
+      "maxLevel": 10,
+      "baseCost": 100,
+      "costMultiplier": 1.5,
+      "effect": {
+        "type": "percentage",
+        "value": 0.2,
+        "formula": "baseDamage * (1 + level * 0.2)"
+      }
+    },
+    "weaponSpeed": {
+      "name": "射擊速度",
+      "description": "增加玩家武器的射擊速度",
+      "maxLevel": 8,
+      "baseCost": 150,
+      "costMultiplier": 1.6,
+      "effect": {
+        "type": "percentage",
+        "value": 0.15,
+        "formula": "baseFireRate / (1 + level * 0.15)"
+      }
+    },
+    "weaponRange": {
+      "name": "射程",
+      "description": "增加玩家武器的射程",
+      "maxLevel": 6,
+      "baseCost": 200,
+      "costMultiplier": 1.4,
+      "effect": {
+        "type": "percentage",
+        "value": 0.1,
+        "formula": "baseRange * (1 + level * 0.1)"
+      }
+    },
+    "playerHealth": {
+      "name": "生命值",
+      "description": "增加玩家的最大生命值",
+      "maxLevel": 5,
+      "baseCost": 300,
+      "costMultiplier": 1.8,
+      "effect": {
+        "type": "flat",
+        "value": 20,
+        "formula": "baseHealth + level * 20"
+      }
+    }
+  },
+  "towerUpgrades": {
+    "basicTower": {
+      "damage": {
+        "name": "基礎傷害",
+        "maxLevel": 5,
+        "baseCost": 50,
+        "costMultiplier": 1.5,
+        "effect": {
+          "type": "percentage",
+          "value": 0.25
+        }
+      },
+      "range": {
+        "name": "射程",
+        "maxLevel": 3,
+        "baseCost": 75,
+        "costMultiplier": 1.4,
+        "effect": {
+          "type": "percentage",
+          "value": 0.15
+        }
+      },
+      "fireRate": {
+        "name": "射擊速度",
+        "maxLevel": 4,
+        "baseCost": 100,
+        "costMultiplier": 1.6,
+        "effect": {
+          "type": "percentage",
+          "value": 0.2
+        }
+      }
+    },
+    "laserTower": {
+      "damage": {
+        "name": "激光傷害",
+        "maxLevel": 5,
+        "baseCost": 100,
+        "costMultiplier": 1.5,
+        "effect": {
+          "type": "percentage",
+          "value": 0.3
+        }
+      },
+      "range": {
+        "name": "激光射程",
+        "maxLevel": 4,
+        "baseCost": 150,
+        "costMultiplier": 1.4,
+        "effect": {
+          "type": "percentage",
+          "value": 0.2
+        }
+      },
+      "piercing": {
+        "name": "穿透",
+        "maxLevel": 3,
+        "baseCost": 200,
+        "costMultiplier": 2.0,
+        "effect": {
+          "type": "flat",
+          "value": 1,
+          "description": "激光可以穿透額外的敵人"
+        }
+      }
+    },
+    "cannonTower": {
+      "damage": {
+        "name": "爆炸傷害",
+        "maxLevel": 5,
+        "baseCost": 150,
+        "costMultiplier": 1.6,
+        "effect": {
+          "type": "percentage",
+          "value": 0.4
+        }
+      },
+      "splashRadius": {
+        "name": "爆炸範圍",
+        "maxLevel": 3,
+        "baseCost": 200,
+        "costMultiplier": 1.8,
+        "effect": {
+          "type": "percentage",
+          "value": 0.25
+        }
+      },
+      "shellSpeed": {
+        "name": "砲彈速度",
+        "maxLevel": 4,
+        "baseCost": 100,
+        "costMultiplier": 1.3,
+        "effect": {
+          "type": "percentage",
+          "value": 0.3
+        }
+      }
+    },
+    "iceTower": {
+      "damage": {
+        "name": "冰凍傷害",
+        "maxLevel": 4,
+        "baseCost": 75,
+        "costMultiplier": 1.4,
+        "effect": {
+          "type": "percentage",
+          "value": 0.2
+        }
+      },
+      "slowEffect": {
+        "name": "減速效果",
+        "maxLevel": 5,
+        "baseCost": 100,
+        "costMultiplier": 1.5,
+        "effect": {
+          "type": "percentage",
+          "value": 0.1,
+          "description": "增加減速強度"
+        }
+      },
+      "slowDuration": {
+        "name": "減速持續",
+        "maxLevel": 3,
+        "baseCost": 125,
+        "costMultiplier": 1.6,
+        "effect": {
+          "type": "flat",
+          "value": 500,
+          "description": "延長減速持續時間(毫秒)"
+        }
+      }
+    }
+  },
+  "specialUpgrades": {
+    "multiShot": {
+      "name": "多重射擊",
+      "description": "同時發射多發子彈",
+      "cost": 1000,
+      "requirements": {
+        "weaponDamage": 5,
+        "weaponSpeed": 3
+      },
+      "effect": {
+        "type": "special",
+        "bulletCount": 3,
+        "spreadAngle": 15
+      }
+    },
+    "explosiveShots": {
+      "name": "爆炸彈藥",
+      "description": "子彈造成範圍傷害",
+      "cost": 1500,
+      "requirements": {
+        "weaponDamage": 7
+      },
+      "effect": {
+        "type": "special",
+        "splashRadius": 50,
+        "splashDamage": 0.6
+      }
+    },
+    "rapidFire": {
+      "name": "極速射擊",
+      "description": "大幅提升射擊速度",
+      "cost": 2000,
+      "requirements": {
+        "weaponSpeed": 6
+      },
+      "effect": {
+        "type": "special",
+        "fireRateMultiplier": 3,
+        "duration": 10000
+      }
+    }
+  }
+}

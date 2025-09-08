@@ -1,0 +1,50 @@
+{
+  "game": {
+    "version": "1.0.0",
+    "title": "Tower Defense Game",
+    "description": "A modern tower defense game built with Phaser.js"
+  },
+  "gameplay": {
+    "startingMoney": 500,
+    "startingHealth": 100,
+    "maxWaves": 50,
+    "preparationTime": 15000,
+    "difficultyScaling": 1.1
+  },
+  "player": {
+    "position": {
+      "x": 600,
+      "y": 650
+    },
+    "weapon": {
+      "fireRate": 500,
+      "damage": 30,
+      "range": 200,
+      "rotationSpeed": 5
+    },
+    "health": {
+      "max": 100,
+      "current": 100,
+      "regeneration": 0
+    }
+  },
+  "economy": {
+    "interestRate": 0.02,
+    "maxInterest": 50,
+    "sellRatio": 0.7,
+    "upgradeCoefficient": 1.5
+  },
+  "ui": {
+    "colors": {
+      "primary": "#00ffff",
+      "secondary": "#ff6b6b",
+      "success": "#00ff00",
+      "warning": "#ffd93d",
+      "danger": "#ff4757"
+    },
+    "fonts": {
+      "primary": "Arial",
+      "secondary": "Courier New"
+    }
+  }
+}

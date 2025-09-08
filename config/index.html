@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Defense Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        
+        #game-container {
+            position: relative;
+            border: 2px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 24px;
+            z-index: 1000;
+        }
+        
+        .loading-bar {
+            width: 300px;
+            height: 20px;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        
+        .loading-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00ffff);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="loading">
+            <div>載入中...</div>
+            <div class="loading-bar">
+                <div class="loading-fill" id="loading-fill"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

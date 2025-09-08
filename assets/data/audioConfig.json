@@ -1,0 +1,279 @@
+{
+  "globalSettings": {
+    "masterVolume": 1.0,
+    "musicVolume": 0.7,
+    "sfxVolume": 0.8,
+    "voiceVolume": 0.9,
+    "fadeInDuration": 1000,
+    "fadeOutDuration": 1000,
+    "crossfadeDuration": 2000
+  },
+  "musicTracks": {
+    "menu": {
+      "file": "menu_theme.mp3",
+      "loop": true,
+      "volume": 0.6,
+      "fadeIn": true,
+      "crossfade": true
+    },
+    "gameplay": {
+      "file": "battle_theme.mp3",
+      "loop": true,
+      "volume": 0.7,
+      "fadeIn": true,
+      "crossfade": true,
+      "variations": [
+        "battle_theme_intense.mp3",
+        "battle_theme_calm.mp3"
+      ]
+    },
+    "victory": {
+      "file": "victory_theme.mp3",
+      "loop": false,
+      "volume": 0.8,
+      "fadeIn": true
+    },
+    "defeat": {
+      "file": "defeat_theme.mp3",
+      "loop": false,
+      "volume": 0.8,
+      "fadeIn": true
+    },
+    "shop": {
+      "file": "shop_theme.mp3",
+      "loop": true,
+      "volume": 0.5,
+      "fadeIn": true
+    }
+  },
+  "soundEffects": {
+    "weapons": {
+      "laser_shot": {
+        "file": "laser_shot.wav",
+        "volume": 0.6,
+        "variations": 3,
+        "pitchVariation": 0.1,
+        "3d": true
+      },
+      "cannon_fire": {
+        "file": "cannon_fire.wav",
+        "volume": 0.8,
+        "variations": 2,
+        "pitchVariation": 0.05,
+        "3d": true
+      },
+      "machine_gun": {
+        "file": "machine_gun.wav",
+        "volume": 0.5,
+        "variations": 4,
+        "pitchVariation": 0.15,
+        "3d": true
+      },
+      "ice_shot": {
+        "file": "ice_shot.wav",
+        "volume": 0.7,
+        "variations": 2,
+        "pitchVariation": 0.08,
+        "3d": true
+      },
+      "missile_launch": {
+        "file": "missile_launch.wav",
+        "volume": 0.9,
+        "variations": 1,
+        "3d": true
+      }
+    },
+    "enemies": {
+      "enemy_death": {
+        "file": "enemy_death.wav",
+        "volume": 0.7,
+        "variations": 3,
+        "pitchVariation": 0.2,
+        "3d": true
+      },
+      "enemy_spawn": {
+        "file": "enemy_spawn.wav",
+        "volume": 0.6,
+        "variations": 2,
+        "3d": true
+      },
+      "enemy_hit": {
+        "file": "enemy_hit.wav",
+        "volume": 0.5,
+        "variations": 4,
+        "pitchVariation": 0.3,
+        "3d": true
+      },
+      "boss_roar": {
+        "file": "boss_roar.wav",
+        "volume": 1.0,
+        "variations": 2,
+        "3d": false
+      }
+    },
+    "towers": {
+      "tower_build": {
+        "file": "tower_build.wav",
+        "volume": 0.8,
+        "variations": 1,
+        "3d": true
+      },
+      "tower_upgrade": {
+        "file": "tower_upgrade.wav",
+        "volume": 0.9,
+        "variations": 1,
+        "3d": true
+      },
+      "tower_sell": {
+        "file": "tower_sell.wav",
+        "volume": 0.7,
+        "variations": 1,
+        "3d": true
+      }
+    },
+    "ui": {
+      "button_click": {
+        "file": "button_click.wav",
+        "volume": 0.4,
+        "variations": 1,
+        "3d": false
+      },
+      "button_confirm": {
+        "file": "button_confirm.wav",
+        "volume": 0.6,
+        "variations": 1,
+        "3d": false
+      },
+      "button_cancel": {
+        "file": "button_cancel.wav",
+        "volume": 0.5,
+        "variations": 1,
+        "3d": false
+      },
+      "purchase_success": {
+        "file": "purchase_success.wav",
+        "volume": 0.7,
+        "variations": 1,
+        "3d": false
+      },
+      "error_sound": {
+        "file": "error_sound.wav",
+        "volume": 0.6,
+        "variations": 1,
+        "3d": false
+      }
+    },
+    "environment": {
+      "wave_start": {
+        "file": "wave_start.wav",
+        "volume": 0.8,
+        "variations": 1,
+        "3d": false
+      },
+      "wave_complete": {
+        "file": "wave_complete.wav",
+        "volume": 0.9,
+        "variations": 1,
+        "3d": false
+      },
+      "coin_collect": {
+        "file": "coin_collect.wav",
+        "volume": 0.5,
+        "variations": 3,
+        "pitchVariation": 0.2,
+        "3d": false
+      },
+      "low_health": {
+        "file": "low_health.wav",
+        "volume": 0.8,
+        "variations": 1,
+        "3d": false,
+        "loop": true
+      }
+    }
+  },
+  "voiceLines": {
+    "tutorial": {
+      "file": "tutorial_voice.mp3",
+      "volume": 0.9,
+      "priority": "high",
+      "interruptible": false
+    },
+    "waveWarning": {
+      "file": "wave_warning.mp3",
+      "volume": 0.8,
+      "priority": "medium",
+      "interruptible": true
+    },
+    "achievement": {
+      "file": "achievement.mp3",
+      "volume": 0.9,
+      "priority": "low",
+      "interruptible": true
+    }
+  },
+  "ambientSounds": {
+    "wind": {
+      "file": "wind_ambient.mp3",
+      "volume": 0.3,
+      "loop": true,
+      "fadeIn": true,
+      "3d": false
+    },
+    "battle": {
+      "file": "battle_ambient.mp3",
+      "volume": 0.5,
+      "loop": true,
+      "fadeIn": true,
+      "3d": false
+    },
+    "fortress": {
+      "file": "fortress_ambient.mp3",
+      "volume": 0.4,
+      "loop": true,
+      "fadeIn": true,
+      "3d": false
+    }
+  },
+  "audioMixing": {
+    "compression": {
+      "enabled": true,
+      "threshold": -20,
+      "ratio": 4,
+      "attack": 3,
+      "release": 100
+    },
+    "reverb": {
+      "enabled": true,
+      "roomSize": 0.3,
+      "dampening": 0.5,
+      "wetGain": 0.2,
+      "dryGain": 0.8
+    },
+    "spatialAudio": {
+      "enabled": true,
+      "maxDistance": 500,
+      "referenceDistance": 100,
+      "rolloffFactor": 1.0,
+      "dopplerEffect": false
+    }
+  },
+  "deviceOptimization": {
+    "mobile": {
+      "maxSimultaneousSounds": 8,
+      "compressionQuality": "medium",
+      "preloadCriticalSounds": true
+    },
+    "desktop": {
+      "maxSimultaneousSounds": 16,
+      "compressionQuality": "high",
+      "preloadCriticalSounds": false
+    },
+    "lowEnd": {
+      "maxSimultaneousSounds": 4,
+      "compressionQuality": "low",
+      "disableSpatialAudio": true,
+      "reduceVariations": true
+    }
+  }
+}
