@@ -127,14 +127,8 @@ export class BaseTower extends Phaser.GameObjects.Container {
    * 創建塔視覺元素
    */
   createTowerVisuals() {
-    // 塔底座
-    this.createTowerBase();
-    
-    // 塔主體
+    // 塔主體 (使用你的塔圖片)
     this.createTowerBody();
-    
-    // 塔炮管
-    this.createTowerBarrel();
     
     // 射程指示器
     this.createRangeIndicator();
@@ -161,23 +155,29 @@ export class BaseTower extends Phaser.GameObjects.Container {
    * 創建塔主體
    */
   createTowerBody() {
-    // 根據塔類型創建不同外觀
-    const colors = {
-      basic: 0x00ffff,
-      cannon: 0xff6b6b,
-      laser: 0x00ff00,
-      ice: 0x74b9ff,
-      poison: 0xa29bfe
+    // 使用塔圖片而不是顏色方塊
+    const towerFrameMap = {
+      basic: 'tower-1.png',
+      cannon: 'tower-2.png', 
+      laser: 'tower-3.png',
+      ice: 'tower-1.png',    // 暫時使用基礎塔圖片
+      poison: 'tower-2.png'  // 暫時使用加農炮塔圖片
     };
     
-    const color = colors[this.towerType] || colors.basic;
+    const frameName = towerFrameMap[this.towerType] || 'tower-1.png';
     
-    this.towerSprite = this.scene.add.rectangle(0, 0, 25, 25, color);
-    this.towerSprite.setStrokeStyle(2, 0xffffff);
+    // 創建塔精靈
+    this.towerSprite = this.scene.add.image(0, 0, 'tower-sprites', frameName);
+    
+    // 縮放到合適大小 (64x64 -> 96x96 以佔3x3網格)
+    this.towerSprite.setScale(1.5);
+    
+    // 設置錨點為中心
+    this.towerSprite.setOrigin(0.5, 0.5);
+    
     this.add(this.towerSprite);
     
-    // 添加塔類型標識
-    this.createTowerIcon();
+    console.log(`創建 ${this.towerType} 塔，使用圖片: ${frameName}`);
   }
 
   /**
@@ -216,7 +216,7 @@ export class BaseTower extends Phaser.GameObjects.Container {
    */
   createRangeIndicator() {
     this.rangeIndicator = this.scene.add.circle(0, 0, this.range, 0x00ffff, 0);
-    this.rangeIndicator.setStrokeStyle(2, 0x00ffff, 0.3);
+    this.rangeIndicator.setStrokeStyle(4, 0x00ffff, 0.3); // 進一步增加線條粗細
     this.rangeIndicator.setVisible(false);
     this.add(this.rangeIndicator);
   }
@@ -225,12 +225,12 @@ export class BaseTower extends Phaser.GameObjects.Container {
    * 創建等級指示器
    */
   createLevelIndicator() {
-    this.levelIndicator = this.scene.add.text(-15, -15, this.level.toString(), {
-      fontSize: '12px',
+    this.levelIndicator = this.scene.add.text(-30, -30, this.level.toString(), {
+      fontSize: '20px', // 進一步增加字體大小
       fill: '#ffd93d',
       fontWeight: 'bold',
       backgroundColor: '#000000',
-      padding: { x: 4, y: 2 }
+      padding: { x: 8, y: 4 } // 進一步增加內邊距
     });
     this.levelIndicator.setOrigin(0.5);
     this.add(this.levelIndicator);
@@ -543,12 +543,12 @@ export class BaseTower extends Phaser.GameObjects.Container {
    * 瞄準目標
    */
   aimAtTarget() {
-    if (!this.currentTarget) return;
+    if (!this.currentTarget || !this.towerSprite) return;
     
     const angle = Phaser.Math.Angle.Between(this.x, this.y, this.currentTarget.x, this.currentTarget.y);
     
-    // 平滑旋轉炮管
-    this.towerBarrel.setRotation(angle + Math.PI / 2);
+    // 旋轉整個塔圖片來瞄準目標
+    this.towerSprite.setRotation(angle + Math.PI / 2);
   }
 
   /**
@@ -601,9 +601,14 @@ export class BaseTower extends Phaser.GameObjects.Container {
    * 獲取射擊位置
    */
   getFirePosition() {
-    // 從炮管末端發射
-    const angle = this.towerBarrel.rotation - Math.PI / 2;
-    const distance = 20;
+    // 從塔圖片的前端發射
+    if (!this.towerSprite) {
+      // 如果塔圖片不存在，從塔中心發射
+      return { x: this.x, y: this.y };
+    }
+    
+    const angle = this.towerSprite.rotation - Math.PI / 2;
+    const distance = 48; // 增加距離，因為塔圖片更大
     
     return {
       x: this.x + Math.cos(angle) * distance,
@@ -644,11 +649,12 @@ export class BaseTower extends Phaser.GameObjects.Container {
       }
     });
     
-    // 塔震動
+    // 塔震動 (保持當前縮放比例)
+    const currentScale = this.towerSprite.scaleX;
     this.scene.tweens.add({
       targets: this.towerSprite,
-      scaleX: { from: 1, to: 1.1 },
-      scaleY: { from: 1, to: 1.1 },
+      scaleX: { from: currentScale, to: currentScale * 1.1 },
+      scaleY: { from: currentScale, to: currentScale * 1.1 },
       duration: 100,
       yoyo: true,
       ease: 'Power2'
@@ -726,9 +732,10 @@ export class BaseTower extends Phaser.GameObjects.Container {
     // 更新等級指示器
     this.levelIndicator.setText(this.level.toString());
     
-    // 根據等級調整大小和顏色
-    const scale = 1 + (this.level - 1) * 0.1;
-    this.towerSprite.setScale(scale);
+    // 根據等級調整大小 (保持 1.5 基礎縮放，額外增加升級縮放)
+    const baseScale = 1.5; // 基礎縮放 (64x64 -> 96x96)
+    const upgradeScale = 1 + (this.level - 1) * 0.1;
+    this.towerSprite.setScale(baseScale * upgradeScale);
     
     // 更新射程指示器
     this.rangeIndicator.setRadius(this.range);

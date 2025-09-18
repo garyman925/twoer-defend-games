@@ -161,6 +161,12 @@ export class GameplayScene extends BaseScene {
     // 載入圖塊集圖片 (匹配地圖文件中的路徑)
     this.load.image('ground', 'assets/tilesets/map/world-1.png');
     
+    // 載入塔圖片
+    this.load.atlas('tower-sprites', 'assets/sprites/towers/tower-sprite.png', 'assets/sprites/towers/tower-sprite.json');
+    
+    // 載入敵人圖片
+    this.load.atlas('enemy-sprites', 'assets/sprites/enemies/enemy-sprite.png', 'assets/sprites/enemies/enemy-sprite.json');
+    
     // 等載入完成後創建地圖
     this.load.once('complete', () => {
       this.createTiledMapBackground();
@@ -168,7 +174,7 @@ export class GameplayScene extends BaseScene {
     
     this.load.start();
     
-    console.log('開始載入 Tiled 地圖...');
+    console.log('開始載入 Tiled 地圖和塔圖片...');
   }
 
   /**

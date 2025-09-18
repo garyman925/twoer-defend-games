@@ -113,19 +113,22 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
    * 創建敵人視覺元素
    */
   createEnemyVisuals() {
-    // 創建敵人主體（臨時使用圓形）
-    const color = this.getEnemyColor();
+    // 創建敵人主體（使用敵人圖片）
+    const frameName = this.getEnemyFrameName();
     const size = this.getEnemySize();
     
-    this.enemySprite = this.scene.add.circle(0, 0, size, color);
+    this.enemySprite = this.scene.add.image(0, 0, 'enemy-sprites', frameName);
+    this.enemySprite.setScale(this.getEnemyScale());
+    this.enemySprite.setOrigin(0.5, 0.5);
     this.add(this.enemySprite);
     
-    // 創建血條背景
-    this.healthBarBg = this.scene.add.rectangle(0, -size - 8, 30, 4, 0x330000);
+    // 創建血條背景 (調整位置適應圖片)
+    const healthBarY = -size - 12;
+    this.healthBarBg = this.scene.add.rectangle(0, healthBarY, 30, 4, 0x330000);
     this.add(this.healthBarBg);
     
     // 創建血條
-    this.healthBar = this.scene.add.rectangle(0, -size - 8, 30, 4, 0xff0000);
+    this.healthBar = this.scene.add.rectangle(0, healthBarY, 30, 4, 0xff0000);
     this.add(this.healthBar);
     
     // 創建敵人類型標識
@@ -170,6 +173,34 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
       boss: 25
     };
     return sizes[this.enemyType] || 12;
+  }
+
+  /**
+   * 獲取敵人圖片幀名稱
+   */
+  getEnemyFrameName() {
+    const frameMap = {
+      'basic': 'enemy-1.png',    // 基礎敵人使用較大的圖片
+      'fast': 'enemy-2.png',     // 快速敵人使用較高的圖片
+      'tank': 'enemy-1.png',     // 坦克敵人使用較大的圖片
+      'flying': 'enemy-2.png',   // 飛行敵人使用較高的圖片
+      'boss': 'enemy-1.png'      // Boss敵人使用較大的圖片
+    };
+    return frameMap[this.enemyType] || 'enemy-1.png';
+  }
+
+  /**
+   * 獲取敵人縮放比例
+   */
+  getEnemyScale() {
+    const scaleMap = {
+      'basic': 0.35,   // 基礎敵人：129x102 -> 約45x36 (放大75%)
+      'fast': 0.25,    // 快速敵人：83x124 -> 約21x31 (放大67%)
+      'tank': 0.5,     // 坦克敵人：129x102 -> 約65x51 (放大67%)
+      'flying': 0.3,   // 飛行敵人：83x124 -> 約25x37 (放大67%)
+      'boss': 0.6      // Boss敵人：129x102 -> 約77x61 (放大50%)
+    };
+    return scaleMap[this.enemyType] || 0.35;
   }
 
   /**

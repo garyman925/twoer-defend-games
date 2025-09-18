@@ -361,9 +361,11 @@ export class TowerPlacementSystem {
     const cell = this.getGridCell(gridPos.x, gridPos.y);
     
     if (cell) {
-      // 顯示並定位預覽塔
+      // 顯示並定位預覽塔 (調整到3x3區域的中心)
       this.buildPreview.setVisible(true);
-      this.buildPreview.setPosition(cell.worldX, cell.worldY);
+      const previewX = cell.worldX + this.gridSize;
+      const previewY = cell.worldY + this.gridSize;
+      this.buildPreview.setPosition(previewX, previewY);
       
       // 根據是否可放置改變顏色
       const canPlace = this.canPlaceTower(gridPos);
@@ -479,16 +481,23 @@ export class TowerPlacementSystem {
   }
 
   /**
-   * 檢查是否可以放置塔
+   * 檢查是否可以放置塔 (3x3 大小)
    */
   canPlaceTower(gridPos) {
-    const cell = this.getGridCell(gridPos.x, gridPos.y);
-    
-    if (!cell) return false;
-    if (cell.occupied) return false;
-    
-    // 檢查 Tiled 地圖的障礙物
-    if (!this.isBuildableFromTiledMap(gridPos)) return false;
+    // 檢查3x3區域是否都可以放置
+    for (let dy = 0; dy < 3; dy++) {
+      for (let dx = 0; dx < 3; dx++) {
+        const checkX = gridPos.x + dx;
+        const checkY = gridPos.y + dy;
+        const cell = this.getGridCell(checkX, checkY);
+        
+        if (!cell) return false;
+        if (cell.occupied) return false;
+        
+        // 檢查 Tiled 地圖的障礙物
+        if (!this.isBuildableFromTiledMap({ x: checkX, y: checkY })) return false;
+      }
+    }
     
     // 檢查資源是否足夠
     if (!this.checkResourceRequirement()) return false;
@@ -598,26 +607,38 @@ export class TowerPlacementSystem {
     const cell = this.getGridCell(gridPos.x, gridPos.y);
     if (!cell) return false;
     
-    console.log(`在網格 (${gridPos.x}, ${gridPos.y}) 放置${this.selectedTowerType}塔`);
+    console.log(`在網格 (${gridPos.x}, ${gridPos.y}) 放置${this.selectedTowerType}塔 (3x3)`);
     
-    // 創建新塔
-    const tower = this.createTowerByType(this.selectedTowerType, cell.worldX, cell.worldY);
+    // 創建新塔 (位置調整到3x3區域的中心)
+    const towerX = cell.worldX + this.gridSize; // 向右偏移一格
+    const towerY = cell.worldY + this.gridSize; // 向下偏移一格
+    const tower = this.createTowerByType(this.selectedTowerType, towerX, towerY);
     
     // 添加到場景的塔群組
     if (this.scene.towers) {
       this.scene.towers.add(tower);
     }
     
-    // 標記網格為已占用
-    cell.occupied = true;
-    cell.tower = tower;
-    this.occupiedCells.add(`${gridPos.x},${gridPos.y}`);
+    // 標記3x3區域為已占用
+    for (let dy = 0; dy < 3; dy++) {
+      for (let dx = 0; dx < 3; dx++) {
+        const checkX = gridPos.x + dx;
+        const checkY = gridPos.y + dy;
+        const checkCell = this.getGridCell(checkX, checkY);
+        
+        if (checkCell) {
+          checkCell.occupied = true;
+          checkCell.tower = tower;
+          this.occupiedCells.add(`${checkX},${checkY}`);
+        }
+      }
+    }
     
     // 扣除資源
     this.consumeResources();
     
     // 播放建造效果
-    this.playBuildEffect(cell.worldX, cell.worldY);
+    this.playBuildEffect(towerX, towerY);
     
     // 播放建造音效
     this.scene.playSound && this.scene.playSound('tower_place');
@@ -729,17 +750,25 @@ export class TowerPlacementSystem {
    * 移除塔（出售時調用）
    */
   removeTower(tower) {
-    // 找到塔對應的網格位置
-    const gridPos = this.worldToGrid(tower.x, tower.y);
-    const cell = this.getGridCell(gridPos.x, gridPos.y);
+    // 找到塔對應的網格位置 (調整回左上角)
+    const gridPos = this.worldToGrid(tower.x - this.gridSize, tower.y - this.gridSize);
     
-    if (cell && cell.tower === tower) {
-      cell.occupied = false;
-      cell.tower = null;
-      this.occupiedCells.delete(`${gridPos.x},${gridPos.y}`);
-      
-      console.log(`從網格 (${gridPos.x}, ${gridPos.y}) 移除塔`);
+    // 清理3x3區域
+    for (let dy = 0; dy < 3; dy++) {
+      for (let dx = 0; dx < 3; dx++) {
+        const checkX = gridPos.x + dx;
+        const checkY = gridPos.y + dy;
+        const checkCell = this.getGridCell(checkX, checkY);
+        
+        if (checkCell && checkCell.tower === tower) {
+          checkCell.occupied = false;
+          checkCell.tower = null;
+          this.occupiedCells.delete(`${checkX},${checkY}`);
+        }
+      }
     }
+    
+    console.log(`從網格 (${gridPos.x}, ${gridPos.y}) 移除塔 (3x3)`);
   }
 
   /**
