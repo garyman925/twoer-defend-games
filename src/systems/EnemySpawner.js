@@ -51,9 +51,16 @@ export class EnemySpawner {
    * 設置生成點
    */
   setupSpawnPoints() {
+    // 優先使用 Tiled 地圖的生成點
+    if (this.scene.enemySpawnPoint) {
+      this.spawnPoints = [this.scene.enemySpawnPoint];
+      console.log('使用 Tiled 地圖生成點:', this.spawnPoints);
+      return;
+    }
+    
+    // 備用：使用螢幕邊緣生成點
     const { width, height } = this.scene.scale.gameSize;
     
-    // 在螢幕邊緣內側設置生成點，確保敵人可見
     this.spawnPoints = [
       // 左邊緣生成點
       { x: 50, y: height * 0.2 },
@@ -211,8 +218,8 @@ export class EnemySpawner {
    * 生成單個敵人
    */
   spawnEnemy(enemyType) {
-    // 選擇隨機生成點
-    const spawnPoint = this.getRandomSpawnPoint();
+    // 使用 Tiled 地圖的生成點
+    const spawnPoint = this.getTiledSpawnPoint();
     
     // 創建敵人
     const enemy = new BaseEnemy(this.scene, spawnPoint.x, spawnPoint.y, enemyType);
@@ -225,6 +232,9 @@ export class EnemySpawner {
     enemy.eventEmitter.on('enemyReachedDestination', (enemy) => {
       this.eventEmitter.emit('enemyReachedDestination', enemy);
     });
+    
+    // 設置敵人的 Tiled 路徑
+    this.setupEnemyTiledPath(enemy);
     
     // 添加到場景的敵人群組
     if (this.scene.enemies) {
@@ -251,10 +261,52 @@ export class EnemySpawner {
   }
 
   /**
-   * 獲取隨機生成點
+   * 獲取 Tiled 地圖生成點
+   */
+  getTiledSpawnPoint() {
+    // 優先使用 Tiled 地圖的生成點
+    if (this.scene.enemySpawnPoint) {
+      return this.scene.enemySpawnPoint;
+    }
+    
+    // 備用：使用隨機生成點
+    return this.getRandomSpawnPoint();
+  }
+
+  /**
+   * 獲取隨機生成點 (備用方法)
    */
   getRandomSpawnPoint() {
     return this.spawnPoints[Math.floor(Math.random() * this.spawnPoints.length)];
+  }
+
+  /**
+   * 設置敵人的 Tiled 路徑
+   */
+  setupEnemyTiledPath(enemy) {
+    // 使用場景中的 Tiled 路徑
+    if (this.scene.gamePath && this.scene.gamePath.length > 0) {
+      enemy.setPath(this.scene.gamePath);
+      console.log(`敵人設置了 ${this.scene.gamePath.length} 個路徑點`);
+    } else {
+      console.warn('沒有找到 Tiled 路徑，使用默認路徑');
+      // 使用默認路徑（從生成點到基地）
+      const defaultPath = this.createDefaultPath(enemy.x, enemy.y);
+      enemy.setPath(defaultPath);
+    }
+  }
+
+  /**
+   * 創建默認路徑 (備用方法)
+   */
+  createDefaultPath(startX, startY) {
+    const { width, height } = this.scene.scale.gameSize;
+    
+    // 簡單的直線路徑到螢幕中心
+    return [
+      { x: startX, y: startY },
+      { x: width / 2, y: height / 2 }
+    ];
   }
 
   /**
@@ -288,10 +340,30 @@ export class EnemySpawner {
       this.enemiesInWave.splice(index, 1);
     }
     
+    // 敵人攻擊基地，對玩家造成傷害
+    this.handleEnemyAttackBase(enemy);
+    
     // 檢查波次是否完成
     this.checkWaveComplete();
     
-    console.log('敵人到達終點');
+    console.log(`🏰 ${enemy.enemyType}敵人到達基地並攻擊！`);
+  }
+
+  /**
+   * 處理敵人攻擊基地
+   */
+  handleEnemyAttackBase(enemy) {
+    // 對玩家造成傷害
+    if (this.scene.player) {
+      this.scene.player.takeDamage(enemy.damage);
+      console.log(`💥 基地受到 ${enemy.damage} 點傷害！`);
+    }
+    
+    // 可以添加基地生命值系統
+    if (this.scene.gameManager) {
+      // 通知遊戲管理器敵人攻擊基地
+      this.scene.gameManager.onBaseAttacked(enemy.damage);
+    }
   }
 
   /**

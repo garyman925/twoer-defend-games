@@ -155,29 +155,273 @@ export class GameplayScene extends BaseScene {
    * 創建遊戲背景
    */
   createGameBackground(width, height) {
-    // 載入新的世界地圖
-    this.load.image('world-map', 'assets/tilesets/map/wolrd-1.png');
+    // 載入 Tiled 地圖
+    this.load.tilemapTiledJSON('map1', 'assets/maps/map1.tmj');
     
-    // 等載入完成後創建背景
+    // 載入圖塊集圖片 (匹配地圖文件中的路徑)
+    this.load.image('ground', 'assets/tilesets/map/world-1.png');
+    
+    // 等載入完成後創建地圖
     this.load.once('complete', () => {
-      this.createWorldMapBackground();
+      this.createTiledMapBackground();
     });
     
     this.load.start();
     
-    // 添加邊界
-    this.createBoundaries(width, height);
-    
-    console.log('開始載入世界地圖...');
+    console.log('開始載入 Tiled 地圖...');
   }
 
   /**
-   * 創建世界地圖背景
+   * 創建 Tiled 地圖背景
+   */
+  createTiledMapBackground() {
+    try {
+      console.log('開始創建 Tiled 地圖...');
+      
+      // 創建地圖
+      this.tiledMap = this.make.tilemap({ key: 'map1' });
+      console.log('地圖創建成功:', this.tiledMap);
+      
+      const tileset = this.tiledMap.addTilesetImage('ground', 'ground');
+      console.log('圖塊集添加成功:', tileset);
+      
+      console.log('地圖信息:', {
+        width: this.tiledMap.width,
+        height: this.tiledMap.height,
+        tileWidth: this.tiledMap.tileWidth,
+        tileHeight: this.tiledMap.tileHeight,
+        layers: this.tiledMap.layers.map(layer => layer.name)
+      });
+      
+      // 創建圖層 (使用正確的圖層名稱)
+      this.backgroundLayer = this.tiledMap.createLayer('Background', tileset);
+      console.log('背景圖層創建:', this.backgroundLayer);
+      
+      this.pathLayer = this.tiledMap.createLayer('Path', tileset);
+      console.log('路徑圖層創建:', this.pathLayer);
+      
+      this.obstaclesLayer = this.tiledMap.createLayer('Obstacles', tileset);
+      console.log('障礙物圖層創建:', this.obstaclesLayer);
+      
+      // 設置圖層深度
+      if (this.backgroundLayer) {
+        this.backgroundLayer.setDepth(-100);
+        console.log('背景圖層深度設置為 -100');
+      }
+      if (this.pathLayer) {
+        this.pathLayer.setDepth(-90);
+        console.log('路徑圖層深度設置為 -90');
+      }
+      if (this.obstaclesLayer) {
+        this.obstaclesLayer.setDepth(-80);
+        console.log('障礙物圖層深度設置為 -80');
+      }
+      
+      // 設置碰撞檢測
+      if (this.obstaclesLayer) {
+        this.obstaclesLayer.setCollisionByExclusion([-1]);
+        console.log('障礙物碰撞檢測設置完成');
+      }
+      
+      // 提取路徑信息
+      this.extractPathFromTiledMap();
+      
+      console.log('Tiled 地圖載入完成');
+      
+    } catch (error) {
+      console.error('載入 Tiled 地圖失敗:', error);
+      console.error('錯誤詳情:', error.stack);
+      // 回退到原來的背景
+      this.createWorldMapBackground();
+    }
+  }
+
+  /**
+   * 從 Tiled 地圖提取路徑
+   */
+  extractPathFromTiledMap() {
+    if (!this.pathLayer) {
+      console.warn('沒有找到路徑圖層');
+      return;
+    }
+    
+    const waypoints = [];
+    
+    // 掃描路徑圖層
+    for (let y = 0; y < this.pathLayer.layer.height; y++) {
+      for (let x = 0; x < this.pathLayer.layer.width; x++) {
+        const tile = this.pathLayer.getTileAt(x, y);
+        if (tile && tile.index > 0) {
+          waypoints.push({
+            x: x * this.tiledMap.tileWidth + this.tiledMap.tileWidth / 2,
+            y: y * this.tiledMap.tileHeight + this.tiledMap.tileHeight / 2,
+            type: tile.index,
+            gridX: x,
+            gridY: y
+          });
+        }
+      }
+    }
+    
+    // 優化路徑點並排序
+    this.gamePath = this.optimizeAndSortPath(waypoints);
+    
+    // 設置敵人生成點和基地位置
+    this.setupEnemySpawnAndBase();
+    
+    console.log(`提取到 ${this.gamePath.length} 個路徑點`);
+    console.log('路徑點:', this.gamePath);
+  }
+
+  /**
+   * 優化並排序路徑點
+   */
+  optimizeAndSortPath(waypoints) {
+    if (waypoints.length === 0) return [];
+    
+    // 找到起點和終點
+    const startPoint = waypoints.find(p => p.type === 14 || p.type === 15); // 起點類型
+    const endPoint = waypoints.find(p => p.type === 14 || p.type === 15); // 終點類型（可能與起點相同類型）
+    
+    if (!startPoint) {
+      console.warn('沒有找到起點，使用第一個路徑點');
+      return this.simplePathSort(waypoints);
+    }
+    
+    // 使用 A* 算法排序路徑點
+    const sortedPath = this.sortPathByDistance(startPoint, waypoints);
+    
+    // 移除重複點
+    const uniquePoints = [];
+    const threshold = 16; // 16像素內視為重複點
+    
+    for (const point of sortedPath) {
+      const isDuplicate = uniquePoints.some(existing => 
+        Math.abs(existing.x - point.x) < threshold && 
+        Math.abs(existing.y - point.y) < threshold
+      );
+      
+      if (!isDuplicate) {
+        uniquePoints.push(point);
+      }
+    }
+    
+    return uniquePoints;
+  }
+
+  /**
+   * 簡單路徑排序（備用方法）
+   */
+  simplePathSort(waypoints) {
+    // 按 Y 坐標排序，然後按 X 坐標排序
+    return waypoints.sort((a, b) => {
+      if (Math.abs(a.y - b.y) < 32) {
+        return a.x - b.x; // 同一行按 X 排序
+      }
+      return a.y - b.y; // 按 Y 排序
+    });
+  }
+
+  /**
+   * 按距離排序路徑點
+   */
+  sortPathByDistance(startPoint, waypoints) {
+    const sorted = [startPoint];
+    const remaining = waypoints.filter(p => p !== startPoint);
+    
+    let currentPoint = startPoint;
+    
+    while (remaining.length > 0) {
+      // 找到距離當前點最近的路徑點
+      let nearestIndex = 0;
+      let nearestDistance = Phaser.Math.Distance.Between(
+        currentPoint.x, currentPoint.y,
+        remaining[0].x, remaining[0].y
+      );
+      
+      for (let i = 1; i < remaining.length; i++) {
+        const distance = Phaser.Math.Distance.Between(
+          currentPoint.x, currentPoint.y,
+          remaining[i].x, remaining[i].y
+        );
+        
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nearestIndex = i;
+        }
+      }
+      
+      // 添加最近點到排序路徑
+      const nearestPoint = remaining.splice(nearestIndex, 1)[0];
+      sorted.push(nearestPoint);
+      currentPoint = nearestPoint;
+    }
+    
+    return sorted;
+  }
+
+  /**
+   * 設置敵人生成點和基地位置
+   */
+  setupEnemySpawnAndBase() {
+    if (!this.gamePath || this.gamePath.length === 0) {
+      console.warn('沒有路徑點，無法設置生成點和基地');
+      return;
+    }
+    
+    // 設置敵人生成點（路徑起點）
+    this.enemySpawnPoint = {
+      x: this.gamePath[0].x,
+      y: this.gamePath[0].y
+    };
+    
+    // 設置基地位置（路徑終點）
+    this.basePosition = {
+      x: this.gamePath[this.gamePath.length - 1].x,
+      y: this.gamePath[this.gamePath.length - 1].y
+    };
+    
+    console.log('敵人生成點:', this.enemySpawnPoint);
+    console.log('基地位置:', this.basePosition);
+  }
+
+  /**
+   * 優化路徑點 (舊方法，保留備用)
+   */
+  optimizePath(waypoints) {
+    if (waypoints.length === 0) return [];
+    
+    // 按類型排序：起點(1) -> 路徑(3) -> 轉彎(4) -> 終點(2)
+    const sortedWaypoints = waypoints.sort((a, b) => {
+      const typeOrder = { 1: 0, 3: 1, 4: 2, 2: 3 }; // 起點、路徑、轉彎、終點
+      return (typeOrder[a.type] || 1) - (typeOrder[b.type] || 1);
+    });
+    
+    // 移除重複點
+    const uniquePoints = [];
+    const threshold = 16; // 16像素內視為重複點
+    
+    for (const point of sortedWaypoints) {
+      const isDuplicate = uniquePoints.some(existing => 
+        Math.abs(existing.x - point.x) < threshold && 
+        Math.abs(existing.y - point.y) < threshold
+      );
+      
+      if (!isDuplicate) {
+        uniquePoints.push(point);
+      }
+    }
+    
+    return uniquePoints;
+  }
+
+  /**
+   * 創建世界地圖背景 (備用方法)
    */
   createWorldMapBackground() {
-    // 獲取地圖尺寸
-    const mapWidth = GameConfig.MAP.WIDTH;  // 1920
-    const mapHeight = GameConfig.MAP.HEIGHT; // 1080
+    // 獲取地圖尺寸 (匹配 Tiled 地圖)
+    const mapWidth = GameConfig.MAP.WIDTH;  // 1280
+    const mapHeight = GameConfig.MAP.HEIGHT; // 960
     
     // 獲取遊戲視窗尺寸
     const { width, height } = this.scale.gameSize;
@@ -222,9 +466,9 @@ export class GameplayScene extends BaseScene {
     graphics.lineStyle(1, 0x444444, 0.3);
     graphics.setDepth(-50);
     
-    // 計算地圖在遊戲視窗中的實際位置和尺寸
-    const mapWidth = GameConfig.MAP.WIDTH;  // 1920
-    const mapHeight = GameConfig.MAP.HEIGHT; // 1080
+    // 計算地圖在遊戲視窗中的實際位置和尺寸 (匹配 Tiled 地圖)
+    const mapWidth = GameConfig.MAP.WIDTH;  // 1280
+    const mapHeight = GameConfig.MAP.HEIGHT; // 960
     
     const scaleX = width / mapWidth;
     const scaleY = height / mapHeight;
@@ -339,8 +583,8 @@ export class GameplayScene extends BaseScene {
    */
   createBasePositionMarker() {
     const { width, height } = this.scale.gameSize;
-    const mapWidth = GameConfig.MAP.WIDTH;  // 1920
-    const mapHeight = GameConfig.MAP.HEIGHT; // 1080
+    const mapWidth = GameConfig.MAP.WIDTH;  // 1280
+    const mapHeight = GameConfig.MAP.HEIGHT; // 960
     
     // 計算縮放比例
     const scaleX = width / mapWidth;
@@ -392,8 +636,8 @@ export class GameplayScene extends BaseScene {
    */
   updateCoordinateDisplay(pointer) {
     const { width, height } = this.scale.gameSize;
-    const mapWidth = GameConfig.MAP.WIDTH;  // 1920
-    const mapHeight = GameConfig.MAP.HEIGHT; // 1080
+    const mapWidth = GameConfig.MAP.WIDTH;  // 1280
+    const mapHeight = GameConfig.MAP.HEIGHT; // 960
     
     // 計算縮放比例
     const scaleX = width / mapWidth;
@@ -460,8 +704,8 @@ export class GameplayScene extends BaseScene {
    */
   onMouseClick(pointer) {
     const { width, height } = this.scale.gameSize;
-    const mapWidth = GameConfig.MAP.WIDTH;  // 1920
-    const mapHeight = GameConfig.MAP.HEIGHT; // 1080
+    const mapWidth = GameConfig.MAP.WIDTH;  // 1280
+    const mapHeight = GameConfig.MAP.HEIGHT; // 960
     
     // 計算縮放比例
     const scaleX = width / mapWidth;
@@ -543,8 +787,8 @@ export class GameplayScene extends BaseScene {
     this.boundaries = this.physics.add.staticGroup();
     
     // 使用地圖實際尺寸作為邊界
-    const mapWidth = GameConfig.MAP.WIDTH;  // 1920
-    const mapHeight = GameConfig.MAP.HEIGHT; // 1080
+    const mapWidth = GameConfig.MAP.WIDTH;  // 1280
+    const mapHeight = GameConfig.MAP.HEIGHT; // 960
     
     // 計算地圖在遊戲視窗中的實際位置和尺寸
     const scaleX = width / mapWidth;
@@ -601,8 +845,8 @@ export class GameplayScene extends BaseScene {
   createPlayer() {
     // 計算地圖在遊戲視窗中的實際位置和尺寸
     const { width, height } = this.scale.gameSize;
-    const mapWidth = GameConfig.MAP.WIDTH;  // 1920
-    const mapHeight = GameConfig.MAP.HEIGHT; // 1080
+    const mapWidth = GameConfig.MAP.WIDTH;  // 1280
+    const mapHeight = GameConfig.MAP.HEIGHT; // 960
     
     const scaleX = width / mapWidth;
     const scaleY = height / mapHeight;

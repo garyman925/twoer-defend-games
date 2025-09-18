@@ -13,11 +13,15 @@ export const GameConfig = {
   GAME_HEIGHT: 768,
   DEBUG: true,
   
-  // 地圖設定
+  // 地圖設定 (匹配 Tiled 地圖)
   MAP: {
-    WIDTH: 1920,
-    HEIGHT: 1080,
-    GRID_SIZE: 64,
+    WIDTH: 1280,  // 40 tiles × 32px = 1280px
+    HEIGHT: 960,  // 30 tiles × 32px = 960px
+    GRID_SIZE: 32, // 匹配 Tiled 地圖的圖塊大小
+    TILE_WIDTH: 32,
+    TILE_HEIGHT: 32,
+    MAP_WIDTH_TILES: 40,  // Tiled 地圖寬度 (tiles)
+    MAP_HEIGHT_TILES: 30, // Tiled 地圖高度 (tiles)
     SAFE_AREA: {
       WIDTH: 1024,
       HEIGHT: 576,
@@ -38,13 +42,13 @@ export const GameConfig = {
       RANGE: 150,
       ROTATION_SPEED: 5
     },
-            POSITION: {
-          X: 64 * 28, // 第29列 × 64像素 = 1792
-          Y: 64 * 13  // 第14行 × 64像素 = 832
-        },
+    POSITION: {
+      X: 32 * 28, // 第29列 × 32像素 = 896 (在 Tiled 地圖範圍內)
+      Y: 32 * 13  // 第14行 × 32像素 = 416 (在 Tiled 地圖範圍內)
+    },
     BASE_GRID_POSITION: {
-      COL: 33, // 第34列 (從0開始是33)
-      ROW: 12  // 第13行 (從0開始是12)
+      COL: 28, // 第29列 (從0開始是28)
+      ROW: 13  // 第14行 (從0開始是13)
     }
   },
 
@@ -95,7 +99,7 @@ export const GameConfig = {
   TOWER: {
     BUILD_COST: 50,
     UPGRADE_COST_MULTIPLIER: 1.5,
-    PLACEMENT_GRID_SIZE: 64,
+    PLACEMENT_GRID_SIZE: 32, // 匹配 Tiled 地圖的圖塊大小
     TYPES: {
       basic: {
         damage: [30, 45, 65, 90, 120],

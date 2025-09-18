@@ -21,8 +21,8 @@ export class TowerPlacementSystem {
     this.selectedTowerType = null;
     this.buildPreview = null;
     
-    // 網格系統
-    this.gridSize = GameConfig.TOWER.PLACEMENT_GRID_SIZE || 64;
+    // 網格系統 (匹配 Tiled 地圖)
+    this.gridSize = GameConfig.TOWER.PLACEMENT_GRID_SIZE || 32;
     this.placementGrid = [];
     this.occupiedCells = new Set();
     
@@ -487,8 +487,8 @@ export class TowerPlacementSystem {
     if (!cell) return false;
     if (cell.occupied) return false;
     
-    // 使用 Tilemap 邏輯層判斷可建造性
-    if (!this.isBuildableFromTilemap(gridPos)) return false;
+    // 檢查 Tiled 地圖的障礙物
+    if (!this.isBuildableFromTiledMap(gridPos)) return false;
     
     // 檢查資源是否足夠
     if (!this.checkResourceRequirement()) return false;
@@ -497,7 +497,58 @@ export class TowerPlacementSystem {
   }
 
   /**
-   * 從 Tilemap 檢查是否可建造
+   * 從 Tiled 地圖檢查是否可建造
+   */
+  isBuildableFromTiledMap(gridPos) {
+    // 檢查 Tiled 地圖的障礙物圖層
+    if (this.scene.obstaclesLayer) {
+      const worldX = gridPos.x * this.gridSize + this.gridSize / 2;
+      const worldY = gridPos.y * this.gridSize + this.gridSize / 2;
+      
+      const obstacleTile = this.scene.obstaclesLayer.getTileAtWorldXY(worldX, worldY);
+      if (obstacleTile && obstacleTile.index > 0) {
+        console.log(`位置 (${worldX}, ${worldY}) 有障礙物，無法建造`);
+        return false;
+      }
+    }
+    
+    // 檢查是否在路徑上
+    if (this.scene.pathLayer) {
+      const worldX = gridPos.x * this.gridSize + this.gridSize / 2;
+      const worldY = gridPos.y * this.gridSize + this.gridSize / 2;
+      
+      const pathTile = this.scene.pathLayer.getTileAtWorldXY(worldX, worldY);
+      if (pathTile && pathTile.index > 0) {
+        console.log(`位置 (${worldX}, ${worldY}) 在路徑上，無法建造`);
+        return false;
+      }
+    }
+    
+    // 檢查其他限制區域
+    const worldX = gridPos.x * this.gridSize + this.gridSize / 2;
+    const worldY = gridPos.y * this.gridSize + this.gridSize / 2;
+    
+    for (const area of this.restrictedAreas) {
+      if (area.type === 'circle') {
+        const distance = Phaser.Math.Distance.Between(worldX, worldY, area.x, area.y);
+        if (distance < area.radius) {
+          console.log(`位置 (${worldX}, ${worldY}) 在限制區域內，無法建造`);
+          return false;
+        }
+      } else if (area.type === 'rect') {
+        if (worldX >= area.x && worldX <= area.x + area.width &&
+            worldY >= area.y && worldY <= area.y + area.height) {
+          console.log(`位置 (${worldX}, ${worldY}) 在限制區域內，無法建造`);
+          return false;
+        }
+      }
+    }
+    
+    return true;
+  }
+
+  /**
+   * 從 Tilemap 檢查是否可建造 (舊方法，保留備用)
    */
   isBuildableFromTilemap(gridPos) {
     if (!this.logicMap || !this.buildableLayer) {

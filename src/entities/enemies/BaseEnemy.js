@@ -196,7 +196,26 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
   }
 
   /**
-   * 設置移動路徑
+   * 設置路徑 (新方法，用於 Tiled 路徑)
+   */
+  setPath(path) {
+    if (!path || !Array.isArray(path) || path.length === 0) {
+      console.warn(`⚠️ ${this.enemyType}敵人收到無效路徑:`, path);
+      return;
+    }
+    
+    this.path = path;
+    this.pathIndex = 0;
+    this.isMoving = true;
+    
+    console.log(`🎯 ${this.enemyType}敵人設置了 ${this.path.length} 個路徑點`);
+    console.log(`📍 路徑詳情:`, this.path.map(p => `(${p.x}, ${p.y})`));
+    
+    this.setNextTarget();
+  }
+
+  /**
+   * 設置移動路徑 (舊方法，保留備用)
    */
   setupPath() {
     // 獲取玩家位置
@@ -483,8 +502,36 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
     const reachThreshold = Math.max(5, this.speed * 0.1);
     
     if (distance < reachThreshold) { // 接近目標點
+      // 檢查是否到達最後一個路徑點（基地）
+      if (this.pathIndex >= this.path.length - 1) {
+        console.log(`🏰 ${this.enemyType}敵人到達基地，開始攻擊！`);
+        this.attackBase();
+        return;
+      }
+      
       this.setNextTarget();
     }
+  }
+
+  /**
+   * 攻擊基地
+   */
+  attackBase() {
+    this.isMoving = false;
+    this.isAttacking = true;
+    
+    // 停止移動
+    if (this.body) {
+      this.body.setVelocity(0, 0);
+    }
+    
+    console.log(`⚔️ ${this.enemyType}敵人開始攻擊基地！`);
+    
+    // 發送攻擊基地事件
+    this.eventEmitter.emit('enemyReachedDestination', this);
+    
+    // 創建攻擊特效
+    this.createAttackEffect();
   }
 
   /**

@@ -9,8 +9,8 @@ export class PathfindingManager {
   constructor(scene) {
     this.scene = scene;
     
-    // 網格設置
-    this.gridSize = GameConfig.TOWER.PLACEMENT_GRID_SIZE || 64; // 與塔放置格子統一
+    // 網格設置 (匹配 Tiled 地圖)
+    this.gridSize = GameConfig.TOWER.PLACEMENT_GRID_SIZE || 32; // 與塔放置格子統一
     this.gridWidth = 0;
     this.gridHeight = 0;
     this.grid = [];
@@ -466,6 +466,13 @@ export class PathfindingManager {
    * 獲取從起點到終點的完整路徑
    */
   getPath(startX, startY, endX, endY, useSmoothing = true) {
+    // 如果場景有 Tiled 地圖路徑，優先使用
+    if (this.scene.gamePath && this.scene.gamePath.length > 0) {
+      console.log('使用 Tiled 地圖路徑');
+      return this.scene.gamePath;
+    }
+    
+    // 否則使用 A* 算法
     const rawPath = this.findPath(startX, startY, endX, endY);
     
     // 確保路徑有效
