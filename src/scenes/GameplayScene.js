@@ -78,7 +78,7 @@ export class GameplayScene extends BaseScene {
     this.load.atlas('tower-sprites', 'assets/sprites/towers/tower-sprite.png', 'assets/sprites/towers/tower-sprite.json');
     
     // 載入敵人精靈圖集
-    this.load.atlas('enemy-sprites', 'assets/sprites/enemies/enemy-sprite.png', 'assets/sprites/enemies/enemy-sprite.json');
+    this.load.atlas('enemy_basic', 'assets/sprites/enemies/basic/basic.webp', 'assets/sprites/enemies/basic/basic.json');
     
     // 載入玩家爆炸動畫
     this.load.atlas('player-explosion', 'assets/sprites/ships/blue/explosion.webp', 'assets/sprites/ships/blue/explosion.json');    

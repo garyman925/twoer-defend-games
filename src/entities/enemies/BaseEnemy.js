@@ -127,10 +127,23 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
     const frameName = this.getEnemyFrameName();
     const size = this.getEnemySize();
     
-    this.enemySprite = this.scene.add.image(0, 0, 'enemy-sprites', frameName);
+    // 根據敵人類型選擇資源
+    if (this.enemyType === 'BASIC') {
+      this.enemySprite = this.scene.add.sprite(0, 0, 'enemy_basic');
+    } else {
+      this.enemySprite = this.scene.add.image(0, 0, 'enemy_basic', frameName);
+    }
     this.enemySprite.setScale(this.getEnemyScale());
+    this.enemySprite.setScale(0.1);
     this.enemySprite.setOrigin(0.5, 0.5);
     this.add(this.enemySprite);
+    
+    // 播放動畫
+    if (this.enemyType === 'BASIC') {
+      if (this.scene.anims.exists('enemy_basic_idle')) {
+        this.enemySprite.play('enemy_basic_idle');
+      }
+    }
     
     // 創建血條背景 (調整位置適應圖片)
     const healthBarY = -size - 12;

@@ -54,10 +54,14 @@ export class AssetLoader {
       { key: 'player_skin_default', path: 'assets/images/skins/player_default.png' },
       
       // 敵人資源
-      { key: 'enemy_basic', path: 'assets/images/entities/enemy_basic.png' },
+      { key: 'enemy_basic', path: 'assets/sprites/enemies/basic/basic.webp' },
+      { key: 'enemy_basic_json', path: 'assets/sprites/enemies/basic/basic.json' },
       { key: 'enemy_fast', path: 'assets/images/entities/enemy_fast.png' },
       { key: 'enemy_tank', path: 'assets/images/entities/enemy_tank.png' },
       { key: 'enemy_boss', path: 'assets/images/entities/enemy_boss.png' },
+      // 添加meteor資源
+      { key: 'enemy_meteor', path: 'assets/sprites/enemies/meteor.webp' },
+      { key: 'enemy_meteor_json', path: 'assets/sprites/enemies/meteor.json' },
       
       // 塔資源
       { key: 'tower_basic', path: 'assets/images/entities/tower_basic.png' },
@@ -82,7 +86,8 @@ export class AssetLoader {
       // 背景資源
       { key: 'game_bg', path: 'assets/images/backgrounds/game_bg.png' },
       { key: 'menu_bg', path: 'assets/images/backgrounds/menu_bg.png' },
-      { key: 'grid_overlay', path: 'assets/images/backgrounds/grid_overlay.png' }
+      { key: 'grid_overlay', path: 'assets/images/backgrounds/grid_overlay.png' },
+      { key: 'game_start_screen', path: 'assets/bg/game-start-screen.png' }
     ];
 
     // 音頻資源
@@ -190,9 +195,20 @@ export class AssetLoader {
     this.scene.load.atlas('player_idle', 'assets/sprites/ships/blue/player_idle.webp', 'assets/sprites/ships/blue/player_idle.json');
     
     // 載入其他關鍵資源
-    this.scene.load.image('enemy_basic', 'assets/sprites/enemies/enemy-sprite.webp');
     this.scene.load.image('tower_basic', 'assets/sprites/towers/tower-sprite.png');
     this.scene.load.image('bullet_basic', 'assets/sprites/bullets/bullets.webp');
+    
+    // 載入敵人圖集
+    this.scene.load.atlas('enemy_basic', 'assets/sprites/enemies/basic/basic.webp', 'assets/sprites/enemies/basic/basic.json');
+    
+    // 載入meteor資源
+    this.scene.load.atlas('enemy_meteor', 'assets/sprites/enemies/meteor.webp', 'assets/sprites/enemies/meteor.json');
+    
+    // 載入主選單背景圖片
+    this.scene.load.image('game_start_screen', 'assets/bg/game-start-screen.png');
+    
+    // 載入UI按鈕圖集
+    this.scene.load.atlas('ui_buttons', 'assets/ui/ui.webp', 'assets/ui/ui.json');
   }
 
   /**
@@ -512,16 +528,52 @@ export class AssetLoader {
       });
     }
     
-    // 敵人行走動畫
+    // Meteor漂浮動畫（隨機選擇外觀）
+    if (this.scene.textures.exists('enemy_meteor')) {
+      this.scene.anims.create({
+        key: 'meteor_float',
+        frames: this.scene.anims.generateFrameNames('enemy_meteor', {
+          prefix: 'Meteor_',
+          suffix: '.png',
+          start: 1,
+          end: 10
+        }),
+        frameRate: 2, // 緩慢旋轉
+        repeat: -1
+      });
+    }
+    
+    // 敵人待機動畫
     Object.keys(GameConfig.ENEMY.TYPES).forEach(enemyType => {
       const key = `enemy_${enemyType.toLowerCase()}`;
       if (this.scene.textures.exists(key)) {
-        this.scene.anims.create({
-          key: `${key}_walk`,
-          frames: this.scene.anims.generateFrameNumbers(key),
-          frameRate: 8,
-          repeat: -1
-        });
+        // 跳過METEOR類型，因為它有自己的動畫創建邏輯
+        if (enemyType === 'METEOR') {
+          return; // 跳過METEOR
+        }
+        
+        // 為basic敵人創建待機動畫
+        if (enemyType === 'BASIC') {
+          this.scene.anims.create({
+            key: `${key}_idle`,
+            frames: this.scene.anims.generateFrameNames(key, {
+              prefix: 'Idle_',
+              suffix: '.png',
+              start: 1,
+              end: 9
+            }),
+            frameRate: 8,
+            repeat: -1
+          });
+        } else {
+          // 其他敵人暫時使用舊的動畫創建方式
+          this.scene.anims.create({
+            key: `${key}_walk`,
+            frames: this.scene.anims.generateFrameNumbers(key),
+            frameRate: 8,
+            repeat: -1
+          });
+        }
       }
     });
   }

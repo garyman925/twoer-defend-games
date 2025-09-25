@@ -122,6 +122,11 @@ export class EnemySpawner {
     // 創建生成隊列
     this.createSpawnQueue(waveConfig);
     
+    // 隨機決定是否生成meteor (30%機率)
+    if (Phaser.Math.Between(1, 100) <= 30) {
+      this.spawnMeteor();
+    }
+    
     // 開始生成
     this.isSpawning = true;
     this.processSpawnQueue();
@@ -447,6 +452,47 @@ export class EnemySpawner {
     };
     
     console.log('敵人生成器已重置');
+  }
+
+  /**
+   * 生成Meteor敵人
+   */
+  spawnMeteor() {
+    // 檢查當前meteor數量
+    const currentMeteors = this.scene.enemies.children.entries.filter(
+      enemy => enemy.enemyType === 'METEOR'
+    );
+    
+    if (currentMeteors.length >= 2) {
+      console.log('🌠 已達到最大meteor數量 (2個)');
+      return;
+    }
+    
+    const { width, height } = this.scene.scale.gameSize;
+    
+    // 隨機生成位置（避免在玩家附近）
+    let x, y;
+    do {
+      x = Phaser.Math.Between(50, width - 50);
+      y = Phaser.Math.Between(50, height - 50);
+    } while (this.isNearPlayer(x, y, 100)); // 距離玩家至少100像素
+    
+    // 動態導入MeteorEnemy類
+    import('../entities/enemies/MeteorEnemy.js').then(({ MeteorEnemy }) => {
+      const meteor = new MeteorEnemy(this.scene, x, y);
+      this.scene.enemies.add(meteor);
+      console.log('🌠 生成Meteor敵人，位置:', x, y);
+    });
+  }
+
+  /**
+   * 檢查是否靠近玩家
+   */
+  isNearPlayer(x, y, minDistance) {
+    if (!this.scene.player) return false;
+    
+    const distance = Phaser.Math.Distance.Between(x, y, this.scene.player.x, this.scene.player.y);
+    return distance < minDistance;
   }
 
   /**

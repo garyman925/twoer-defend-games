@@ -88,6 +88,7 @@ export class Player extends Phaser.GameObjects.Container {
     this.playerSprite = this.scene.add.sprite(0, 0, 'player_idle');
     this.playerSprite.setScale(0.1); // 縮小到10%
     this.playerSprite.setOrigin(0.5, 0.5); // 設置錨點為中心
+    this.playerSprite.setRotation(Math.PI / 2); // 向右轉90度
     
     console.log('🎮 玩家精靈創建完成，位置:', this.playerSprite.x, this.playerSprite.y);
     console.log('🎮 玩家精靈縮放:', this.playerSprite.scaleX, this.playerSprite.scaleY);
@@ -138,11 +139,15 @@ export class Player extends Phaser.GameObjects.Container {
    * 創建武器
    */
   createWeapon() {
+    console.log('🔫 開始創建武器');
+    
     // 導入武器類別
     const { PlayerWeapon } = require('./PlayerWeapon.js');
     this.weapon = new PlayerWeapon(this.scene, this);
     this.weapon.setPosition(0, 0); // 確保武器在玩家中心
     this.add(this.weapon);
+    
+    console.log('🔫 武器創建完成:', this.weapon ? '成功' : '失敗');
   }
 
   /**
@@ -195,6 +200,9 @@ export class Player extends Phaser.GameObjects.Container {
     
     // 更新移動
     this.handleMovement(time, delta);
+    
+    // 更新滑鼠跟隨轉向
+    this.updateMouseRotation(time, delta);
     
     // 更新武器
     if (this.weapon) {
@@ -265,14 +273,37 @@ export class Player extends Phaser.GameObjects.Container {
   }
 
   /**
+   * 更新滑鼠跟隨轉向
+   */
+  updateMouseRotation(time, delta) {
+    if (!this.isAlive) return;
+    
+    // 獲取滑鼠位置
+    const mouseX = this.scene.input.mousePointer.x;
+    const mouseY = this.scene.input.mousePointer.y;
+    
+    // 計算目標角度
+    const targetAngle = Phaser.Math.Angle.Between(this.x, this.y, mouseX, mouseY);
+    
+    // 平滑旋轉到目標角度
+    const rotationSpeed = 0.1; // 旋轉速度 (0.1 = 較慢，0.5 = 較快)
+    this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, targetAngle, rotationSpeed);
+  }
+
+  /**
    * 處理滑鼠按下
    */
   handleMouseDown(pointer) {
     if (!this.isAlive) return;
     
+    console.log('🎯 滑鼠按下，武器狀態:', this.weapon ? '存在' : '不存在');
+    
     // 開始射擊
     if (this.weapon) {
+      console.log('🎯 開始射擊');
       this.weapon.startFiring();
+    } else {
+      console.log('❌ 武器不存在');
     }
   }
 

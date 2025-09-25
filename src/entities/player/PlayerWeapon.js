@@ -26,7 +26,7 @@ export class PlayerWeapon extends Phaser.GameObjects.Container {
     this.aimingSpeed = 0.1;
     
     // 射擊系統
-    this.lastFireTime = 0;
+    this.lastFireTime = -this.fireRate;
     this.isFiring = false;
     this.projectiles = [];
     this.projectilePool = [];
@@ -137,6 +137,7 @@ export class PlayerWeapon extends Phaser.GameObjects.Container {
    * 開始射擊
    */
   startFiring() {
+    console.log('🔫 武器開始射擊，當前狀態:', this.isFiring ? '已在射擊' : '開始射擊');
     this.isFiring = true;
   }
 
@@ -165,10 +166,15 @@ export class PlayerWeapon extends Phaser.GameObjects.Container {
    * 射擊
    */
   fire() {
+    console.log('🔫 嘗試射擊，投射物數量:', this.projectiles.filter(p => p.active).length, '/', this.maxProjectiles);
+    
     // 檢查是否有可用的投射物
     if (this.projectiles.filter(p => p.active).length >= this.maxProjectiles) {
+      console.log('❌ 投射物數量已達上限，無法射擊');
       return;
     }
+    
+    console.log('✅ 開始發射子彈');
     
     // 播放射擊音效
     this.playFireSound();

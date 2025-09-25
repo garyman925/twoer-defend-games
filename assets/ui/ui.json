@@ -1,0 +1,83 @@
+{
+	"textures": [
+		{
+			"image": "ui.webp",
+			"format": "RGBA8888",
+			"size": {
+				"w": 457,
+				"h": 517
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "btn-disabled.png",
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 455,
+						"h": 173
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 0,
+						"w": 455,
+						"h": 173
+					},
+					"sourceSize": {
+						"w": 457,
+						"h": 173
+					}
+				},
+				{
+					"filename": "btn-hover.png",
+					"frame": {
+						"x": 1,
+						"y": 176,
+						"w": 455,
+						"h": 165
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 4,
+						"w": 455,
+						"h": 165
+					},
+					"sourceSize": {
+						"w": 457,
+						"h": 173
+					}
+				},
+				{
+					"filename": "btn.png",
+					"frame": {
+						"x": 1,
+						"y": 343,
+						"w": 455,
+						"h": 173
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 0,
+						"w": 455,
+						"h": 173
+					},
+					"sourceSize": {
+						"w": 457,
+						"h": 173
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:001b13ceb4d42503f7bb57f000365a51:732da820f0d55e698caa51a94c60d18b:c25403fe9d41abdbab1e6f1b6cf06693$"
+	}
+}

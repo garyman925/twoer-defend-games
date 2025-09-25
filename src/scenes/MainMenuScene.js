@@ -64,10 +64,23 @@ export class MainMenuScene extends BaseScene {
    * 創建背景
    */
   createBackground(width, height) {
-    // 創建漸變背景
-    const graphics = this.add.graphics();
-    graphics.fillGradientStyle(0x0c0c0c, 0x1a1a2e, 0x16213e, 0x0c0c0c);
-    graphics.fillRect(0, 0, width, height);
+    // 使用新的背景圖片
+    if (this.textures.exists('game_start_screen')) {
+      this.backgroundImage = this.add.image(width / 2, height / 2, 'game_start_screen');
+      
+      // 調整背景圖片大小以適應螢幕
+      const scaleX = width / this.backgroundImage.width;
+      const scaleY = height / this.backgroundImage.height;
+      const scale = Math.max(scaleX, scaleY);
+      
+      this.backgroundImage.setScale(scale);
+      this.backgroundImage.setDepth(-1000); // 確保背景在最底層
+    } else {
+      // 如果背景圖片未載入，使用漸變背景作為備用
+      const graphics = this.add.graphics();
+      graphics.fillGradientStyle(0x0c0c0c, 0x1a1a2e, 0x16213e, 0x0c0c0c);
+      graphics.fillRect(0, 0, width, height);
+    }
     
     // 添加動態背景效果
     this.createBackgroundEffects(width, height);
@@ -106,52 +119,17 @@ export class MainMenuScene extends BaseScene {
    * 創建標題
    */
   createTitle(width, height) {
-    this.titleText = this.add.text(width / 2, height / 4, 'TOWER DEFENSE', {
-      fontFamily: 'Arial',
-      fontSize: '64px',
-      fontWeight: 'bold',
-      fill: '#00ffff',
-      stroke: '#ffffff',
-      strokeThickness: 3,
-      shadow: {
-        offsetX: 2,
-        offsetY: 2,
-        color: '#000000',
-        blur: 5,
-        fill: true
-      }
-    });
-    
-    this.titleText.setOrigin(0.5);
-    
-    // 標題動畫
-    this.tweens.add({
-      targets: this.titleText,
-      scaleX: { from: 1, to: 1.05 },
-      scaleY: { from: 1, to: 1.05 },
-      duration: 2000,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut'
-    });
-    
-    // 副標題
-    const subtitle = this.add.text(width / 2, height / 4 + 80, '防禦你的基地', {
-      fontFamily: 'Arial',
-      fontSize: '24px',
-      fill: '#ffffff',
-      alpha: 0.8
-    });
-    subtitle.setOrigin(0.5);
+    // 標題和副標題已移除
   }
 
   /**
    * 創建選單按鈕
    */
   createMenuButtons(width, height) {
-    const centerX = width / 2;
-    const startY = height / 2;
-    const buttonSpacing = 80;
+    // 按鈕位置設置在右下角
+    const startX = width - 150; // 距離右邊 200px
+    const startY = height - 300; // 距離底部 200px
+    const buttonSpacing = 90;
     
     const buttonConfigs = [
       {
@@ -160,14 +138,9 @@ export class MainMenuScene extends BaseScene {
         color: '#00ff00'
       },
       {
-        text: '升級商店',
+        text: '商店',
         action: () => this.openShop(),
         color: '#ffd93d'
-      },
-      {
-        text: '設置',
-        action: () => this.openSettings(),
-        color: '#00ffff'
       },
       {
         text: '說明',
@@ -178,7 +151,7 @@ export class MainMenuScene extends BaseScene {
     
     buttonConfigs.forEach((config, index) => {
       const button = this.createMenuButton(
-        centerX,
+        startX,
         startY + (index * buttonSpacing),
         config.text,
         config.action,
@@ -193,16 +166,18 @@ export class MainMenuScene extends BaseScene {
    * 創建選單按鈕
    */
   createMenuButton(x, y, text, action, color = '#00ffff') {
-    // 按鈕背景
-    const buttonBg = this.add.rectangle(x, y, 300, 60, 0x000000, 0.7);
-    buttonBg.setStrokeStyle(2, color);
+    // 使用圖片按鈕
+    const buttonBg = this.add.image(x, y, 'ui_buttons', 'btn.png');
+    buttonBg.setScale(0.5); // 調整按鈕大小
     
     // 按鈕文字
     const buttonText = this.add.text(x, y, text, {
       fontFamily: 'Arial',
-      fontSize: '24px',
+      fontSize: '20px',
       fontWeight: 'bold',
-      fill: color
+      fill: '#ffffff',
+      stroke: '#000000',
+      strokeThickness: 2
     });
     buttonText.setOrigin(0.5);
     
@@ -212,45 +187,26 @@ export class MainMenuScene extends BaseScene {
     // 設置互動
     buttonBg.setInteractive();
     
+
     // 懸停效果
     buttonBg.on('pointerover', () => {
-      this.tweens.add({
-        targets: [buttonBg, buttonText],
-        scaleX: 1.1,
-        scaleY: 1.1,
-        duration: 200,
-        ease: 'Back.easeOut'
-      });
-      
-      buttonBg.setFillStyle(color, 0.2);
+      // 切換到懸停狀態
+      buttonBg.setFrame('btn-hover.png');      
       this.playSound('button_hover');
+      
     });
     
     buttonBg.on('pointerout', () => {
-      this.tweens.add({
-        targets: [buttonBg, buttonText],
-        scaleX: 1,
-        scaleY: 1,
-        duration: 200,
-        ease: 'Back.easeOut'
-      });
-      
-      buttonBg.setFillStyle(0x000000, 0.7);
+
+      // 切換回正常狀態
+      buttonBg.setFrame('btn.png');
+
     });
     
     // 點擊效果
     buttonBg.on('pointerdown', () => {
-      this.tweens.add({
-        targets: [buttonBg, buttonText],
-        scaleX: 0.95,
-        scaleY: 0.95,
-        duration: 100,
-        yoyo: true,
-        ease: 'Power2'
-      });
-      
+
       this.playSound('button_click');
-      
       // 延遲執行動作
       this.time.delayedCall(150, action);
     });
@@ -482,19 +438,14 @@ export class MainMenuScene extends BaseScene {
    * 重新佈局UI
    */
   repositionUI(width, height) {
-    // 重新定位標題
-    if (this.titleText) {
-      this.titleText.setPosition(width / 2, height / 4);
-    }
-    
-    // 重新定位按鈕
-    const centerX = width / 2;
-    const startY = height / 2;
+    // 重新定位按鈕到右下角
+    const startX = width - 200; // 距離右邊 200px
+    const startY = height - 200; // 距離底部 200px
     const buttonSpacing = 80;
     
     this.menuButtons.forEach((button, index) => {
       if (button) {
-        button.setPosition(centerX, startY + (index * buttonSpacing));
+        button.setPosition(startX, startY + (index * buttonSpacing));
       }
     });
   }

@@ -132,6 +132,15 @@ export const GameConfig = {
         reward: 15,
         damage: 25,
         attackType: 'melee' // 近戰攻擊
+      },
+      METEOR: {
+        health: 80,
+        speed: 20, // 緩慢漂浮
+        reward: 0, // 不給獎勵
+        damage: 30,
+        maxCount: 2, // 最多2個
+        behavior: 'passive', // 被動行為
+        attackType: 'collision' // 碰撞傷害
       }
     }
   },
@@ -192,17 +201,17 @@ export const GameConfig = {
     
     // 波次配置
     PATTERNS: [
-      { enemyType: 'MELEE', count: 2, interval: 1500 }, // 第1波：近戰敵人測試
+      { enemyType: 'BASIC', count: 2, interval: 1500 }, // 第1波：近戰敵人測試
       { enemyType: 'RANGED', count: 2, interval: 1500 }, // 第2波：遠程敵人測試
       { enemyType: 'BASIC', count: 5, interval: 1000 },
       { enemyType: 'BASIC', count: 8, interval: 800 },
       { enemyType: 'FAST', count: 6, interval: 600 },
-      { enemyType: 'MELEE', count: 4, interval: 1200 }, // 添加近戰敵人
+      { enemyType: 'BASIC', count: 4, interval: 1200 }, // 添加近戰敵人
       { enemyType: 'BASIC', count: 10, interval: 700 },
       { enemyType: 'TANK', count: 3, interval: 2000 },
       { enemyType: 'RANGED', count: 3, interval: 1500 }, // 添加遠程敵人
       { enemyType: 'FAST', count: 12, interval: 500 },
-      { enemyType: 'MELEE', count: 6, interval: 1000 }, // 更多近戰敵人
+      { enemyType: 'BASIC', count: 6, interval: 1000 }, // 更多近戰敵人
       { enemyType: 'BASIC', count: 15, interval: 600 },
       { enemyType: 'RANGED', count: 5, interval: 1200 }, // 更多遠程敵人
       { enemyType: 'FLYING', count: 8, interval: 800 },
