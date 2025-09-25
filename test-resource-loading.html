@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資源加載測試</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            border: 2px solid #444;
+            margin: 20px 0;
+        }
+        .info {
+            background: #333;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .warning { color: #ff9800; }
+    </style>
+</head>
+<body>
+    <h1>資源加載測試</h1>
+    
+    <div class="info">
+        <h3>測試目標：</h3>
+        <ul>
+            <li>✅ 在 preload() 階段加載所有資源</li>
+            <li>✅ 驗證 tower-sprites 圖集是否正確加載</li>
+            <li>✅ 檢查所有 frame 是否可用</li>
+            <li>✅ 測試塔卡片顯示</li>
+        </ul>
+    </div>
+
+    <div id="game-container"></div>
+
+    <div class="info">
+        <h3>控制台日誌：</h3>
+        <p>請打開瀏覽器開發者工具查看詳細的加載日誌</p>
+    </div>
+
+    <script src="node_modules/phaser/dist/phaser.min.js"></script>
+    <script>
+        class ResourceLoadingTestScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'ResourceLoadingTestScene' });
+            }
+
+            preload() {
+                console.log('🔄 開始 preload() 階段...');
+                
+                // 載入塔精靈圖集
+                this.load.atlas('tower-sprites', 'assets/sprites/towers/tower-sprite.png', 'assets/sprites/towers/tower-sprite.json');
+                
+                // 載入敵人精靈圖集
+                this.load.atlas('enemy-sprites', 'assets/sprites/enemies/enemy-sprite.png', 'assets/sprites/enemies/enemy-sprite.json');
+                
+                console.log('📁 preload() 階段完成');
+            }
+
+            create() {
+                console.log('🎮 開始 create() 階段...');
+                
+                // 創建背景
+                this.add.rectangle(640, 400, 1280, 800, 0x2c3e50);
+                
+                // 檢查資源是否正確加載
+                this.checkResources();
+                
+                // 創建塔卡片測試
+                this.createTowerCardTest();
+                
+                console.log('✅ create() 階段完成');
+            }
+            
+            checkResources() {
+                console.log('🔍 檢查資源加載狀態...');
+                
+                // 檢查 tower-sprites 圖集
+                if (this.textures.exists('tower-sprites')) {
+                    console.log('✅ tower-sprites 圖集已加載');
+                    
+                    // 檢查所有 frame
+                    const frames = [
+                        'basic-tower.png',
+                        'canon-tower.png', 
+                        'laser-tower.png',
+                        'ice-tower.png',
+                        'basic-tower-card.png',
+                        'canon-tower-card.png',
+                        'laser-tower-card.png',
+                        'ice-tower-card.png'
+                    ];
+                    
+                    frames.forEach(frameName => {
+                        if (this.textures.get('tower-sprites').has(frameName)) {
+                            console.log(`✅ Frame "${frameName}" 可用`);
+                        } else {
+                            console.error(`❌ Frame "${frameName}" 不可用`);
+                        }
+                    });
+                } else {
+                    console.error('❌ tower-sprites 圖集未加載');
+                }
+                
+                // 檢查 enemy-sprites 圖集
+                if (this.textures.exists('enemy-sprites')) {
+                    console.log('✅ enemy-sprites 圖集已加載');
+                } else {
+                    console.error('❌ enemy-sprites 圖集未加載');
+                }
+            }
+            
+            createTowerCardTest() {
+                console.log('🎴 創建塔卡片測試...');
+                
+                const cardFrames = [
+                    'basic-tower-card.png',
+                    'canon-tower-card.png',
+                    'laser-tower-card.png',
+                    'ice-tower-card.png'
+                ];
+                
+                const cardNames = ['基礎塔', '加農炮', '激光塔', '冰凍塔'];
+                
+                cardFrames.forEach((frameName, index) => {
+                    const x = 200 + index * 200;
+                    const y = 300;
+                    
+                    // 創建卡片
+                    const card = this.add.image(x, y, 'tower-sprites', frameName);
+                    card.setScale(0.8);
+                    
+                    // 創建標籤
+                    const label = this.add.text(x, y + 80, cardNames[index], {
+                        fontSize: '16px',
+                        fill: '#ffffff',
+                        backgroundColor: '#000000',
+                        padding: { x: 8, y: 4 }
+                    });
+                    label.setOrigin(0.5);
+                    
+                    // 添加 hover 效果
+                    card.setInteractive();
+                    card.on('pointerover', () => {
+                        card.setScale(0.9);
+                        card.setTint(0x00ff00);
+                    });
+                    card.on('pointerout', () => {
+                        card.setScale(0.8);
+                        card.clearTint();
+                    });
+                    
+                    console.log(`✅ 創建卡片: ${cardNames[index]} (${frameName})`);
+                });
+            }
+        }
+
+        const config = {
+            type: Phaser.AUTO,
+            width: 1280,
+            height: 800,
+            parent: 'game-container',
+            backgroundColor: '#2c3e50',
+            scene: ResourceLoadingTestScene
+        };
+
+        const game = new Phaser.Game(config);
+    </script>
+</body>
+</html>

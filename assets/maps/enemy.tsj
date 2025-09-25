@@ -1,0 +1,15 @@
+{ "columns":1,
+ "image":"..\/..\/..\/..\/..\/..\/Users\/Nebula-Gary\/Downloads\/\u5de5\u4f5c\u5340\u57df 2.jpg",
+ "imageheight":33,
+ "imagewidth":33,
+ "margin":0,
+ "name":"enemy",
+ "spacing":0,
+ "tilecount":1,
+ "tiledversion":"1.11.2",
+ "tileheight":32,
+ "tilewidth":32,
+ "transparentcolor":"#ffffff",
+ "type":"tileset",
+ "version":"1.10"
+}

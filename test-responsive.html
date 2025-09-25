@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>響應式設計測試</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        #game-container {
+            position: relative;
+            border: 2px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            width: 100vw;
+            height: 100vh;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        .info-panel {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+            min-width: 200px;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            margin: 2px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="info-panel">
+        <h3>🔄 響應式測試</h3>
+        <div id="window-info">窗口: <span id="window-size">-</span></div>
+        <div id="game-info">遊戲: <span id="game-size">-</span></div>
+        <div id="scale-info">縮放: <span id="scale-factor">-</span></div>
+        <div id="mode-info">模式: <span id="scale-mode">FIT</span></div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="toggleFullscreen()">全屏切換</button>
+        <button onclick="resizeWindow(800, 600)">800x600</button>
+        <button onclick="resizeWindow(1024, 768)">1024x768</button>
+        <button onclick="resizeWindow(1280, 720)">1280x720</button>
+        <button onclick="resizeWindow(1920, 1080)">1920x1080</button>
+    </div>
+
+    <div id="game-container"></div>
+
+    <script src="node_modules/phaser/dist/phaser.min.js"></script>
+    <script>
+        class ResponsiveTestScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'ResponsiveTestScene' });
+            }
+
+            preload() {
+                // 載入測試圖片
+                this.load.image('test-bg', 'assets/tilesets/map/world-1.png');
+                this.load.atlas('tower-sprites', 'assets/sprites/towers/tower-sprite.png', 'assets/sprites/towers/tower-sprite.json');
+                this.load.atlas('enemy-sprites', 'assets/sprites/enemies/enemy-sprite.png', 'assets/sprites/enemies/enemy-sprite.json');
+            }
+
+            create() {
+                console.log('✅ 響應式測試場景創建完成');
+                
+                // 創建背景
+                this.add.image(0, 0, 'test-bg').setOrigin(0, 0);
+                
+                // 創建測試元素
+                this.createTestElements();
+                
+                // 設置響應式事件
+                this.setupResponsiveEvents();
+                
+                // 更新信息面板
+                this.updateInfoPanel();
+            }
+
+            createTestElements() {
+                // 創建一些測試元素來觀察縮放效果
+                const centerX = this.cameras.main.width / 2;
+                const centerY = this.cameras.main.height / 2;
+                
+                // 測試塔
+                const tower = this.add.image(centerX - 100, centerY, 'tower-sprites', 'tower-1.png');
+                tower.setScale(1.5);
+                
+                // 測試敵人
+                const enemy = this.add.image(centerX + 100, centerY, 'enemy-sprites', 'enemy-1.png');
+                enemy.setScale(0.35);
+                
+                // 測試圓形（觀察是否變形）
+                const circle = this.add.circle(centerX, centerY - 100, 30, 0xff0000);
+                circle.setStrokeStyle(3, 0xffffff);
+                
+                // 測試文字
+                this.add.text(centerX, centerY + 100, '響應式測試', {
+                    fontSize: '24px',
+                    fill: '#ffffff',
+                    align: 'center'
+                }).setOrigin(0.5);
+                
+                // 邊界標記
+                this.add.rectangle(0, 0, 10, 10, 0x00ff00).setOrigin(0, 0); // 左上角
+                this.add.rectangle(this.cameras.main.width - 10, 0, 10, 10, 0x00ff00).setOrigin(0, 0); // 右上角
+                this.add.rectangle(0, this.cameras.main.height - 10, 10, 10, 0x00ff00).setOrigin(0, 0); // 左下角
+                this.add.rectangle(this.cameras.main.width - 10, this.cameras.main.height - 10, 10, 10, 0x00ff00).setOrigin(0, 0); // 右下角
+            }
+
+            setupResponsiveEvents() {
+                // 監聽窗口大小變化
+                this.game.events.on('windowResize', (data) => {
+                    console.log('🔄 場景收到窗口大小變化事件:', data);
+                    this.updateInfoPanel();
+                });
+            }
+
+            onResize(width, height) {
+                console.log('🔄 場景響應式更新:', width, height);
+                this.updateInfoPanel();
+            }
+
+            updateInfoPanel() {
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                const gameWidth = this.cameras.main.width;
+                const gameHeight = this.cameras.main.height;
+                const scaleX = windowWidth / 1024;
+                const scaleY = windowHeight / 768;
+                
+                document.getElementById('window-size').textContent = `${windowWidth}x${windowHeight}`;
+                document.getElementById('game-size').textContent = `${gameWidth}x${gameHeight}`;
+                document.getElementById('scale-factor').textContent = `${scaleX.toFixed(2)}x${scaleY.toFixed(2)}`;
+                document.getElementById('scale-mode').textContent = 'FIT (保持比例)';
+            }
+        }
+
+        // 遊戲配置
+        const config = {
+            type: Phaser.AUTO,
+            width: 1024,
+            height: 768,
+            parent: 'game-container',
+            backgroundColor: '#1a1a2e',
+            
+            // 響應式縮放配置
+            scale: {
+                mode: Phaser.Scale.FIT,
+                parent: 'game-container',
+                autoCenter: Phaser.Scale.CENTER_BOTH,
+                min: {
+                    width: 1024,
+                    height: 768
+                },
+                max: {
+                    width: 1920,
+                    height: 1080
+                },
+                resizeInterval: 100,
+                fullscreenTarget: 'game-container'
+            },
+
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { x: 0, y: 0 },
+                    debug: false
+                }
+            },
+
+            scene: ResponsiveTestScene
+        };
+
+        // 創建遊戲實例
+        const game = new Phaser.Game(config);
+
+        // 全局函數
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function resizeWindow(width, height) {
+            // 注意：這只是模擬，實際無法改變瀏覽器窗口大小
+            console.log(`模擬窗口大小: ${width}x${height}`);
+            alert(`請手動調整瀏覽器窗口大小到 ${width}x${height} 來測試響應式效果`);
+        }
+
+        // 監聽窗口大小變化
+        window.addEventListener('resize', () => {
+            setTimeout(() => {
+                if (game.scene && game.scene.isActive('ResponsiveTestScene')) {
+                    game.scene.getScene('ResponsiveTestScene').updateInfoPanel();
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>

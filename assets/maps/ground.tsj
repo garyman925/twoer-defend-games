@@ -1,0 +1,15 @@
+{ "columns":40,
+ "image":"map-1.png",
+ "imageheight":833,
+ "imagewidth":1280,
+ "margin":0,
+ "name":"ground",
+ "spacing":0,
+ "tilecount":1040,
+ "tiledversion":"1.11.2",
+ "tileheight":32,
+ "tilewidth":32,
+ "transparentcolor":"#ffffff",
+ "type":"tileset",
+ "version":"1.10"
+}

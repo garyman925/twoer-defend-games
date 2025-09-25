@@ -1,0 +1,2120 @@
+{
+	"textures": [
+		{
+			"image": "idle.webp",
+			"format": "RGBA8888",
+			"size": {
+				"w": 15360,
+				"h": 9182
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "Exhaust_1_1_000.png",
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 1063,
+						"h": 1108
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1108
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1192
+					}
+				},
+				{
+					"filename": "Exhaust_1_1_001.png",
+					"frame": {
+						"x": 1066,
+						"y": 1,
+						"w": 1063,
+						"h": 1192
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1192
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1192
+					}
+				},
+				{
+					"filename": "Exhaust_1_1_002.png",
+					"frame": {
+						"x": 2131,
+						"y": 1,
+						"w": 1063,
+						"h": 1108
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1108
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1192
+					}
+				},
+				{
+					"filename": "Exhaust_1_1_005.png",
+					"frame": {
+						"x": 2131,
+						"y": 1,
+						"w": 1063,
+						"h": 1108
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1108
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1192
+					}
+				},
+				{
+					"filename": "Exhaust_1_1_003.png",
+					"frame": {
+						"x": 3196,
+						"y": 1,
+						"w": 1063,
+						"h": 1165
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1165
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1192
+					}
+				},
+				{
+					"filename": "Exhaust_1_1_008.png",
+					"frame": {
+						"x": 3196,
+						"y": 1,
+						"w": 1063,
+						"h": 1165
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1165
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1192
+					}
+				},
+				{
+					"filename": "Exhaust_1_1_004.png",
+					"frame": {
+						"x": 4261,
+						"y": 1,
+						"w": 1063,
+						"h": 1051
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1051
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1192
+					}
+				},
+				{
+					"filename": "Exhaust_1_1_006.png",
+					"frame": {
+						"x": 5326,
+						"y": 1,
+						"w": 1063,
+						"h": 1165
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1165
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1192
+					}
+				},
+				{
+					"filename": "Exhaust_1_1_007.png",
+					"frame": {
+						"x": 6391,
+						"y": 1,
+						"w": 1063,
+						"h": 1165
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1165
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1192
+					}
+				},
+				{
+					"filename": "Exhaust_1_1_009.png",
+					"frame": {
+						"x": 7456,
+						"y": 1,
+						"w": 1063,
+						"h": 1051
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1051
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1192
+					}
+				},
+				{
+					"filename": "Exhaust_1_2_000.png",
+					"frame": {
+						"x": 8521,
+						"y": 1,
+						"w": 1063,
+						"h": 1236
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1236
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1272
+					}
+				},
+				{
+					"filename": "Exhaust_1_2_001.png",
+					"frame": {
+						"x": 9586,
+						"y": 1,
+						"w": 1063,
+						"h": 1165
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1165
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1272
+					}
+				},
+				{
+					"filename": "Exhaust_1_2_002.png",
+					"frame": {
+						"x": 10651,
+						"y": 1,
+						"w": 1063,
+						"h": 1272
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1272
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1272
+					}
+				},
+				{
+					"filename": "Exhaust_1_2_003.png",
+					"frame": {
+						"x": 11716,
+						"y": 1,
+						"w": 1063,
+						"h": 1236
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1236
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1272
+					}
+				},
+				{
+					"filename": "Exhaust_1_2_004.png",
+					"frame": {
+						"x": 12781,
+						"y": 1,
+						"w": 1063,
+						"h": 1194
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1194
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1272
+					}
+				},
+				{
+					"filename": "Exhaust_1_2_005.png",
+					"frame": {
+						"x": 13846,
+						"y": 1,
+						"w": 1063,
+						"h": 1236
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1236
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1272
+					}
+				},
+				{
+					"filename": "Exhaust_1_2_006.png",
+					"frame": {
+						"x": 1,
+						"y": 1275,
+						"w": 1063,
+						"h": 1222
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1222
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1272
+					}
+				},
+				{
+					"filename": "Exhaust_1_2_007.png",
+					"frame": {
+						"x": 1066,
+						"y": 1275,
+						"w": 1063,
+						"h": 1193
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1193
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1272
+					}
+				},
+				{
+					"filename": "Exhaust_1_2_008.png",
+					"frame": {
+						"x": 2131,
+						"y": 1275,
+						"w": 1063,
+						"h": 1236
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1236
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1272
+					}
+				},
+				{
+					"filename": "Exhaust_1_2_009.png",
+					"frame": {
+						"x": 3196,
+						"y": 1275,
+						"w": 1063,
+						"h": 1272
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1063,
+						"h": 1272
+					},
+					"sourceSize": {
+						"w": 1063,
+						"h": 1272
+					}
+				},
+				{
+					"filename": "Exhaust_2_1_000.png",
+					"frame": {
+						"x": 4261,
+						"y": 1275,
+						"w": 1018,
+						"h": 1230
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1230
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1314
+					}
+				},
+				{
+					"filename": "Exhaust_2_1_001.png",
+					"frame": {
+						"x": 5281,
+						"y": 1275,
+						"w": 1018,
+						"h": 1314
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1314
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1314
+					}
+				},
+				{
+					"filename": "Exhaust_2_1_002.png",
+					"frame": {
+						"x": 6301,
+						"y": 1275,
+						"w": 1018,
+						"h": 1230
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1230
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1314
+					}
+				},
+				{
+					"filename": "Exhaust_2_1_003.png",
+					"frame": {
+						"x": 7321,
+						"y": 1275,
+						"w": 1018,
+						"h": 1287
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1287
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1314
+					}
+				},
+				{
+					"filename": "Exhaust_2_1_008.png",
+					"frame": {
+						"x": 7321,
+						"y": 1275,
+						"w": 1018,
+						"h": 1287
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1287
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1314
+					}
+				},
+				{
+					"filename": "Exhaust_2_1_004.png",
+					"frame": {
+						"x": 8341,
+						"y": 1275,
+						"w": 1018,
+						"h": 1173
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1173
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1314
+					}
+				},
+				{
+					"filename": "Exhaust_2_1_005.png",
+					"frame": {
+						"x": 9361,
+						"y": 1275,
+						"w": 1018,
+						"h": 1230
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1230
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1314
+					}
+				},
+				{
+					"filename": "Exhaust_2_1_006.png",
+					"frame": {
+						"x": 10381,
+						"y": 1275,
+						"w": 1018,
+						"h": 1287
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1287
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1314
+					}
+				},
+				{
+					"filename": "Exhaust_2_1_007.png",
+					"frame": {
+						"x": 11401,
+						"y": 1275,
+						"w": 1018,
+						"h": 1287
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1287
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1314
+					}
+				},
+				{
+					"filename": "Exhaust_2_1_009.png",
+					"frame": {
+						"x": 12421,
+						"y": 1275,
+						"w": 1018,
+						"h": 1173
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1173
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1314
+					}
+				},
+				{
+					"filename": "Exhaust_2_2_000.png",
+					"frame": {
+						"x": 13441,
+						"y": 1275,
+						"w": 1018,
+						"h": 1358
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1358
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1394
+					}
+				},
+				{
+					"filename": "Exhaust_2_2_001.png",
+					"frame": {
+						"x": 1,
+						"y": 2635,
+						"w": 1018,
+						"h": 1287
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1287
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1394
+					}
+				},
+				{
+					"filename": "Exhaust_2_2_002.png",
+					"frame": {
+						"x": 1021,
+						"y": 2635,
+						"w": 1018,
+						"h": 1394
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1394
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1394
+					}
+				},
+				{
+					"filename": "Exhaust_2_2_003.png",
+					"frame": {
+						"x": 2041,
+						"y": 2635,
+						"w": 1018,
+						"h": 1358
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1358
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1394
+					}
+				},
+				{
+					"filename": "Exhaust_2_2_004.png",
+					"frame": {
+						"x": 3061,
+						"y": 2635,
+						"w": 1018,
+						"h": 1316
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1316
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1394
+					}
+				},
+				{
+					"filename": "Exhaust_2_2_005.png",
+					"frame": {
+						"x": 4081,
+						"y": 2635,
+						"w": 1018,
+						"h": 1358
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1358
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1394
+					}
+				},
+				{
+					"filename": "Exhaust_2_2_006.png",
+					"frame": {
+						"x": 5101,
+						"y": 2635,
+						"w": 1018,
+						"h": 1344
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1344
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1394
+					}
+				},
+				{
+					"filename": "Exhaust_2_2_007.png",
+					"frame": {
+						"x": 6121,
+						"y": 2635,
+						"w": 1018,
+						"h": 1315
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1315
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1394
+					}
+				},
+				{
+					"filename": "Exhaust_2_2_008.png",
+					"frame": {
+						"x": 7141,
+						"y": 2635,
+						"w": 1018,
+						"h": 1358
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1358
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1394
+					}
+				},
+				{
+					"filename": "Exhaust_2_2_009.png",
+					"frame": {
+						"x": 8161,
+						"y": 2635,
+						"w": 1018,
+						"h": 1394
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1018,
+						"h": 1394
+					},
+					"sourceSize": {
+						"w": 1018,
+						"h": 1394
+					}
+				},
+				{
+					"filename": "Exhaust_3_1_000.png",
+					"frame": {
+						"x": 9181,
+						"y": 2635,
+						"w": 1142,
+						"h": 1199
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1199
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1221
+					}
+				},
+				{
+					"filename": "Exhaust_3_1_001.png",
+					"frame": {
+						"x": 10325,
+						"y": 2635,
+						"w": 1142,
+						"h": 1174
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1174
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1221
+					}
+				},
+				{
+					"filename": "Exhaust_3_1_002.png",
+					"frame": {
+						"x": 11469,
+						"y": 2635,
+						"w": 1142,
+						"h": 1221
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1221
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1221
+					}
+				},
+				{
+					"filename": "Exhaust_3_1_003.png",
+					"frame": {
+						"x": 12613,
+						"y": 2635,
+						"w": 1142,
+						"h": 1151
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1151
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1221
+					}
+				},
+				{
+					"filename": "Exhaust_3_1_004.png",
+					"frame": {
+						"x": 13757,
+						"y": 2635,
+						"w": 1142,
+						"h": 1221
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1221
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1221
+					}
+				},
+				{
+					"filename": "Exhaust_3_1_005.png",
+					"frame": {
+						"x": 1,
+						"y": 4031,
+						"w": 1142,
+						"h": 1199
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1199
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1221
+					}
+				},
+				{
+					"filename": "Exhaust_3_1_006.png",
+					"frame": {
+						"x": 1145,
+						"y": 4031,
+						"w": 1142,
+						"h": 1221
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1221
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1221
+					}
+				},
+				{
+					"filename": "Exhaust_3_1_008.png",
+					"frame": {
+						"x": 1145,
+						"y": 4031,
+						"w": 1142,
+						"h": 1221
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1221
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1221
+					}
+				},
+				{
+					"filename": "Exhaust_3_1_007.png",
+					"frame": {
+						"x": 2289,
+						"y": 4031,
+						"w": 1142,
+						"h": 1199
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1199
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1221
+					}
+				},
+				{
+					"filename": "Exhaust_3_1_009.png",
+					"frame": {
+						"x": 3433,
+						"y": 4031,
+						"w": 1142,
+						"h": 1199
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1199
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1221
+					}
+				},
+				{
+					"filename": "Exhaust_3_2_000.png",
+					"frame": {
+						"x": 4577,
+						"y": 4031,
+						"w": 1142,
+						"h": 1406
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1406
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1485
+					}
+				},
+				{
+					"filename": "Exhaust_3_2_005.png",
+					"frame": {
+						"x": 4577,
+						"y": 4031,
+						"w": 1142,
+						"h": 1406
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1406
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1485
+					}
+				},
+				{
+					"filename": "Exhaust_3_2_001.png",
+					"frame": {
+						"x": 5721,
+						"y": 4031,
+						"w": 1142,
+						"h": 1446
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1446
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1485
+					}
+				},
+				{
+					"filename": "Exhaust_3_2_002.png",
+					"frame": {
+						"x": 6865,
+						"y": 4031,
+						"w": 1142,
+						"h": 1485
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1485
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1485
+					}
+				},
+				{
+					"filename": "Exhaust_3_2_003.png",
+					"frame": {
+						"x": 8009,
+						"y": 4031,
+						"w": 1142,
+						"h": 1426
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1426
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1485
+					}
+				},
+				{
+					"filename": "Exhaust_3_2_004.png",
+					"frame": {
+						"x": 9153,
+						"y": 4031,
+						"w": 1142,
+						"h": 1466
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1466
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1485
+					}
+				},
+				{
+					"filename": "Exhaust_3_2_006.png",
+					"frame": {
+						"x": 10297,
+						"y": 4031,
+						"w": 1142,
+						"h": 1446
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1446
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1485
+					}
+				},
+				{
+					"filename": "Exhaust_3_2_007.png",
+					"frame": {
+						"x": 11441,
+						"y": 4031,
+						"w": 1142,
+						"h": 1485
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1485
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1485
+					}
+				},
+				{
+					"filename": "Exhaust_3_2_008.png",
+					"frame": {
+						"x": 12585,
+						"y": 4031,
+						"w": 1142,
+						"h": 1426
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1426
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1485
+					}
+				},
+				{
+					"filename": "Exhaust_3_2_009.png",
+					"frame": {
+						"x": 13729,
+						"y": 4031,
+						"w": 1142,
+						"h": 1466
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1142,
+						"h": 1466
+					},
+					"sourceSize": {
+						"w": 1142,
+						"h": 1485
+					}
+				},
+				{
+					"filename": "Exhaust_4_1_000.png",
+					"frame": {
+						"x": 1,
+						"y": 5518,
+						"w": 958,
+						"h": 1326
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1326
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1348
+					}
+				},
+				{
+					"filename": "Exhaust_4_1_001.png",
+					"frame": {
+						"x": 961,
+						"y": 5518,
+						"w": 958,
+						"h": 1301
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1301
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1348
+					}
+				},
+				{
+					"filename": "Exhaust_4_1_002.png",
+					"frame": {
+						"x": 1921,
+						"y": 5518,
+						"w": 958,
+						"h": 1348
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1348
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1348
+					}
+				},
+				{
+					"filename": "Exhaust_4_1_003.png",
+					"frame": {
+						"x": 2881,
+						"y": 5518,
+						"w": 958,
+						"h": 1277
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1277
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1348
+					}
+				},
+				{
+					"filename": "Exhaust_4_1_004.png",
+					"frame": {
+						"x": 3841,
+						"y": 5518,
+						"w": 958,
+						"h": 1348
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1348
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1348
+					}
+				},
+				{
+					"filename": "Exhaust_4_1_005.png",
+					"frame": {
+						"x": 4801,
+						"y": 5518,
+						"w": 958,
+						"h": 1326
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1326
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1348
+					}
+				},
+				{
+					"filename": "Exhaust_4_1_006.png",
+					"frame": {
+						"x": 5761,
+						"y": 5518,
+						"w": 958,
+						"h": 1348
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1348
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1348
+					}
+				},
+				{
+					"filename": "Exhaust_4_1_008.png",
+					"frame": {
+						"x": 5761,
+						"y": 5518,
+						"w": 958,
+						"h": 1348
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1348
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1348
+					}
+				},
+				{
+					"filename": "Exhaust_4_1_007.png",
+					"frame": {
+						"x": 6721,
+						"y": 5518,
+						"w": 958,
+						"h": 1326
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1326
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1348
+					}
+				},
+				{
+					"filename": "Exhaust_4_1_009.png",
+					"frame": {
+						"x": 7681,
+						"y": 5518,
+						"w": 958,
+						"h": 1326
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1326
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1348
+					}
+				},
+				{
+					"filename": "Exhaust_4_2_000.png",
+					"frame": {
+						"x": 8641,
+						"y": 5518,
+						"w": 958,
+						"h": 1533
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1533
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1612
+					}
+				},
+				{
+					"filename": "Exhaust_4_2_005.png",
+					"frame": {
+						"x": 8641,
+						"y": 5518,
+						"w": 958,
+						"h": 1533
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1533
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1612
+					}
+				},
+				{
+					"filename": "Exhaust_4_2_001.png",
+					"frame": {
+						"x": 9601,
+						"y": 5518,
+						"w": 958,
+						"h": 1573
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1573
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1612
+					}
+				},
+				{
+					"filename": "Exhaust_4_2_002.png",
+					"frame": {
+						"x": 10561,
+						"y": 5518,
+						"w": 958,
+						"h": 1612
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1612
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1612
+					}
+				},
+				{
+					"filename": "Exhaust_4_2_003.png",
+					"frame": {
+						"x": 11521,
+						"y": 5518,
+						"w": 958,
+						"h": 1553
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1553
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1612
+					}
+				},
+				{
+					"filename": "Exhaust_4_2_004.png",
+					"frame": {
+						"x": 12481,
+						"y": 5518,
+						"w": 958,
+						"h": 1593
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1593
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1612
+					}
+				},
+				{
+					"filename": "Exhaust_4_2_006.png",
+					"frame": {
+						"x": 13441,
+						"y": 5518,
+						"w": 958,
+						"h": 1573
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1573
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1612
+					}
+				},
+				{
+					"filename": "Exhaust_4_2_007.png",
+					"frame": {
+						"x": 14401,
+						"y": 5518,
+						"w": 958,
+						"h": 1612
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1612
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1612
+					}
+				},
+				{
+					"filename": "Exhaust_4_2_008.png",
+					"frame": {
+						"x": 1,
+						"y": 7132,
+						"w": 958,
+						"h": 1553
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1553
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1612
+					}
+				},
+				{
+					"filename": "Exhaust_4_2_009.png",
+					"frame": {
+						"x": 961,
+						"y": 7132,
+						"w": 958,
+						"h": 1593
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 958,
+						"h": 1593
+					},
+					"sourceSize": {
+						"w": 958,
+						"h": 1612
+					}
+				},
+				{
+					"filename": "Exhaust_5_1_000.png",
+					"frame": {
+						"x": 1921,
+						"y": 7132,
+						"w": 802,
+						"h": 1694
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1694
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 1694
+					}
+				},
+				{
+					"filename": "Exhaust_5_1_002.png",
+					"frame": {
+						"x": 1921,
+						"y": 7132,
+						"w": 802,
+						"h": 1694
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1694
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 1694
+					}
+				},
+				{
+					"filename": "Exhaust_5_1_004.png",
+					"frame": {
+						"x": 1921,
+						"y": 7132,
+						"w": 802,
+						"h": 1694
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1694
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 1694
+					}
+				},
+				{
+					"filename": "Exhaust_5_1_006.png",
+					"frame": {
+						"x": 1921,
+						"y": 7132,
+						"w": 802,
+						"h": 1694
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1694
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 1694
+					}
+				},
+				{
+					"filename": "Exhaust_5_1_008.png",
+					"frame": {
+						"x": 1921,
+						"y": 7132,
+						"w": 802,
+						"h": 1694
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1694
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 1694
+					}
+				},
+				{
+					"filename": "Exhaust_5_1_001.png",
+					"frame": {
+						"x": 2725,
+						"y": 7132,
+						"w": 802,
+						"h": 1682
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1682
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 1694
+					}
+				},
+				{
+					"filename": "Exhaust_5_1_003.png",
+					"frame": {
+						"x": 3529,
+						"y": 7132,
+						"w": 802,
+						"h": 1682
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1682
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 1694
+					}
+				},
+				{
+					"filename": "Exhaust_5_1_005.png",
+					"frame": {
+						"x": 4333,
+						"y": 7132,
+						"w": 802,
+						"h": 1682
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1682
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 1694
+					}
+				},
+				{
+					"filename": "Exhaust_5_1_007.png",
+					"frame": {
+						"x": 5137,
+						"y": 7132,
+						"w": 802,
+						"h": 1682
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1682
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 1694
+					}
+				},
+				{
+					"filename": "Exhaust_5_1_009.png",
+					"frame": {
+						"x": 5941,
+						"y": 7132,
+						"w": 802,
+						"h": 1682
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1682
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 1694
+					}
+				},
+				{
+					"filename": "Exhaust_5_2_000.png",
+					"frame": {
+						"x": 6745,
+						"y": 7132,
+						"w": 802,
+						"h": 1790
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1790
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 2049
+					}
+				},
+				{
+					"filename": "Exhaust_5_2_001.png",
+					"frame": {
+						"x": 7549,
+						"y": 7132,
+						"w": 802,
+						"h": 2011
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 2011
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 2049
+					}
+				},
+				{
+					"filename": "Exhaust_5_2_002.png",
+					"frame": {
+						"x": 8353,
+						"y": 7132,
+						"w": 802,
+						"h": 2049
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 2049
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 2049
+					}
+				},
+				{
+					"filename": "Exhaust_5_2_003.png",
+					"frame": {
+						"x": 9157,
+						"y": 7132,
+						"w": 802,
+						"h": 1746
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1746
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 2049
+					}
+				},
+				{
+					"filename": "Exhaust_5_2_004.png",
+					"frame": {
+						"x": 9961,
+						"y": 7132,
+						"w": 802,
+						"h": 1981
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1981
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 2049
+					}
+				},
+				{
+					"filename": "Exhaust_5_2_005.png",
+					"frame": {
+						"x": 10765,
+						"y": 7132,
+						"w": 802,
+						"h": 2040
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 2040
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 2049
+					}
+				},
+				{
+					"filename": "Exhaust_5_2_006.png",
+					"frame": {
+						"x": 11569,
+						"y": 7132,
+						"w": 802,
+						"h": 1736
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1736
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 2049
+					}
+				},
+				{
+					"filename": "Exhaust_5_2_007.png",
+					"frame": {
+						"x": 12373,
+						"y": 7132,
+						"w": 802,
+						"h": 1951
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1951
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 2049
+					}
+				},
+				{
+					"filename": "Exhaust_5_2_008.png",
+					"frame": {
+						"x": 13177,
+						"y": 7132,
+						"w": 802,
+						"h": 2028
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 2028
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 2049
+					}
+				},
+				{
+					"filename": "Exhaust_5_2_009.png",
+					"frame": {
+						"x": 13981,
+						"y": 7132,
+						"w": 802,
+						"h": 1773
+					},
+					"rotated": false,
+					"trimmed": true,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 802,
+						"h": 1773
+					},
+					"sourceSize": {
+						"w": 802,
+						"h": 2049
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:5d1a120f302ee123ff578a45d624641b:f5aeb62a8cb13135e26950c3258d8d7d:2d0d60ed3b997d00c2a3d47c5ae8b0f0$"
+	}
+}

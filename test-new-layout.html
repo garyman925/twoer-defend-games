@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新布局測試</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        #game-container {
+            position: relative;
+            border: 2px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            width: 100vw;
+            height: 100vh;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        .info-panel {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+            min-width: 250px;
+        }
+        
+        .bottom-ui {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 130px;
+            background: rgba(0, 50, 100, 0.9);
+            border-top: 2px solid #00ffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .tower-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .tower-button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="info-panel">
+        <h3>🗺️ 新布局測試</h3>
+        <div>地圖尺寸: <span id="map-size">1280x832px</span></div>
+        <div>遊戲總高度: <span id="game-height">962px</span></div>
+        <div>底部UI高度: <span id="ui-height">130px</span></div>
+        <div>玩家基地位置: <span id="base-position">(896, 640)</span></div>
+        <div>地圖格子: <span id="map-tiles">40x26</span></div>
+    </div>
+    
+    <div class="bottom-ui">
+        <div style="color: white; text-align: center;">
+            <h3>塔選擇區域 (130px)</h3>
+            <button class="tower-button">基礎塔</button>
+            <button class="tower-button">加農炮塔</button>
+            <button class="tower-button">雷射塔</button>
+            <button class="tower-button">冰凍塔</button>
+            <button class="tower-button">毒氣塔</button>
+        </div>
+    </div>
+
+    <div id="game-container"></div>
+
+    <script src="node_modules/phaser/dist/phaser.min.js"></script>
+    <script>
+        class NewLayoutTestScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'NewLayoutTestScene' });
+            }
+
+            preload() {
+                // 載入測試圖片
+                this.load.image('test-bg', 'assets/tilesets/map/world-1.png');
+                this.load.atlas('tower-sprites', 'assets/sprites/towers/tower-sprite.png', 'assets/sprites/towers/tower-sprite.json');
+                this.load.atlas('enemy-sprites', 'assets/sprites/enemies/enemy-sprite.png', 'assets/sprites/enemies/enemy-sprite.json');
+            }
+
+            create() {
+                console.log('✅ 新布局測試場景創建完成');
+                
+                // 創建地圖背景
+                this.createMapBackground();
+                
+                // 創建測試元素
+                this.createTestElements();
+                
+                // 創建網格顯示
+                this.createGridDisplay();
+                
+                // 更新信息面板
+                this.updateInfoPanel();
+            }
+
+            createMapBackground() {
+                // 創建地圖背景 (1280x832)
+                const mapWidth = 1280;
+                const mapHeight = 832;
+                
+                // 計算縮放比例
+                const { width, height } = this.cameras.main;
+                const scaleX = width / mapWidth;
+                const scaleY = (height - 130) / mapHeight; // 減去底部UI高度
+                const scale = Math.min(scaleX, scaleY);
+                
+                const scaledWidth = mapWidth * scale;
+                const scaledHeight = mapHeight * scale;
+                
+                // 計算地圖位置（居中，但考慮底部UI）
+                const mapX = (width - scaledWidth) / 2;
+                const mapY = (height - 130 - scaledHeight) / 2; // 為底部UI留出空間
+                
+                // 創建地圖背景
+                const mapBg = this.add.rectangle(mapX + scaledWidth/2, mapY + scaledHeight/2, scaledWidth, scaledHeight, 0x2a4a2a);
+                mapBg.setStrokeStyle(3, 0x00ff00);
+                
+                // 添加地圖標籤
+                this.add.text(mapX + scaledWidth/2, mapY - 20, '地圖區域 (1280x832px)', {
+                    fontSize: '16px',
+                    fill: '#00ff00',
+                    align: 'center'
+                }).setOrigin(0.5);
+                
+                // 保存地圖信息供其他方法使用
+                this.mapInfo = {
+                    x: mapX,
+                    y: mapY,
+                    width: scaledWidth,
+                    height: scaledHeight,
+                    scale: scale
+                };
+            }
+
+            createTestElements() {
+                if (!this.mapInfo) return;
+                
+                const { x, y, width, height, scale } = this.mapInfo;
+                
+                // 創建玩家基地 (位置: 896, 640)
+                const baseX = x + (896 * scale);
+                const baseY = y + (640 * scale);
+                
+                const base = this.add.circle(baseX, baseY, 20, 0xff0000);
+                base.setStrokeStyle(3, 0xffffff);
+                
+                this.add.text(baseX, baseY - 30, '玩家基地', {
+                    fontSize: '12px',
+                    fill: '#ffffff',
+                    align: 'center'
+                }).setOrigin(0.5);
+                
+                // 創建測試塔
+                const towerX = x + (400 * scale);
+                const towerY = y + (300 * scale);
+                
+                const tower = this.add.image(towerX, towerY, 'tower-sprites', 'tower-1.png');
+                tower.setScale(1.5 * scale);
+                
+                // 創建測試敵人
+                const enemyX = x + (200 * scale);
+                const enemyY = y + (200 * scale);
+                
+                const enemy = this.add.image(enemyX, enemyY, 'enemy-sprites', 'enemy-1.png');
+                enemy.setScale(0.35 * scale);
+            }
+
+            createGridDisplay() {
+                if (!this.mapInfo) return;
+                
+                const { x, y, width, height, scale } = this.mapInfo;
+                const gridSize = 32 * scale;
+                
+                // 創建網格線
+                const graphics = this.add.graphics();
+                graphics.lineStyle(1, 0x00ff00, 0.3);
+                
+                // 垂直線
+                for (let i = 0; i <= 40; i++) {
+                    const lineX = x + (i * gridSize);
+                    graphics.lineBetween(lineX, y, lineX, y + height);
+                }
+                
+                // 水平線
+                for (let i = 0; i <= 26; i++) {
+                    const lineY = y + (i * gridSize);
+                    graphics.lineBetween(x, lineY, x + width, lineY);
+                }
+                
+                graphics.setDepth(-1);
+            }
+
+            updateInfoPanel() {
+                const { width, height } = this.cameras.main;
+                
+                document.getElementById('map-size').textContent = '1280x832px';
+                document.getElementById('game-height').textContent = `${height}px`;
+                document.getElementById('ui-height').textContent = '130px';
+                document.getElementById('base-position').textContent = '(896, 640)';
+                document.getElementById('map-tiles').textContent = '40x26';
+            }
+        }
+
+        // 遊戲配置
+        const config = {
+            type: Phaser.AUTO,
+            width: 1024,
+            height: 962, // 新的遊戲高度
+            parent: 'game-container',
+            backgroundColor: '#1a1a2e',
+            
+            // 響應式縮放配置
+            scale: {
+                mode: Phaser.Scale.FIT,
+                parent: 'game-container',
+                autoCenter: Phaser.Scale.CENTER_BOTH,
+                min: {
+                    width: 1024,
+                    height: 962
+                },
+                max: {
+                    width: 1920,
+                    height: 1080
+                },
+                resizeInterval: 100,
+                fullscreenTarget: 'game-container'
+            },
+
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { x: 0, y: 0 },
+                    debug: false
+                }
+            },
+
+            scene: NewLayoutTestScene
+        };
+
+        // 創建遊戲實例
+        const game = new Phaser.Game(config);
+
+        // 監聽窗口大小變化
+        window.addEventListener('resize', () => {
+            setTimeout(() => {
+                if (game.scene && game.scene.isActive('NewLayoutTestScene')) {
+                    game.scene.getScene('NewLayoutTestScene').updateInfoPanel();
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>

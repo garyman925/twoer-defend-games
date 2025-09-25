@@ -1,0 +1,14 @@
+{ "columns":28,
+ "image":"..\/..\/..\/..\/kenney_rpgUrbanKit\/Tilemap\/tilemap.png",
+ "imageheight":305,
+ "imagewidth":458,
+ "margin":0,
+ "name":"tilemap",
+ "spacing":0,
+ "tilecount":532,
+ "tiledversion":"1.11.2",
+ "tileheight":16,
+ "tilewidth":16,
+ "type":"tileset",
+ "version":"1.10"
+}

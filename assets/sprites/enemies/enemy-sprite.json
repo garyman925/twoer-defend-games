@@ -1,0 +1,41 @@
+{
+	"textures": [
+		{
+			"image": "enemy-sprite.webp",
+			"format": "RGBA8888",
+			"size": {
+				"w": 1082,
+				"h": 640
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "Boss_Full.png",
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 1080,
+						"h": 638
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 1080,
+						"h": 638
+					},
+					"sourceSize": {
+						"w": 1080,
+						"h": 638
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:6190e1f8534dbac8b56a90a736aa6abc:e8e49687e5e99376c28c36f46184da85:cd59329768871ce46ab23c13211751aa$"
+	}
+}

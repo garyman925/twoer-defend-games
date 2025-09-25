@@ -1,0 +1,256 @@
+{
+  "enemyTypes": {
+    "basic": {
+      "name": "基礎敵人",
+      "description": "最常見的敵人類型",
+      "health": 50,
+      "speed": 60,
+      "damage": 10,
+      "reward": 10,
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "armor": 0,
+      "abilities": [],
+      "weaknesses": [],
+      "resistances": [],
+      "sprite": "enemy_basic",
+      "animations": {
+        "walk": "enemy_basic_walk",
+        "death": "enemy_basic_death"
+      },
+      "sounds": {
+        "spawn": "enemy_spawn",
+        "death": "enemy_death",
+        "hit": "enemy_hit"
+      }
+    },
+    "fast": {
+      "name": "快速敵人",
+      "description": "移動速度很快的敵人",
+      "health": 30,
+      "speed": 120,
+      "damage": 5,
+      "reward": 15,
+      "size": {
+        "width": 28,
+        "height": 28
+      },
+      "armor": 0,
+      "abilities": ["dodge"],
+      "weaknesses": ["ice"],
+      "resistances": [],
+      "sprite": "enemy_fast",
+      "animations": {
+        "walk": "enemy_fast_walk",
+        "death": "enemy_fast_death",
+        "dodge": "enemy_fast_dodge"
+      },
+      "sounds": {
+        "spawn": "enemy_spawn",
+        "death": "enemy_death",
+        "hit": "enemy_hit"
+      }
+    },
+    "tank": {
+      "name": "坦克敵人",
+      "description": "生命值很高但移動緩慢",
+      "health": 150,
+      "speed": 30,
+      "damage": 20,
+      "reward": 25,
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "armor": 5,
+      "abilities": ["armor"],
+      "weaknesses": ["explosive"],
+      "resistances": ["basic"],
+      "sprite": "enemy_tank",
+      "animations": {
+        "walk": "enemy_tank_walk",
+        "death": "enemy_tank_death"
+      },
+      "sounds": {
+        "spawn": "enemy_spawn",
+        "death": "enemy_death",
+        "hit": "enemy_hit"
+      }
+    },
+    "flying": {
+      "name": "飛行敵人",
+      "description": "可以飛行，免疫地面效果",
+      "health": 40,
+      "speed": 80,
+      "damage": 8,
+      "reward": 20,
+      "size": {
+        "width": 36,
+        "height": 36
+      },
+      "armor": 0,
+      "abilities": ["flying"],
+      "weaknesses": ["laser"],
+      "resistances": ["ice"],
+      "sprite": "enemy_flying",
+      "animations": {
+        "walk": "enemy_flying_fly",
+        "death": "enemy_flying_death"
+      },
+      "sounds": {
+        "spawn": "enemy_spawn",
+        "death": "enemy_death",
+        "hit": "enemy_hit"
+      }
+    },
+    "boss": {
+      "name": "Boss敵人",
+      "description": "非常強大的Boss級敵人",
+      "health": 500,
+      "speed": 40,
+      "damage": 50,
+      "reward": 100,
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "armor": 10,
+      "abilities": ["regeneration", "summon"],
+      "weaknesses": [],
+      "resistances": ["basic", "ice"],
+      "sprite": "enemy_boss",
+      "animations": {
+        "walk": "enemy_boss_walk",
+        "death": "enemy_boss_death",
+        "attack": "enemy_boss_attack",
+        "special": "enemy_boss_special"
+      },
+      "sounds": {
+        "spawn": "boss_roar",
+        "death": "boss_death",
+        "hit": "boss_hit",
+        "roar": "boss_roar"
+      }
+    }
+  },
+  "abilities": {
+    "dodge": {
+      "name": "閃避",
+      "description": "有機率閃避攻擊",
+      "dodgeChance": 0.15,
+      "cooldown": 2000
+    },
+    "armor": {
+      "name": "護甲",
+      "description": "減少受到的傷害",
+      "damageReduction": 5,
+      "type": "flat"
+    },
+    "flying": {
+      "name": "飛行",
+      "description": "免疫地面效果和阻擋",
+      "immunities": ["ice", "slow"]
+    },
+    "regeneration": {
+      "name": "再生",
+      "description": "每秒恢復生命值",
+      "healPerSecond": 2,
+      "maxHealthPercent": 1.0
+    },
+    "summon": {
+      "name": "召喚",
+      "description": "死亡時召喚小怪",
+      "summonType": "basic",
+      "summonCount": 3,
+      "summonDelay": 500
+    }
+  },
+  "waves": {
+    "patterns": [
+      {
+        "wave": 1,
+        "enemies": [
+          { "type": "basic", "count": 5, "interval": 1000 }
+        ],
+        "preparationTime": 3000
+      },
+      {
+        "wave": 2,
+        "enemies": [
+          { "type": "basic", "count": 8, "interval": 800 }
+        ],
+        "preparationTime": 3000
+      },
+      {
+        "wave": 3,
+        "enemies": [
+          { "type": "basic", "count": 6, "interval": 1000 },
+          { "type": "fast", "count": 3, "interval": 1500 }
+        ],
+        "preparationTime": 3000
+      },
+      {
+        "wave": 4,
+        "enemies": [
+          { "type": "basic", "count": 10, "interval": 700 }
+        ],
+        "preparationTime": 3000
+      },
+      {
+        "wave": 5,
+        "enemies": [
+          { "type": "tank", "count": 2, "interval": 3000 },
+          { "type": "basic", "count": 8, "interval": 800 }
+        ],
+        "preparationTime": 3000
+      },
+      {
+        "wave": 6,
+        "enemies": [
+          { "type": "fast", "count": 10, "interval": 600 }
+        ],
+        "preparationTime": 3000
+      },
+      {
+        "wave": 7,
+        "enemies": [
+          { "type": "basic", "count": 12, "interval": 600 },
+          { "type": "flying", "count": 4, "interval": 2000 }
+        ],
+        "preparationTime": 3000
+      },
+      {
+        "wave": 8,
+        "enemies": [
+          { "type": "tank", "count": 4, "interval": 2000 },
+          { "type": "fast", "count": 6, "interval": 1000 }
+        ],
+        "preparationTime": 3000
+      },
+      {
+        "wave": 9,
+        "enemies": [
+          { "type": "basic", "count": 15, "interval": 500 },
+          { "type": "flying", "count": 6, "interval": 1500 }
+        ],
+        "preparationTime": 3000
+      },
+      {
+        "wave": 10,
+        "enemies": [
+          { "type": "boss", "count": 1, "interval": 5000 },
+          { "type": "basic", "count": 20, "interval": 400 }
+        ],
+        "preparationTime": 3000
+      }
+    ],
+    "scaling": {
+      "healthMultiplier": 1.1,
+      "speedMultiplier": 1.05,
+      "rewardMultiplier": 1.15,
+      "countMultiplier": 1.2
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{ "columns":32,
+ "image":"..\/..\/..\/..\/..\/..\/Users\/Nebula-Gary\/Downloads\/yukijoygaryringo_dc_A_tileset_for_a_2D_game_size_1024x1024_pi_928886ea-e29b-427a-8604-c556c8d5c31b_3.png",
+ "imageheight":1024,
+ "imagewidth":1024,
+ "margin":0,
+ "name":"yukijoygaryringo_dc_A_tileset_for_a_2D_game_size_1024x1024_pi_928886ea-e29b-427a-8604-c556c8d5c31b_3",
+ "spacing":0,
+ "tilecount":1024,
+ "tiledversion":"1.11.2",
+ "tileheight":32,
+ "tilewidth":32,
+ "transparentcolor":"#ffffff",
+ "type":"tileset",
+ "version":"1.10"
+}

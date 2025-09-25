@@ -1,0 +1,188 @@
+{
+	"textures": [
+		{
+			"image": "tower-sprite.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 243,
+				"h": 361
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "canon-tower.png",
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 97,
+						"h": 91
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 97,
+						"h": 91
+					},
+					"sourceSize": {
+						"w": 97,
+						"h": 91
+					}
+				},
+				{
+					"filename": "ice-tower.png",
+					"frame": {
+						"x": 100,
+						"y": 1,
+						"w": 30,
+						"h": 97
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 30,
+						"h": 97
+					},
+					"sourceSize": {
+						"w": 30,
+						"h": 97
+					}
+				},
+				{
+					"filename": "basic-tower.png",
+					"frame": {
+						"x": 132,
+						"y": 1,
+						"w": 50,
+						"h": 97
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 50,
+						"h": 97
+					},
+					"sourceSize": {
+						"w": 50,
+						"h": 97
+					}
+				},
+				{
+					"filename": "laser-tower.png",
+					"frame": {
+						"x": 184,
+						"y": 1,
+						"w": 58,
+						"h": 97
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 58,
+						"h": 97
+					},
+					"sourceSize": {
+						"w": 58,
+						"h": 97
+					}
+				},
+				{
+					"filename": "laser-tower-card.png",
+					"frame": {
+						"x": 1,
+						"y": 100,
+						"w": 97,
+						"h": 129
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 97,
+						"h": 129
+					},
+					"sourceSize": {
+						"w": 97,
+						"h": 129
+					}
+				},
+				{
+					"filename": "ice-tower-card.png",
+					"frame": {
+						"x": 100,
+						"y": 100,
+						"w": 97,
+						"h": 129
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 97,
+						"h": 129
+					},
+					"sourceSize": {
+						"w": 97,
+						"h": 129
+					}
+				},
+				{
+					"filename": "canon-tower-card.png",
+					"frame": {
+						"x": 1,
+						"y": 231,
+						"w": 97,
+						"h": 129
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 97,
+						"h": 129
+					},
+					"sourceSize": {
+						"w": 97,
+						"h": 129
+					}
+				},
+				{
+					"filename": "basic-tower-card.png",
+					"frame": {
+						"x": 100,
+						"y": 231,
+						"w": 97,
+						"h": 129
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 97,
+						"h": 129
+					},
+					"sourceSize": {
+						"w": 97,
+						"h": 129
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:ff1a4fff1467f938632c4d89d0c81891:0029c201735ac27f58f580a24cf1079b:b1d5e9d8c46cf2e8c0df7bb5344805d6$"
+	}
+}

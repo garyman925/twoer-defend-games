@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多 Tileset 測試</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            border: 2px solid #444;
+            margin: 20px 0;
+        }
+        .info {
+            background: #333;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>多 Tileset 地圖加載測試</h1>
+    
+    <div class="info">
+        <h3>測試目標：</h3>
+        <ul>
+            <li>✅ 加載 map1.tmj 地圖文件</li>
+            <li>✅ 加載 ground tileset (world-1.png)</li>
+            <li>✅ 加載 tileset-1 tileset (tileset-1.png)</li>
+            <li>✅ 創建 Background、Path、Obstacles 圖層</li>
+            <li>✅ 顯示地圖內容</li>
+        </ul>
+    </div>
+
+    <div id="game-container"></div>
+
+    <div class="info">
+        <h3>控制台日誌：</h3>
+        <p>請打開瀏覽器開發者工具查看詳細的加載日誌</p>
+    </div>
+
+    <script src="node_modules/phaser/dist/phaser.min.js"></script>
+    <script>
+        class MultiTilesetTestScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'MultiTilesetTestScene' });
+            }
+
+            preload() {
+                console.log('🔄 開始加載資源...');
+                
+                // 加載地圖文件
+                this.load.tilemapTiledJSON('map1', 'assets/maps/map1.tmj');
+                
+                // 加載第一個 tileset
+                this.load.image('ground', 'assets/tilesets/map/world-1.png');
+                
+                // 加載第二個 tileset
+                this.load.image('tileset-1', 'assets/tilesets/tileset-1.png');
+                
+                console.log('📁 資源加載完成');
+            }
+
+            create() {
+                console.log('🎮 開始創建場景...');
+                
+                // 創建地圖
+                this.tiledMap = this.make.tilemap({ key: 'map1' });
+                console.log('🗺️ 地圖創建成功:', this.tiledMap);
+                
+                // 顯示地圖信息
+                console.log('📊 地圖信息:', {
+                    width: this.tiledMap.width,
+                    height: this.tiledMap.height,
+                    tileWidth: this.tiledMap.tileWidth,
+                    tileHeight: this.tiledMap.tileHeight,
+                    layers: this.tiledMap.layers.map(layer => layer.name),
+                    tilesets: this.tiledMap.tilesets.map(ts => ts.name)
+                });
+                
+                // 添加多個 tileset
+                const groundTileset = this.tiledMap.addTilesetImage('ground', 'ground');
+                console.log('🟢 Ground 圖塊集添加成功:', groundTileset);
+                
+                // 檢查並添加第二個 tileset
+                let tileset1 = null;
+                try {
+                    tileset1 = this.tiledMap.addTilesetImage('tileset-1', 'tileset-1');
+                    console.log('🔵 Tileset-1 圖塊集添加成功:', tileset1);
+                } catch (error) {
+                    console.warn('⚠️ Tileset-1 添加失敗，將只使用 ground tileset:', error);
+                }
+                
+                // 創建所有 tileset 的數組
+                const allTilesets = [groundTileset];
+                if (tileset1) {
+                    allTilesets.push(tileset1);
+                }
+                
+                console.log('📦 所有 tileset:', allTilesets);
+                
+                // 創建圖層
+                try {
+                    this.backgroundLayer = this.tiledMap.createLayer('Background', allTilesets);
+                    console.log('🖼️ 背景圖層創建:', this.backgroundLayer);
+                } catch (error) {
+                    console.error('❌ 背景圖層創建失敗:', error);
+                }
+                
+                try {
+                    this.pathLayer = this.tiledMap.createLayer('Path', allTilesets);
+                    console.log('🛤️ 路徑圖層創建:', this.pathLayer);
+                } catch (error) {
+                    console.error('❌ 路徑圖層創建失敗:', error);
+                }
+                
+                try {
+                    this.obstaclesLayer = this.tiledMap.createLayer('Obstacles', allTilesets);
+                    console.log('🚧 障礙物圖層創建:', this.obstaclesLayer);
+                } catch (error) {
+                    console.error('❌ 障礙物圖層創建失敗:', error);
+                }
+                
+                // 設置圖層深度
+                if (this.backgroundLayer) {
+                    this.backgroundLayer.setDepth(-100);
+                }
+                if (this.pathLayer) {
+                    this.pathLayer.setDepth(-50);
+                }
+                if (this.obstaclesLayer) {
+                    this.obstaclesLayer.setDepth(-25);
+                }
+                
+                // 縮放地圖以適應屏幕
+                const scaleX = this.cameras.main.width / (this.tiledMap.widthInPixels);
+                const scaleY = this.cameras.main.height / (this.tiledMap.heightInPixels);
+                const scale = Math.min(scaleX, scaleY, 1);
+                
+                this.tiledMap.setScale(scale);
+                
+                // 居中地圖
+                this.tiledMap.x = (this.cameras.main.width - this.tiledMap.widthInPixels * scale) / 2;
+                this.tiledMap.y = (this.cameras.main.height - this.tiledMap.heightInPixels * scale) / 2;
+                
+                console.log('✅ 地圖設置完成，縮放比例:', scale);
+                console.log('🎯 地圖位置:', { x: this.tiledMap.x, y: this.tiledMap.y });
+            }
+        }
+
+        const config = {
+            type: Phaser.AUTO,
+            width: 1280,
+            height: 832,
+            parent: 'game-container',
+            backgroundColor: '#2c3e50',
+            scene: MultiTilesetTestScene
+        };
+
+        const game = new Phaser.Game(config);
+    </script>
+</body>
+</html>

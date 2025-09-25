@@ -1,0 +1,83 @@
+{
+	"textures": [
+		{
+			"image": "tower-sprite.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 198,
+				"h": 66
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "tower-1.png",
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 64,
+						"h": 64
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 64,
+						"h": 64
+					},
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					}
+				},
+				{
+					"filename": "tower-2.png",
+					"frame": {
+						"x": 67,
+						"y": 1,
+						"w": 64,
+						"h": 64
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 64,
+						"h": 64
+					},
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					}
+				},
+				{
+					"filename": "tower-3.png",
+					"frame": {
+						"x": 133,
+						"y": 1,
+						"w": 64,
+						"h": 64
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 64,
+						"h": 64
+					},
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:c70c604e3261378a64ed911c7ce466b9:96242be78b1a864e46e667eeea77bd5f:b1d5e9d8c46cf2e8c0df7bb5344805d6$"
+	}
+}

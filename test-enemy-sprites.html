@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>敵人圖片測試</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            border: 2px solid #333;
+            margin: 20px auto;
+            display: block;
+        }
+        .info {
+            text-align: center;
+            margin: 20px;
+        }
+        .controls {
+            text-align: center;
+            margin: 20px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h1>🎮 敵人圖片測試</h1>
+        <p>測試敵人圖片是否正確加載和顯示</p>
+    </div>
+
+    <div class="controls">
+        <button onclick="spawnEnemy('basic')">生成基礎敵人</button>
+        <button onclick="spawnEnemy('fast')">生成快速敵人</button>
+        <button onclick="spawnEnemy('tank')">生成坦克敵人</button>
+        <button onclick="spawnEnemy('flying')">生成飛行敵人</button>
+        <button onclick="spawnEnemy('boss')">生成Boss敵人</button>
+        <button onclick="clearEnemies()">清除所有敵人</button>
+    </div>
+
+    <script src="node_modules/phaser/dist/phaser.min.js"></script>
+    <script>
+        class EnemyTestScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'EnemyTestScene' });
+                this.enemies = [];
+            }
+
+            preload() {
+                // 載入敵人圖片
+                this.load.atlas('enemy-sprites', 'assets/sprites/enemies/enemy-sprite.png', 'assets/sprites/enemies/enemy-sprite.json');
+                
+                // 載入進度條
+                this.load.on('progress', (progress) => {
+                    console.log('載入進度:', Math.round(progress * 100) + '%');
+                });
+            }
+
+            create() {
+                console.log('✅ 敵人圖片測試場景創建完成');
+                
+                // 創建背景
+                this.add.rectangle(400, 300, 800, 600, 0x2a2a2a);
+                
+                // 顯示可用幀
+                this.showAvailableFrames();
+                
+                // 創建說明文字
+                this.add.text(400, 50, '敵人圖片測試 - 點擊按鈕生成不同類型的敵人', {
+                    fontSize: '18px',
+                    fill: '#ffffff',
+                    align: 'center'
+                }).setOrigin(0.5);
+            }
+
+            showAvailableFrames() {
+                // 顯示可用的敵人幀
+                const frames = ['enemy-1.png', 'enemy-2.png'];
+                frames.forEach((frame, index) => {
+                    const x = 200 + index * 400;
+                    const y = 150;
+                    
+                    // 顯示幀名稱
+                    this.add.text(x, y - 80, frame, {
+                        fontSize: '16px',
+                        fill: '#ffff00',
+                        align: 'center'
+                    }).setOrigin(0.5);
+                    
+                    // 顯示圖片
+                    const sprite = this.add.image(x, y, 'enemy-sprites', frame);
+                    sprite.setScale(0.4); // 稍微放大預覽
+                    sprite.setOrigin(0.5, 0.5);
+                    
+                    // 顯示原始大小信息
+                    const frameData = this.textures.get('enemy-sprites').get(frame);
+                    this.add.text(x, y + 80, `原始: ${frameData.width}x${frameData.height}`, {
+                        fontSize: '12px',
+                        fill: '#cccccc',
+                        align: 'center'
+                    }).setOrigin(0.5);
+                });
+            }
+
+            spawnEnemy(type) {
+                const x = 100 + Math.random() * 600;
+                const y = 300 + Math.random() * 200;
+                
+                const enemy = this.createEnemy(type, x, y);
+                this.enemies.push(enemy);
+                
+                console.log(`生成 ${type} 敵人於 (${x}, ${y})`);
+            }
+
+            createEnemy(type, x, y) {
+                // 獲取敵人配置
+                const frameName = this.getEnemyFrameName(type);
+                const scale = this.getEnemyScale(type);
+                const size = this.getEnemySize(type);
+                
+                // 創建敵人圖片
+                const enemySprite = this.add.image(x, y, 'enemy-sprites', frameName);
+                enemySprite.setScale(scale);
+                enemySprite.setOrigin(0.5, 0.5);
+                
+                // 創建血條
+                const healthBarY = y - size - 12;
+                const healthBarBg = this.add.rectangle(x, healthBarY, 30, 4, 0x330000);
+                const healthBar = this.add.rectangle(x, healthBarY, 30, 4, 0xff0000);
+                
+                // 創建類型標識
+                const typeIndicator = this.add.text(x, y, type[0].toUpperCase(), {
+                    fontSize: '12px',
+                    fill: '#ffffff',
+                    align: 'center'
+                }).setOrigin(0.5);
+                
+                // 創建敵人組
+                const enemyGroup = this.add.group();
+                enemyGroup.add(enemySprite);
+                enemyGroup.add(healthBarBg);
+                enemyGroup.add(healthBar);
+                enemyGroup.add(typeIndicator);
+                
+                // 添加敵人信息
+                enemyGroup.enemyType = type;
+                enemyGroup.frameName = frameName;
+                enemyGroup.scale = scale;
+                
+                return enemyGroup;
+            }
+
+            getEnemyFrameName(type) {
+                const frameMap = {
+                    'basic': 'enemy-1.png',
+                    'fast': 'enemy-2.png',
+                    'tank': 'enemy-1.png',
+                    'flying': 'enemy-2.png',
+                    'boss': 'enemy-1.png'
+                };
+                return frameMap[type] || 'enemy-1.png';
+            }
+
+            getEnemyScale(type) {
+                const scaleMap = {
+                    'basic': 0.35,   // 基礎敵人：放大75%
+                    'fast': 0.25,    // 快速敵人：放大67%
+                    'tank': 0.5,     // 坦克敵人：放大67%
+                    'flying': 0.3,   // 飛行敵人：放大67%
+                    'boss': 0.6      // Boss敵人：放大50%
+                };
+                return scaleMap[type] || 0.35;
+            }
+
+            getEnemySize(type) {
+                const sizeMap = {
+                    'basic': 12,
+                    'fast': 10,
+                    'tank': 18,
+                    'flying': 14,
+                    'boss': 25
+                };
+                return sizeMap[type] || 12;
+            }
+
+            clearEnemies() {
+                this.enemies.forEach(enemy => {
+                    enemy.destroy();
+                });
+                this.enemies = [];
+                console.log('清除所有敵人');
+            }
+        }
+
+        // 遊戲配置
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            parent: 'game-container',
+            backgroundColor: '#1a1a1a',
+            scene: EnemyTestScene
+        };
+
+        // 創建遊戲實例
+        const game = new Phaser.Game(config);
+
+        // 全局函數供按鈕調用
+        function spawnEnemy(type) {
+            game.scene.getScene('EnemyTestScene').spawnEnemy(type);
+        }
+
+        function clearEnemies() {
+            game.scene.getScene('EnemyTestScene').clearEnemies();
+        }
+    </script>
+</body>
+</html>

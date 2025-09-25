@@ -1,0 +1,286 @@
+{
+  "towerTypes": {
+    "basic": {
+      "name": "基礎塔",
+      "description": "平衡的攻擊塔，適合新手使用",
+      "cost": 50,
+      "damage": 25,
+      "range": 120,
+      "fireRate": 1000,
+      "projectileSpeed": 300,
+      "projectileType": "bullet",
+      "targetType": "ground",
+      "maxLevel": 5,
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "sprite": "tower_basic",
+      "projectileSprite": "bullet_basic",
+      "sounds": {
+        "fire": "basic_shot",
+        "build": "tower_build",
+        "upgrade": "tower_upgrade"
+      },
+      "effects": {
+        "muzzleFlash": true,
+        "impact": "basic_impact"
+      },
+      "upgrades": {
+        "damage": {
+          "levels": [30, 35, 42, 50, 60],
+          "costs": [25, 40, 60, 85, 120]
+        },
+        "range": {
+          "levels": [135, 150, 165, 180, 200],
+          "costs": [30, 50, 75, 105, 150]
+        },
+        "fireRate": {
+          "levels": [900, 800, 700, 600, 500],
+          "costs": [35, 55, 80, 115, 160]
+        }
+      }
+    },
+    "laser": {
+      "name": "激光塔",
+      "description": "高精準度的能量武器",
+      "cost": 100,
+      "damage": 40,
+      "range": 150,
+      "fireRate": 800,
+      "projectileSpeed": 1000,
+      "projectileType": "laser",
+      "targetType": "all",
+      "maxLevel": 5,
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "sprite": "tower_laser",
+      "projectileSprite": "bullet_laser",
+      "sounds": {
+        "fire": "laser_shot",
+        "build": "tower_build",
+        "upgrade": "tower_upgrade"
+      },
+      "effects": {
+        "muzzleFlash": true,
+        "impact": "laser_impact",
+        "beam": true
+      },
+      "specialAbilities": {
+        "piercing": {
+          "unlockLevel": 3,
+          "maxTargets": 2
+        }
+      },
+      "upgrades": {
+        "damage": {
+          "levels": [50, 62, 77, 95, 118],
+          "costs": [50, 80, 120, 170, 240]
+        },
+        "range": {
+          "levels": [170, 190, 210, 235, 260],
+          "costs": [60, 95, 140, 200, 280]
+        },
+        "fireRate": {
+          "levels": [700, 600, 500, 400, 320],
+          "costs": [70, 110, 160, 230, 320]
+        }
+      }
+    },
+    "cannon": {
+      "name": "大砲塔",
+      "description": "造成範圍爆炸傷害",
+      "cost": 150,
+      "damage": 80,
+      "range": 100,
+      "fireRate": 1500,
+      "projectileSpeed": 200,
+      "projectileType": "shell",
+      "targetType": "ground",
+      "splashRadius": 60,
+      "splashDamage": 0.7,
+      "maxLevel": 5,
+      "size": {
+        "width": 52,
+        "height": 52
+      },
+      "sprite": "tower_cannon",
+      "projectileSprite": "bullet_cannon",
+      "sounds": {
+        "fire": "cannon_fire",
+        "build": "tower_build",
+        "upgrade": "tower_upgrade",
+        "explosion": "cannon_explosion"
+      },
+      "effects": {
+        "muzzleFlash": true,
+        "impact": "explosion",
+        "screenShake": 3
+      },
+      "upgrades": {
+        "damage": {
+          "levels": [100, 125, 155, 190, 235],
+          "costs": [75, 120, 180, 260, 360]
+        },
+        "range": {
+          "levels": [115, 130, 145, 165, 185],
+          "costs": [80, 125, 185, 270, 380]
+        },
+        "splashRadius": {
+          "levels": [70, 80, 90, 105, 120],
+          "costs": [90, 140, 210, 300, 420]
+        }
+      }
+    },
+    "ice": {
+      "name": "冰霜塔",
+      "description": "減緩敵人移動速度",
+      "cost": 75,
+      "damage": 20,
+      "range": 130,
+      "fireRate": 1200,
+      "projectileSpeed": 250,
+      "projectileType": "ice",
+      "targetType": "ground",
+      "slowEffect": 0.5,
+      "slowDuration": 2000,
+      "maxLevel": 5,
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "sprite": "tower_ice",
+      "projectileSprite": "bullet_ice",
+      "sounds": {
+        "fire": "ice_shot",
+        "build": "tower_build",
+        "upgrade": "tower_upgrade",
+        "freeze": "ice_freeze"
+      },
+      "effects": {
+        "muzzleFlash": true,
+        "impact": "ice_explosion",
+        "slow": true
+      },
+      "upgrades": {
+        "damage": {
+          "levels": [25, 32, 40, 50, 62],
+          "costs": [40, 65, 95, 135, 190]
+        },
+        "slowEffect": {
+          "levels": [0.4, 0.3, 0.25, 0.2, 0.15],
+          "costs": [50, 80, 115, 165, 230]
+        },
+        "slowDuration": {
+          "levels": [2500, 3000, 3500, 4000, 5000],
+          "costs": [45, 70, 105, 150, 210]
+        }
+      }
+    },
+    "missile": {
+      "name": "導彈塔",
+      "description": "發射追蹤導彈",
+      "cost": 200,
+      "damage": 120,
+      "range": 180,
+      "fireRate": 2000,
+      "projectileSpeed": 150,
+      "projectileType": "missile",
+      "targetType": "all",
+      "splashRadius": 80,
+      "splashDamage": 0.8,
+      "maxLevel": 5,
+      "size": {
+        "width": 56,
+        "height": 56
+      },
+      "sprite": "tower_missile",
+      "projectileSprite": "bullet_missile",
+      "sounds": {
+        "fire": "missile_launch",
+        "build": "tower_build",
+        "upgrade": "tower_upgrade",
+        "explosion": "missile_explosion"
+      },
+      "effects": {
+        "muzzleFlash": true,
+        "impact": "missile_explosion",
+        "tracking": true,
+        "screenShake": 5
+      },
+      "specialAbilities": {
+        "homing": {
+          "unlockLevel": 1,
+          "trackingStrength": 0.8
+        }
+      },
+      "upgrades": {
+        "damage": {
+          "levels": [150, 185, 230, 280, 345],
+          "costs": [100, 160, 240, 350, 490]
+        },
+        "range": {
+          "levels": [200, 220, 245, 270, 300],
+          "costs": [120, 190, 280, 400, 560]
+        },
+        "splashRadius": {
+          "levels": [90, 100, 115, 130, 150],
+          "costs": [110, 175, 260, 370, 520]
+        }
+      }
+    }
+  },
+  "placementRules": {
+    "gridSize": 64,
+    "minDistanceFromPath": 32,
+    "minDistanceFromPlayer": 100,
+    "minDistanceBetweenTowers": 16,
+    "allowedAreas": {
+      "type": "exclude",
+      "zones": [
+        {
+          "name": "playerZone",
+          "x": 550,
+          "y": 600,
+          "width": 100,
+          "height": 100
+        },
+        {
+          "name": "enemyPath",
+          "points": [
+            { "x": 0, "y": 100 },
+            { "x": 600, "y": 100 },
+            { "x": 600, "y": 650 }
+          ],
+          "width": 64
+        }
+      ]
+    }
+  },
+  "buildingMechanics": {
+    "buildTime": 1000,
+    "sellRatio": 0.7,
+    "upgradeTime": 1500,
+    "maxTowersPerPlayer": 20,
+    "queueLimit": 3
+  },
+  "visualEffects": {
+    "constructionEffect": {
+      "duration": 1000,
+      "particles": "construction_sparks",
+      "sound": "tower_build"
+    },
+    "upgradeEffect": {
+      "duration": 1500,
+      "particles": "upgrade_glow",
+      "sound": "tower_upgrade"
+    },
+    "destroyEffect": {
+      "duration": 800,
+      "particles": "destruction_debris",
+      "sound": "tower_destroy"
+    }
+  }
+}

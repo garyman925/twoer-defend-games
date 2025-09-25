@@ -1,0 +1,15 @@
+{ "columns":64,
+ "image":"..\/..\/..\/..\/..\/..\/Users\/Nebula-Gary\/Downloads\/pinguin2670_Tiles_of_retro_2D_games_like_dofus_in_pixel_art_--p_e48364d1-97cb-426f-822b-1c5fa6473bb4.png",
+ "imageheight":2048,
+ "imagewidth":2048,
+ "margin":0,
+ "name":"pinguin2670_Tiles_of_retro_2D_games_like_dofus_in_pixel_art_--p_e48364d1-97cb-426f-822b-1c5fa6473bb4",
+ "spacing":0,
+ "tilecount":4096,
+ "tiledversion":"1.11.2",
+ "tileheight":32,
+ "tilewidth":32,
+ "transparentcolor":"#ffffff",
+ "type":"tileset",
+ "version":"1.10"
+}

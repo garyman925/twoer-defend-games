@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiled 地圖測試</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            border: 2px solid #fff;
+            margin: 20px auto;
+            display: block;
+        }
+        .debug-info {
+            background: #333;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tiled 地圖載入測試</h1>
+    
+    <div class="debug-info">
+        <h3>調試信息：</h3>
+        <div id="debug-output"></div>
+    </div>
+    
+    <canvas id="game-container" width="1024" height="768"></canvas>
+    
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.86.0/dist/phaser.min.js"></script>
+    <script>
+        class TestScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'TestScene' });
+            }
+            
+            preload() {
+                console.log('開始載入資源...');
+                this.add.text(100, 100, '載入中...', { fontSize: '32px', fill: '#fff' });
+                
+                // 載入 Tiled 地圖
+                this.load.tilemapTiledJSON('map1', 'assets/maps/map1.tmj');
+                
+                // 載入圖塊集圖片
+                this.load.image('ground', 'assets/tilesets/map/world-1.png');
+                
+                // 監聽載入事件
+                this.load.on('progress', (progress) => {
+                    console.log('載入進度:', Math.round(progress * 100) + '%');
+                });
+                
+                this.load.on('complete', () => {
+                    console.log('所有資源載入完成');
+                    this.createMap();
+                });
+                
+                this.load.on('filecomplete', (key, type, data) => {
+                    console.log('文件載入完成:', key, type);
+                });
+                
+                this.load.on('loaderror', (file) => {
+                    console.error('載入錯誤:', file);
+                });
+                
+                this.load.start();
+            }
+            
+            createMap() {
+                try {
+                    console.log('開始創建地圖...');
+                    
+                    // 創建地圖
+                    this.tiledMap = this.make.tilemap({ key: 'map1' });
+                    console.log('地圖創建成功:', this.tiledMap);
+                    
+                    const tileset = this.tiledMap.addTilesetImage('ground', 'ground');
+                    console.log('圖塊集添加成功:', tileset);
+                    
+                    console.log('地圖信息:', {
+                        width: this.tiledMap.width,
+                        height: this.tiledMap.height,
+                        tileWidth: this.tiledMap.tileWidth,
+                        tileHeight: this.tiledMap.tileHeight,
+                        layers: this.tiledMap.layers.map(layer => layer.name)
+                    });
+                    
+                    // 創建圖層
+                    this.backgroundLayer = this.tiledMap.createLayer('Background', tileset);
+                    console.log('背景圖層創建:', this.backgroundLayer);
+                    
+                    this.pathLayer = this.tiledMap.createLayer('Path', tileset);
+                    console.log('路徑圖層創建:', this.pathLayer);
+                    
+                    this.obstaclesLayer = this.tiledMap.createLayer('Obstacles', tileset);
+                    console.log('障礙物圖層創建:', this.obstaclesLayer);
+                    
+                    // 設置圖層深度
+                    if (this.backgroundLayer) this.backgroundLayer.setDepth(-100);
+                    if (this.pathLayer) this.pathLayer.setDepth(-90);
+                    if (this.obstaclesLayer) this.obstaclesLayer.setDepth(-80);
+                    
+                    // 添加成功信息
+                    this.add.text(100, 200, '地圖載入成功！', { fontSize: '24px', fill: '#0f0' });
+                    
+                    console.log('Tiled 地圖載入完成');
+                    
+                } catch (error) {
+                    console.error('載入 Tiled 地圖失敗:', error);
+                    console.error('錯誤詳情:', error.stack);
+                    
+                    this.add.text(100, 200, '地圖載入失敗！', { fontSize: '24px', fill: '#f00' });
+                    this.add.text(100, 240, error.message, { fontSize: '16px', fill: '#f00' });
+                }
+            }
+        }
+        
+        const config = {
+            type: Phaser.AUTO,
+            width: 1024,
+            height: 768,
+            canvas: document.getElementById('game-container'),
+            scene: TestScene,
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    debug: true
+                }
+            }
+        };
+        
+        const game = new Phaser.Game(config);
+        
+        // 捕獲所有 console 輸出
+        const originalLog = console.log;
+        const originalError = console.error;
+        const debugOutput = document.getElementById('debug-output');
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            debugOutput.innerHTML += '<div style="color: #0f0;">' + args.join(' ') + '</div>';
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            debugOutput.innerHTML += '<div style="color: #f00;">' + args.join(' ') + '</div>';
+        };
+    </script>
+</body>
+</html>

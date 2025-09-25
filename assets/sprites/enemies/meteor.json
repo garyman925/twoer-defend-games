@@ -1,0 +1,209 @@
+{
+	"textures": [
+		{
+			"image": "meteor.webp",
+			"format": "RGBA8888",
+			"size": {
+				"w": 906,
+				"h": 834
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "Meteor_01.png",
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 300,
+						"h": 300
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 300,
+						"h": 300
+					},
+					"sourceSize": {
+						"w": 300,
+						"h": 300
+					}
+				},
+				{
+					"filename": "Meteor_03.png",
+					"frame": {
+						"x": 1,
+						"y": 303,
+						"w": 300,
+						"h": 300
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 300,
+						"h": 300
+					},
+					"sourceSize": {
+						"w": 300,
+						"h": 300
+					}
+				},
+				{
+					"filename": "Meteor_09.png",
+					"frame": {
+						"x": 1,
+						"y": 605,
+						"w": 300,
+						"h": 206
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 300,
+						"h": 206
+					},
+					"sourceSize": {
+						"w": 300,
+						"h": 206
+					}
+				},
+				{
+					"filename": "Meteor_07.png",
+					"frame": {
+						"x": 303,
+						"y": 1,
+						"w": 300,
+						"h": 300
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 300,
+						"h": 300
+					},
+					"sourceSize": {
+						"w": 300,
+						"h": 300
+					}
+				},
+				{
+					"filename": "Meteor_10.png",
+					"frame": {
+						"x": 605,
+						"y": 1,
+						"w": 300,
+						"h": 300
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 300,
+						"h": 300
+					},
+					"sourceSize": {
+						"w": 300,
+						"h": 300
+					}
+				},
+				{
+					"filename": "Meteor_06.png",
+					"frame": {
+						"x": 303,
+						"y": 303,
+						"w": 300,
+						"h": 288
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 300,
+						"h": 288
+					},
+					"sourceSize": {
+						"w": 300,
+						"h": 288
+					}
+				},
+				{
+					"filename": "Meteor_02.png",
+					"frame": {
+						"x": 605,
+						"y": 303,
+						"w": 300,
+						"h": 266
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 300,
+						"h": 266
+					},
+					"sourceSize": {
+						"w": 300,
+						"h": 266
+					}
+				},
+				{
+					"filename": "Meteor_05.png",
+					"frame": {
+						"x": 605,
+						"y": 571,
+						"w": 300,
+						"h": 262
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 300,
+						"h": 262
+					},
+					"sourceSize": {
+						"w": 300,
+						"h": 262
+					}
+				},
+				{
+					"filename": "Meteor_04.png",
+					"frame": {
+						"x": 303,
+						"y": 593,
+						"w": 300,
+						"h": 137
+					},
+					"rotated": false,
+					"trimmed": false,
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 300,
+						"h": 137
+					},
+					"sourceSize": {
+						"w": 300,
+						"h": 137
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:549b93389f78b7d474cc8efe1c13d6d7:416d905691d8e1db5714ac9463676b9f:a1fda97e0ca517c0cc49a8a29a6f0c2f$"
+	}
+}

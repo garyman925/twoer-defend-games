@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>塔圖片測試</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            border: 2px solid #fff;
+            margin: 20px auto;
+            display: block;
+        }
+        .debug-info {
+            background: #333;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .controls {
+            background: #222;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button {
+            background: #00ffff;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #00cccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>塔圖片載入測試</h1>
+    
+    <div class="debug-info">
+        <h3>調試信息：</h3>
+        <div id="debug-output"></div>
+    </div>
+    
+    <div class="controls">
+        <h3>測試控制：</h3>
+        <button onclick="createBasicTower()">創建基礎塔</button>
+        <button onclick="createCannonTower()">創建加農炮塔</button>
+        <button onclick="createLaserTower()">創建激光塔</button>
+        <button onclick="clearTowers()">清除所有塔</button>
+    </div>
+    
+    <canvas id="game-container" width="1024" height="768"></canvas>
+    
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.86.0/dist/phaser.min.js"></script>
+    <script>
+        class TowerTestScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'TowerTestScene' });
+                this.towers = [];
+            }
+            
+            preload() {
+                console.log('開始載入塔圖片...');
+                this.add.text(100, 100, '載入中...', { fontSize: '32px', fill: '#fff' });
+                
+                // 載入塔圖片
+                this.load.atlas('tower-sprites', 'assets/sprites/towers/tower-sprite.png', 'assets/sprites/towers/tower-sprite.json');
+                
+                // 監聽載入事件
+                this.load.on('progress', (progress) => {
+                    console.log('載入進度:', Math.round(progress * 100) + '%');
+                });
+                
+                this.load.on('complete', () => {
+                    console.log('塔圖片載入完成');
+                    this.createTestEnvironment();
+                });
+                
+                this.load.on('filecomplete', (key, type, data) => {
+                    console.log('文件載入完成:', key, type);
+                });
+                
+                this.load.on('loaderror', (file) => {
+                    console.error('載入錯誤:', file);
+                });
+                
+                this.load.start();
+            }
+            
+            createTestEnvironment() {
+                // 清除載入文字
+                this.children.list.forEach(child => {
+                    if (child.text === '載入中...') {
+                        child.destroy();
+                    }
+                });
+                
+                // 創建網格背景
+                this.createGrid();
+                
+                // 創建說明文字
+                this.add.text(50, 50, '塔圖片測試 - 點擊按鈕創建不同類型的塔', {
+                    fontSize: '20px',
+                    fill: '#00ffff'
+                });
+                
+                console.log('測試環境創建完成');
+            }
+            
+            createGrid() {
+                const graphics = this.add.graphics();
+                graphics.lineStyle(1, 0x333333, 0.5);
+                
+                // 繪制 32x32 網格
+                for (let x = 0; x <= 1024; x += 32) {
+                    graphics.lineBetween(x, 0, x, 768);
+                }
+                for (let y = 0; y <= 768; y += 32) {
+                    graphics.lineBetween(0, y, 1024, y);
+                }
+                
+                graphics.setDepth(-1);
+            }
+            
+            createTower(type, x = 200, y = 200) {
+                const towerFrameMap = {
+                    basic: 'tower-1.png',
+                    cannon: 'tower-2.png', 
+                    laser: 'tower-3.png'
+                };
+                
+                const frameName = towerFrameMap[type] || 'tower-1.png';
+                
+                // 創建塔精靈
+                const tower = this.add.image(x, y, 'tower-sprites', frameName);
+                
+                // 縮放到合適大小 (64x64 -> 32x32 以匹配網格)
+                tower.setScale(0.5);
+                
+                // 設置錨點為中心
+                tower.setOrigin(0.5, 0.5);
+                
+                // 添加塔類型標籤
+                const label = this.add.text(x, y + 25, type.toUpperCase(), {
+                    fontSize: '12px',
+                    fill: '#fff',
+                    stroke: '#000',
+                    strokeThickness: 2
+                });
+                label.setOrigin(0.5);
+                
+                // 添加到塔列表
+                this.towers.push({ tower, label, type });
+                
+                console.log(`創建 ${type} 塔，使用圖片: ${frameName}，位置: (${x}, ${y})`);
+                
+                return tower;
+            }
+            
+            clearAllTowers() {
+                this.towers.forEach(({ tower, label }) => {
+                    tower.destroy();
+                    label.destroy();
+                });
+                this.towers = [];
+                console.log('清除所有塔');
+            }
+        }
+        
+        const config = {
+            type: Phaser.AUTO,
+            width: 1024,
+            height: 768,
+            canvas: document.getElementById('game-container'),
+            scene: TowerTestScene,
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    debug: false
+                }
+            }
+        };
+        
+        const game = new Phaser.Game(config);
+        
+        // 捕獲所有 console 輸出
+        const originalLog = console.log;
+        const originalError = console.error;
+        const debugOutput = document.getElementById('debug-output');
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            debugOutput.innerHTML += '<div style="color: #0f0;">' + args.join(' ') + '</div>';
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            debugOutput.innerHTML += '<div style="color: #f00;">' + args.join(' ') + '</div>';
+        };
+        
+        // 全局函數供按鈕調用
+        function createBasicTower() {
+            if (game.scene.getScene('TowerTestScene')) {
+                const x = 200 + (game.scene.getScene('TowerTestScene').towers.length * 100);
+                const y = 200;
+                game.scene.getScene('TowerTestScene').createTower('basic', x, y);
+            }
+        }
+        
+        function createCannonTower() {
+            if (game.scene.getScene('TowerTestScene')) {
+                const x = 200 + (game.scene.getScene('TowerTestScene').towers.length * 100);
+                const y = 300;
+                game.scene.getScene('TowerTestScene').createTower('cannon', x, y);
+            }
+        }
+        
+        function createLaserTower() {
+            if (game.scene.getScene('TowerTestScene')) {
+                const x = 200 + (game.scene.getScene('TowerTestScene').towers.length * 100);
+                const y = 400;
+                game.scene.getScene('TowerTestScene').createTower('laser', x, y);
+            }
+        }
+        
+        function clearTowers() {
+            if (game.scene.getScene('TowerTestScene')) {
+                game.scene.getScene('TowerTestScene').clearAllTowers();
+            }
+        }
+    </script>
+</body>
+</html>

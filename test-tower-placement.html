@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>塔放置系統測試</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            border: 2px solid #444;
+            margin: 20px 0;
+        }
+        .info {
+            background: #333;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .warning { color: #ff9800; }
+        .controls {
+            background: #444;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button {
+            background: #666;
+            color: white;
+            border: 1px solid #888;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #777;
+        }
+    </style>
+</head>
+<body>
+    <h1>塔放置系統測試</h1>
+    
+    <div class="info">
+        <h3>測試目標：</h3>
+        <ul>
+            <li>✅ 玩家有初始金錢 (500)</li>
+            <li>✅ 點擊塔卡片觸發放置模式</li>
+            <li>✅ 顯示網格和預覽塔</li>
+            <li>✅ 可以在地圖上放置塔</li>
+            <li>✅ 放置後扣除金錢</li>
+        </ul>
+    </div>
+
+    <div class="controls">
+        <h3>測試控制：</h3>
+        <button onclick="addMoney(100)">+100 金錢</button>
+        <button onclick="addMoney(500)">+500 金錢</button>
+        <button onclick="spendMoney(200)">-200 金錢</button>
+        <button onclick="resetMoney()">重置金錢</button>
+        <button onclick="showPlayerInfo()">顯示玩家信息</button>
+    </div>
+
+    <div id="game-container"></div>
+
+    <div class="info">
+        <h3>操作說明：</h3>
+        <ul>
+            <li>🖱️ 點擊底部塔卡片選擇塔類型</li>
+            <li>🖱️ 在地圖上點擊放置塔</li>
+            <li>⌨️ 按 ESC 取消放置</li>
+            <li>💰 使用上方按鈕測試金錢系統</li>
+        </ul>
+    </div>
+
+    <script src="node_modules/phaser/dist/phaser.min.js"></script>
+    <script>
+        // 模擬玩家金錢
+        let playerMoney = 500;
+        
+        // 金錢控制函數
+        function addMoney(amount) {
+            playerMoney += amount;
+            updateMoneyDisplay();
+            if (window.game && window.game.scene && window.game.scene.scenes[0] && window.game.scene.scenes[0].player) {
+                window.game.scene.scenes[0].player.money += amount;
+                console.log(`💰 添加 $${amount}，總金錢: $${window.game.scene.scenes[0].player.money}`);
+            }
+        }
+        
+        function spendMoney(amount) {
+            playerMoney = Math.max(0, playerMoney - amount);
+            updateMoneyDisplay();
+            if (window.game && window.game.scene && window.game.scene.scenes[0] && window.game.scene.scenes[0].player) {
+                window.game.scene.scenes[0].player.money = Math.max(0, window.game.scene.scenes[0].player.money - amount);
+                console.log(`💸 花費 $${amount}，剩餘金錢: $${window.game.scene.scenes[0].player.money}`);
+            }
+        }
+        
+        function resetMoney() {
+            playerMoney = 500;
+            updateMoneyDisplay();
+            if (window.game && window.game.scene && window.game.scene.scenes[0] && window.game.scene.scenes[0].player) {
+                window.game.scene.scenes[0].player.money = 500;
+                console.log(`🔄 重置金錢: $${window.game.scene.scenes[0].player.money}`);
+            }
+        }
+        
+        function updateMoneyDisplay() {
+            const moneyDisplay = document.getElementById('money-display');
+            if (moneyDisplay) {
+                moneyDisplay.textContent = `金錢: $${playerMoney}`;
+            }
+        }
+        
+        function showPlayerInfo() {
+            if (window.game && window.game.scene && window.game.scene.scenes[0] && window.game.scene.scenes[0].player) {
+                const player = window.game.scene.scenes[0].player;
+                console.log('👤 玩家信息:', {
+                    health: player.health,
+                    maxHealth: player.maxHealth,
+                    money: player.money,
+                    isAlive: player.isAlive
+                });
+            } else {
+                console.log('❌ 玩家對象不存在');
+            }
+        }
+
+        class TowerPlacementTestScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'TowerPlacementTestScene' });
+                this.player = null;
+                this.towerCardUI = null;
+                this.towerPlacementSystem = null;
+            }
+
+            preload() {
+                console.log('🔄 開始加載資源...');
+                
+                // 載入塔精靈圖集
+                this.load.atlas('tower-sprites', 'assets/sprites/towers/tower-sprite.png', 'assets/sprites/towers/tower-sprite.json');
+                
+                console.log('📁 資源加載完成');
+            }
+
+            create() {
+                console.log('🎮 開始創建場景...');
+                
+                // 創建背景
+                this.add.rectangle(640, 400, 1280, 800, 0x2c3e50);
+                
+                // 創建玩家
+                this.createPlayer();
+                
+                // 創建塔卡片UI
+                this.createTowerCardUI();
+                
+                // 創建塔放置系統
+                this.createTowerPlacementSystem();
+                
+                // 創建金錢顯示
+                this.createMoneyDisplay();
+                
+                console.log('✅ 場景創建完成');
+            }
+            
+            createPlayer() {
+                console.log('👤 創建玩家...');
+                
+                // 模擬 Player 類
+                this.player = {
+                    health: 100,
+                    maxHealth: 100,
+                    money: 500, // 初始金錢
+                    isAlive: true,
+                    x: 640,
+                    y: 400
+                };
+                
+                // 創建玩家視覺表示
+                const playerSprite = this.add.circle(640, 400, 20, 0x00ffff);
+                playerSprite.setStrokeStyle(3, 0xffffff);
+                
+                console.log('✅ 玩家創建完成，金錢:', this.player.money);
+            }
+            
+            createTowerCardUI() {
+                console.log('🎴 創建塔卡片UI...');
+                
+                this.towerCardUI = new TowerCardUITest(this);
+                this.towerCardUI.create();
+                
+                console.log('✅ 塔卡片UI創建完成');
+            }
+            
+            createTowerPlacementSystem() {
+                console.log('🏗️ 創建塔放置系統...');
+                
+                this.towerPlacementSystem = new TowerPlacementSystemTest(this);
+                this.towerPlacementSystem.create();
+                
+                console.log('✅ 塔放置系統創建完成');
+            }
+            
+            createMoneyDisplay() {
+                const moneyText = this.add.text(20, 20, `金錢: $${this.player.money}`, {
+                    fontSize: '24px',
+                    fill: '#ffd93d',
+                    fontWeight: 'bold',
+                    backgroundColor: '#000000',
+                    padding: { x: 10, y: 5 }
+                });
+                moneyText.setDepth(2000);
+                
+                // 將元素添加到 DOM 以便外部控制
+                const moneyElement = document.createElement('div');
+                moneyElement.id = 'money-display';
+                moneyElement.textContent = `金錢: $${this.player.money}`;
+                moneyElement.style.position = 'absolute';
+                moneyElement.style.top = '20px';
+                moneyElement.style.left = '20px';
+                moneyElement.style.color = '#ffd93d';
+                moneyElement.style.fontSize = '18px';
+                moneyElement.style.fontWeight = 'bold';
+                moneyElement.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                moneyElement.style.padding = '5px 10px';
+                moneyElement.style.borderRadius = '5px';
+                document.body.appendChild(moneyElement);
+            }
+            
+            onTowerCardSelected(data) {
+                const { type, name, cost } = data;
+                console.log(`🎯 選擇了塔卡片: ${name} (${type}) - 價格: $${cost}`);
+                
+                // 調試信息
+                console.log('🔍 調試信息:');
+                console.log('  - 玩家對象:', this.player);
+                console.log('  - 玩家金錢:', this.player ? this.player.money : 'undefined');
+                console.log('  - 塔放置系統:', this.towerPlacementSystem);
+                console.log('  - 塔卡片UI:', this.towerCardUI);
+                
+                // 檢查玩家是否有足夠的金錢
+                if (this.player && this.player.money >= cost) {
+                    console.log(`✅ 金錢檢查通過: 玩家有 $${this.player.money}，需要 $${cost}`);
+                    
+                    // 開始塔放置模式
+                    if (this.towerPlacementSystem) {
+                        console.log(`🚀 調用 startTowerPlacement(${type})`);
+                        this.towerPlacementSystem.startTowerPlacement(type);
+                        
+                        console.log(`✅ 開始放置 ${type} 塔`);
+                    } else {
+                        console.error('❌ 塔放置系統未初始化');
+                    }
+                } else {
+                    const reason = !this.player ? '玩家對象不存在' : 
+                                  this.player.money < cost ? `金錢不足 (有$${this.player.money}，需要$${cost})` : '未知原因';
+                    console.warn(`❌ 無法購買 ${name}: ${reason}`);
+                    
+                    // 取消卡片選擇
+                    if (this.towerCardUI) {
+                        this.towerCardUI.deselectAll();
+                    }
+                }
+            }
+        }
+
+        // 簡化版的 TowerCardUI 用於測試
+        class TowerCardUITest {
+            constructor(scene) {
+                this.scene = scene;
+                this.cards = [];
+                this.selectedCard = null;
+                this.cardSpacing = 20;
+                this.cardWidth = 97;
+                this.cardHeight = 129;
+                this.uiHeight = 130;
+                
+                this.towerTypes = [
+                    { type: 'basic', name: '基礎塔', cardFrame: 'basic-tower-card.png', cost: 50 },
+                    { type: 'cannon', name: '加農炮', cardFrame: 'canon-tower-card.png', cost: 100 },
+                    { type: 'laser', name: '激光塔', cardFrame: 'laser-tower-card.png', cost: 150 },
+                    { type: 'ice', name: '冰凍塔', cardFrame: 'ice-tower-card.png', cost: 120 }
+                ];
+            }
+
+            create() {
+                console.log('🎴 創建塔卡片選擇區域...');
+                
+                const { width, height } = this.scene.scale.gameSize;
+                const startX = this.cardSpacing;
+                const cardY = height - this.uiHeight + (this.uiHeight - this.cardHeight) / 2;
+                
+                // 創建背景
+                this.createBackground(width, height);
+                
+                // 創建每個塔卡片
+                this.towerTypes.forEach((towerConfig, index) => {
+                    const cardX = startX + index * (this.cardWidth + this.cardSpacing);
+                    const card = this.createTowerCard(cardX, cardY, towerConfig, index);
+                    this.cards.push(card);
+                });
+                
+                console.log(`✅ 創建了 ${this.cards.length} 個塔卡片`);
+            }
+
+            createBackground(width, height) {
+                this.background = this.scene.add.rectangle(
+                    width / 2, 
+                    height - this.uiHeight / 2, 
+                    width, 
+                    this.uiHeight, 
+                    0x000000, 
+                    0.8
+                );
+                this.background.setDepth(1000);
+                
+                this.border = this.scene.add.rectangle(
+                    width / 2,
+                    height - this.uiHeight,
+                    width,
+                    2,
+                    0x444444
+                );
+                this.border.setDepth(1001);
+            }
+
+            createTowerCard(x, y, towerConfig, index) {
+                const card = {
+                    type: towerConfig.type,
+                    name: towerConfig.name,
+                    cost: towerConfig.cost,
+                    cardFrame: towerConfig.cardFrame,
+                    index: index,
+                    container: null,
+                    sprite: null,
+                    shadow: null,
+                    highlight: null,
+                    costText: null,
+                    isSelected: false
+                };
+
+                card.container = this.scene.add.container(x, y);
+                card.container.setDepth(1002);
+                card.container.setSize(this.cardWidth, this.cardHeight);
+                card.container.setInteractive();
+
+                // 陰影
+                card.shadow = this.scene.add.rectangle(2, 2, this.cardWidth, this.cardHeight, 0x000000, 0.3);
+                card.shadow.setOrigin(0.5);
+                card.container.add(card.shadow);
+
+                // 卡片精靈
+                card.sprite = this.scene.add.image(0, 0, 'tower-sprites', card.cardFrame);
+                card.sprite.setOrigin(0.5);
+                card.container.add(card.sprite);
+
+                // 高亮效果
+                card.highlight = this.scene.add.rectangle(0, 0, this.cardWidth + 8, this.cardHeight + 8, 0x00ff00, 0);
+                card.highlight.setStrokeStyle(3, 0x00ff00, 0.8);
+                card.highlight.setOrigin(0.5);
+                card.highlight.setVisible(false);
+                card.container.add(card.highlight);
+
+                // 價格文字
+                card.costText = this.scene.add.text(0, this.cardHeight / 2 - 10, `$${card.cost}`, {
+                    fontSize: '14px',
+                    fill: '#ffd93d',
+                    fontWeight: 'bold',
+                    backgroundColor: '#000000',
+                    padding: { x: 4, y: 2 }
+                });
+                card.costText.setOrigin(0.5);
+                card.container.add(card.costText);
+
+                // 交互事件
+                this.addCardInteractions(card);
+
+                return card;
+            }
+
+            addCardInteractions(card) {
+                card.container.on('pointerover', () => {
+                    if (!card.isSelected) {
+                        card.sprite.setScale(1.1);
+                        card.shadow.setScale(1.1);
+                        card.container.y -= 5;
+                    }
+                });
+
+                card.container.on('pointerout', () => {
+                    if (!card.isSelected) {
+                        card.sprite.setScale(1.0);
+                        card.shadow.setScale(1.0);
+                        card.container.y += 5;
+                    }
+                });
+
+                card.container.on('pointerdown', () => {
+                    this.selectCard(card);
+                });
+            }
+
+            selectCard(selectedCard) {
+                if (this.selectedCard) {
+                    this.deselectCard(this.selectedCard);
+                }
+
+                selectedCard.isSelected = true;
+                selectedCard.highlight.setVisible(true);
+                selectedCard.sprite.setScale(1.1);
+                selectedCard.shadow.setScale(1.1);
+                selectedCard.container.y -= 5;
+
+                this.selectedCard = selectedCard;
+
+                console.log(`🎯 選擇了塔: ${selectedCard.name} (${selectedCard.type})`);
+
+                this.scene.events.emit('towerCardSelected', {
+                    type: selectedCard.type,
+                    name: selectedCard.name,
+                    cost: selectedCard.cost
+                });
+            }
+
+            deselectCard(card) {
+                card.isSelected = false;
+                card.highlight.setVisible(false);
+                card.sprite.setScale(1.0);
+                card.shadow.setScale(1.0);
+                card.container.y += 5;
+            }
+
+            deselectAll() {
+                if (this.selectedCard) {
+                    this.deselectCard(this.selectedCard);
+                    this.selectedCard = null;
+                }
+            }
+        }
+
+        // 簡化版的 TowerPlacementSystem 用於測試
+        class TowerPlacementSystemTest {
+            constructor(scene) {
+                this.scene = scene;
+                this.isBuilding = false;
+                this.selectedTowerType = null;
+                this.buildPreview = null;
+            }
+
+            create() {
+                console.log('🏗️ 初始化塔放置系統...');
+                
+                // 設置事件監聽
+                this.scene.events.on('towerCardSelected', this.scene.onTowerCardSelected, this.scene);
+                
+                console.log('✅ 塔放置系統初始化完成');
+            }
+
+            startTowerPlacement(towerType) {
+                console.log(`🎯 開始塔放置模式: ${towerType}`);
+                
+                this.isBuilding = true;
+                this.selectedTowerType = towerType;
+                
+                // 創建預覽塔
+                this.createBuildPreview();
+                
+                console.log(`✅ 塔放置模式已啟動: ${towerType}`);
+            }
+
+            createBuildPreview() {
+                if (this.buildPreview) {
+                    this.buildPreview.destroy();
+                }
+                
+                // 創建預覽塔
+                this.buildPreview = this.scene.add.image(640, 300, 'tower-sprites', `${this.selectedTowerType}-tower.png`);
+                this.buildPreview.setScale(1.5);
+                this.buildPreview.setAlpha(0.6);
+                this.buildPreview.setDepth(101);
+                
+                // 添加跟隨滑鼠的邏輯
+                this.scene.input.on('pointermove', (pointer) => {
+                    if (this.isBuilding && this.buildPreview) {
+                        const worldPoint = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
+                        this.buildPreview.setPosition(worldPoint.x, worldPoint.y);
+                    }
+                });
+                
+                // 添加點擊放置邏輯
+                this.scene.input.on('pointerdown', (pointer) => {
+                    if (this.isBuilding && this.buildPreview) {
+                        const worldPoint = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
+                        this.placeTower(worldPoint.x, worldPoint.y);
+                    }
+                });
+                
+                console.log('✅ 預覽塔創建完成');
+            }
+
+            placeTower(x, y) {
+                console.log(`🏗️ 在位置 (${x}, ${y}) 放置 ${this.selectedTowerType} 塔`);
+                
+                // 創建實際的塔
+                const tower = this.scene.add.image(x, y, 'tower-sprites', `${this.selectedTowerType}-tower.png`);
+                tower.setScale(1.5);
+                tower.setDepth(100);
+                
+                // 扣除金錢
+                const cost = this.getTowerCost(this.selectedTowerType);
+                this.scene.player.money -= cost;
+                console.log(`💰 扣除 $${cost}，剩餘金錢: $${this.scene.player.money}`);
+                
+                // 取消放置模式
+                this.cancelBuilding();
+                
+                console.log(`✅ ${this.selectedTowerType} 塔放置完成`);
+            }
+
+            getTowerCost(towerType) {
+                const costs = {
+                    basic: 50,
+                    cannon: 100,
+                    laser: 150,
+                    ice: 120
+                };
+                return costs[towerType] || 100;
+            }
+
+            cancelBuilding() {
+                this.isBuilding = false;
+                this.selectedTowerType = null;
+                
+                if (this.buildPreview) {
+                    this.buildPreview.destroy();
+                    this.buildPreview = null;
+                }
+                
+                // 取消卡片選擇
+                if (this.scene.towerCardUI) {
+                    this.scene.towerCardUI.deselectAll();
+                }
+                
+                console.log('❌ 塔放置模式已取消');
+            }
+        }
+
+        const config = {
+            type: Phaser.AUTO,
+            width: 1280,
+            height: 962,
+            parent: 'game-container',
+            backgroundColor: '#2c3e50',
+            scene: TowerPlacementTestScene
+        };
+
+        const game = new Phaser.Game(config);
+        window.game = game;
+    </script>
+</body>
+</html>
