@@ -468,6 +468,11 @@ export class LaserTower extends BaseTower {
    * 充能完成後發射雷射
    */
   fireAfterCharge() {
+    // 檢查場景是否仍然存在
+    if (!this.scene || !this.scene.tweens) {
+      return;
+    }
+    
     console.log(`🚀 雷射塔充能完成，發射雷射！`);
     
     // 重置充能狀態

@@ -152,10 +152,10 @@ export class PlayerWeapon extends Phaser.GameObjects.Container {
    * 更新武器
    */
   update(time, delta) {
-    // 更新射擊
-    if (this.isFiring && time.now - this.lastFireTime > this.fireRate) {
+    // 更新射擊（修正：直接使用 time，不是 time.now）
+    if (this.isFiring && time - this.lastFireTime > this.fireRate) {
       this.fire();
-      this.lastFireTime = time.now;
+      this.lastFireTime = time;
     }
     
     // 更新投射物
@@ -202,21 +202,26 @@ export class PlayerWeapon extends Phaser.GameObjects.Container {
       
       // 計算散射角度
       const angleOffset = (i - (multiShotCount - 1) / 2) * spreadAngle;
-      // 子彈飛行方向也需要調整，讓它與戰機頭部方向一致
-      const fireAngle = this.currentAngle - Math.PI/2 + angleOffset;
+      
+      // 🔧 修正：直接使用當前角度（不需要減 π/2）
+      const fireAngle = this.currentAngle + angleOffset;
       
       // 計算子彈發射位置（從戰機頭部發射）
-      // 使用玩家的世界座標作為基準點
       const playerWorldX = this.player.x;
       const playerWorldY = this.player.y;
       
-      // 從戰機頭部發射（戰機圖片是垂直向上的，需要調整角度）
-      // 戰機頭部距離中心約 50 像素，需要減去 90 度（π/2）來對應戰機頭部方向
-      const muzzleX = playerWorldX + Math.cos(this.currentAngle - Math.PI/2) * 50;
-      const muzzleY = playerWorldY + Math.sin(this.currentAngle - Math.PI/2) * 50;
+      // 🔧 修正：使用正確的角度計算發射位置
+      const muzzleDistance = 50;
+      const muzzleX = playerWorldX + Math.cos(this.currentAngle) * muzzleDistance;
+      const muzzleY = playerWorldY + Math.sin(this.currentAngle) * muzzleDistance;
       
       // 設置投射物
       projectile.fire(muzzleX, muzzleY, fireAngle, this.getProjectileConfig());
+      
+      // 🔑 關鍵：添加到場景的玩家投射物群組（模仿 Tower 的做法）
+      if (this.scene.playerProjectiles) {
+        this.scene.playerProjectiles.add(projectile);
+      }
     }
   }
 
@@ -347,10 +352,10 @@ export class PlayerWeapon extends Phaser.GameObjects.Container {
    * 銷毀武器
    */
   destroy() {
-    // 銷毀所有投射物
+    // 停用所有投射物（使用 deactivate 而不是 destroy，避免錯誤）
     this.projectiles.forEach(projectile => {
-      if (projectile) {
-        projectile.destroy();
+      if (projectile && projectile.deactivate) {
+        projectile.deactivate();
       }
     });
     
@@ -442,18 +447,18 @@ class PlayerProjectile extends Phaser.GameObjects.Container {
     
     // 檢查生命週期
     if (this.lifeTime >= this.maxLifeTime) {
-      this.destroy();
+      this.deactivate();
       return;
     }
     
-    // 更新位置
+    // ✅ 恢復手動位置更新（像 Tower 投射物一樣）
     this.x += this.velocity.x * (delta / 1000);
     this.y += this.velocity.y * (delta / 1000);
     
     // 檢查邊界
     const { width, height } = this.scene.scale.gameSize;
     if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
-      this.destroy();
+      this.deactivate();
       return;
     }
     
@@ -579,6 +584,13 @@ class PlayerProjectile extends Phaser.GameObjects.Container {
   deactivate() {
     this.setActive(false);
     this.setVisible(false);
+    
+    // 安全檢查：確保 body 存在
+    if (this.body) {
+      this.body.setVelocity(0, 0);
+    }
+    
+    this.lifeTime = 0;
   }
   
   /**

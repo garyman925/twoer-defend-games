@@ -4,57 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tower Defense Game</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Squada+One&display=swap" rel="stylesheet">
+    <!-- 引入 CSS 檔案，順序很重要 -->
+    <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="assets/css/ui.css">
+    <link rel="stylesheet" href="assets/css/menu.css">
+    <link rel="stylesheet" href="assets/css/gameplay.css">
+    <link rel="stylesheet" href="assets/css/tower-bar.css">
+    <link rel="stylesheet" href="assets/css/status-bar.css">
+    <link rel="stylesheet" href="assets/css/dialog.css">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
-            overflow: hidden; /* 防止滾動條 */
-        }
-        
-        #game-container {
-            position: relative;
-            border: 2px solid #333;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-            /* 響應式設計：讓容器適應窗口大小 */
-            width: 100vw;
-            height: 100vh;
-            max-width: 100%;
-            max-height: 100%;
-            /* 添加漸變背景填充左右黑邊 */
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
-        }
-        
-        /* 強制 canvas 縮放到容器大小 */
-        canvas {
-            display: block;
-            margin: 0 auto;
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: contain; /* 保持比例縮放 */
-        }
-        
+        /* 載入畫面特定樣式 */
         #loading {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: #fff;
+            color: var(--light);
             font-size: 24px;
-            z-index: 1000;
+            z-index: var(--z-dialog);
         }
         
         .loading-bar {
             width: 300px;
             height: 20px;
-            border: 2px solid #fff;
+            border: 2px solid var(--light);
             border-radius: 10px;
             overflow: hidden;
             margin-top: 20px;
@@ -62,7 +39,7 @@
         
         .loading-fill {
             height: 100%;
-            background: linear-gradient(90deg, #00ff00, #00ffff);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             width: 0%;
             transition: width 0.3s ease;
         }

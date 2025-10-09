@@ -10,6 +10,7 @@ export class AssetLoader {
     this.scene = scene;
     this.loadedAssets = new Set();
     this.loadingQueue = [];
+    this.failedAssets = [];
     this.totalAssets = 0;
     this.loadedCount = 0;
     
@@ -34,59 +35,11 @@ export class AssetLoader {
    * 設置資源列表
    */
   setupAssetLists() {
-    // 圖片資源
+    // 圖片資源 - 只保留實際存在的資源
     this.assetCategories.images = [
-      // UI資源
-      { key: 'button_normal', path: 'assets/images/ui/button_normal.png' },
-      { key: 'button_hover', path: 'assets/images/ui/button_hover.png' },
-      { key: 'button_pressed', path: 'assets/images/ui/button_pressed.png' },
-      { key: 'progress_bg', path: 'assets/images/ui/progress_bg.png' },
-      { key: 'progress_fill', path: 'assets/images/ui/progress_fill.png' },
-      { key: 'panel_bg', path: 'assets/images/ui/panel_bg.png' },
-      { key: 'coin_icon', path: 'assets/images/ui/coin_icon.png' },
-      { key: 'health_icon', path: 'assets/images/ui/health_icon.png' },
-      { key: 'wave_icon', path: 'assets/images/ui/wave_icon.png' },
-      
-      // 玩家資源
-      { key: 'player_idle', path: 'assets/sprites/ships/blue/player_idle.webp' },
-      { key: 'player_idle_json', path: 'assets/sprites/ships/blue/player_idle.json' },
-      { key: 'player_weapon', path: 'assets/images/entities/player_weapon.png' },
-      { key: 'player_skin_default', path: 'assets/images/skins/player_default.png' },
-      
-      // 敵人資源
-      { key: 'enemy_basic', path: 'assets/sprites/enemies/basic/basic.webp' },
-      { key: 'enemy_basic_json', path: 'assets/sprites/enemies/basic/basic.json' },
-      { key: 'enemy_fast', path: 'assets/images/entities/enemy_fast.png' },
-      { key: 'enemy_tank', path: 'assets/images/entities/enemy_tank.png' },
-      { key: 'enemy_boss', path: 'assets/images/entities/enemy_boss.png' },
-      // 添加meteor資源
-      { key: 'enemy_meteor', path: 'assets/sprites/enemies/meteor.webp' },
-      { key: 'enemy_meteor_json', path: 'assets/sprites/enemies/meteor.json' },
-      
-      // 塔資源
-      { key: 'tower_basic', path: 'assets/images/entities/tower_basic.png' },
-      { key: 'tower_laser', path: 'assets/images/entities/tower_laser.png' },
-      { key: 'tower_cannon', path: 'assets/images/entities/tower_cannon.png' },
-      { key: 'tower_ice', path: 'assets/images/entities/tower_ice.png' },
-      { key: 'tower_base', path: 'assets/images/entities/tower_base.png' },
-      
-      // 投射物資源
-      { key: 'bullet_basic', path: 'assets/images/entities/bullet_basic.png' },
-      { key: 'bullet_laser', path: 'assets/images/entities/bullet_laser.png' },
-      { key: 'bullet_cannon', path: 'assets/images/entities/bullet_cannon.png' },
-      { key: 'bullet_ice', path: 'assets/images/entities/bullet_ice.png' },
-      
-      // 特效資源
-      { key: 'explosion', path: 'assets/images/effects/explosion.png' },
-      { key: 'muzzle_flash', path: 'assets/images/effects/muzzle_flash.png' },
-      { key: 'impact_effect', path: 'assets/images/effects/impact_effect.png' },
-      { key: 'particle_spark', path: 'assets/images/effects/particle_spark.png' },
-      { key: 'particle_smoke', path: 'assets/images/effects/particle_smoke.png' },
-      
       // 背景資源
-      { key: 'game_bg', path: 'assets/images/backgrounds/game_bg.png' },
-      { key: 'menu_bg', path: 'assets/images/backgrounds/menu_bg.png' },
-      { key: 'grid_overlay', path: 'assets/images/backgrounds/grid_overlay.png' },
+      { key: 'space-bg', path: 'assets/maps/space-bg.png' },
+      { key: 'world-1', path: 'assets/maps/world-1.png' },
       { key: 'game_start_screen', path: 'assets/bg/game-start-screen.png' }
     ];
 
@@ -146,7 +99,7 @@ export class AssetLoader {
       { key: 'upgradeData', path: 'assets/data/upgradeData.json' },
       { key: 'enemyData', path: 'assets/data/enemyData.json' },
       { key: 'towerData', path: 'assets/data/towerData.json' },
-      { key: 'skinData', path: 'assets/data/skinData.json' },
+      // { key: 'skinData', path: 'assets/data/skinData.json' },  // 移除：檔案不存在
       { key: 'audioConfig', path: 'assets/data/audioConfig.json' }
     ];
   }
@@ -165,9 +118,18 @@ export class AssetLoader {
    * 載入所有資源
    */
   loadAllAssets() {
+    console.log('📦 開始載入所有資源...');
     
-    // 暫時只載入基礎必要資源，避免載入不存在的檔案
-    this.loadEssentialAssets();
+    // 初始化錯誤記錄陣列
+    this.failedAssets = [];
+    
+    // 載入所有類型的資源
+    this.loadData();         // JSON 配置檔案
+    this.loadImages();       // 所有圖片
+    // this.loadAudio();     // 所有音頻（暫時註解，避免音頻錯誤）
+    
+    // 創建基礎佔位圖片
+    this.createPlaceholderAssets();
     
     // 設置載入事件
     this.setupLoadEvents();
@@ -191,24 +153,60 @@ export class AssetLoader {
    * 載入關鍵圖片資源
    */
   loadCriticalImages() {
-    // 載入玩家待機動畫資源
-    this.scene.load.atlas('player_idle', 'assets/sprites/ships/blue/player_idle.webp', 'assets/sprites/ships/blue/player_idle.json');
+    console.log('📦 載入關鍵圖集資源...');
     
-    // 載入其他關鍵資源
-    this.scene.load.image('tower_basic', 'assets/sprites/towers/tower-sprite.png');
-    this.scene.load.image('bullet_basic', 'assets/sprites/bullets/bullets.webp');
+    // 載入玩家資源（使用 ships/blue）
+    this.scene.load.atlas('player_idle', 
+      'assets/sprites/ships/blue/player_idle.webp', 
+      'assets/sprites/ships/blue/player_idle.json');
+    
+    // 載入玩家爆炸效果（在 ships/blue）
+    this.scene.load.atlas('player-explosion', 
+      'assets/sprites/ships/blue/explosion.webp', 
+      'assets/sprites/ships/blue/explosion.json');
+    
+    // 載入敵人爆炸效果（在 sprites/explosion）
+    this.scene.load.atlas('enemy-explosion', 
+      'assets/sprites/explosion/explosion.png', 
+      'assets/sprites/explosion/explosion.json');
+    
+    // 載入塔圖片（使用飛船圖片）
+    this.scene.load.image('ship_basic', 'assets/sprites/ships/type1/type-1.png');
+    this.scene.load.image('ship_cannon', 'assets/sprites/ships/type2/type-2.png');
+    this.scene.load.image('ship_laser', 'assets/sprites/ships/type3/type-3.png');
+    this.scene.load.image('ship_ice', 'assets/sprites/ships/type4/type-4.png');
+    
+    // 載入子彈圖集
+    this.scene.load.atlas('bullets', 
+      'assets/sprites/bullets/bullets.webp', 
+      'assets/sprites/bullets/bullets.json');
     
     // 載入敵人圖集
-    this.scene.load.atlas('enemy_basic', 'assets/sprites/enemies/basic/basic.webp', 'assets/sprites/enemies/basic/basic.json');
+    this.scene.load.atlas('enemy_basic', 
+      'assets/sprites/enemies/basic/basic.webp', 
+      'assets/sprites/enemies/basic/basic.json');
     
-    // 載入meteor資源
-    this.scene.load.atlas('enemy_meteor', 'assets/sprites/enemies/meteor.webp', 'assets/sprites/enemies/meteor.json');
+    this.scene.load.atlas('enemy_meteor', 
+      'assets/sprites/enemies/meteor.webp', 
+      'assets/sprites/enemies/meteor.json');
     
-    // 載入主選單背景圖片
-    this.scene.load.image('game_start_screen', 'assets/bg/game-start-screen.png');
+    // 載入UI圖集
+    this.scene.load.atlas('ui_buttons', 
+      'assets/ui/ui.webp', 
+      'assets/ui/ui.json');
     
-    // 載入UI按鈕圖集
-    this.scene.load.atlas('ui_buttons', 'assets/ui/ui.webp', 'assets/ui/ui.json');
+    this.scene.load.atlas('ui2', 
+      'assets/ui/ui2.png', 
+      'assets/ui/ui2.json');
+    
+    this.scene.load.atlas('game-ui', 
+      'assets/ui/game-ui.png', 
+      'assets/ui/game-ui.json');
+    
+    // 載入地圖
+    this.scene.load.tilemapTiledJSON('map1', 'assets/maps/map1.tmj');
+    
+    console.log('✅ 關鍵圖集資源載入配置完成');
   }
 
   /**
@@ -331,9 +329,21 @@ export class AssetLoader {
    * 載入錯誤處理
    */
   onLoadError(file) {
-    console.error(`載入失敗: ${file.key} - ${file.src}`);
+    const errorInfo = {
+      key: file.key,
+      type: file.type,
+      src: file.src
+    };
     
-    // 嘗試載入預設資源
+    // 記錄失敗的資源
+    this.failedAssets.push(errorInfo);
+    
+    // 在控制台輸出警告（而非錯誤）
+    console.warn(`⚠️ 資源載入失敗: ${file.key}`);
+    console.warn(`   類型: ${file.type}`);
+    console.warn(`   路徑: ${file.src}`);
+    
+    // 嘗試載入預設資源（保留原有邏輯）
     this.loadFallbackAsset(file.key, file.type);
   }
 
@@ -341,6 +351,21 @@ export class AssetLoader {
    * 載入完成
    */
   onLoadComplete() {
+    console.log('✅ 資源載入完成！');
+    
+    // 輸出失敗資源報告
+    if (this.failedAssets && this.failedAssets.length > 0) {
+      console.group(`⚠️ 以下資源載入失敗（共 ${this.failedAssets.length} 個）：`);
+      this.failedAssets.forEach((asset, index) => {
+        console.log(`${index + 1}. [${asset.type}] ${asset.key}`);
+        console.log(`   路徑: ${asset.src}`);
+      });
+      console.groupEnd();
+      
+      console.log('💡 提示：這些資源可以從 AssetLoader.js 的 assetCategories 中移除');
+    } else {
+      console.log('✨ 所有資源都成功載入！');
+    }
     
     // 隱藏載入畫面
     this.hideLoadingScreen();
@@ -492,8 +517,8 @@ export class AssetLoader {
     // 設置音頻配置
     this.setupAudioConfiguration();
     
-    // 驗證關鍵資源
-    this.validateCriticalAssets();
+    // 驗證關鍵資源（已移除，改用載入失敗報告）
+    // this.validateCriticalAssets();
     
     // 發送資源載入完成事件
     this.scene.events.emit('allAssetsLoaded');
@@ -595,11 +620,28 @@ export class AssetLoader {
    */
   validateCriticalAssets() {
     const criticalAssets = [
+      // 玩家資源
       'player_idle',
+      'player-explosion',
+      
+      // 敵人資源
       'enemy_basic',
-      'tower_basic',
-      'bullet_basic',
-      'button_normal'
+      'enemy_meteor',
+      
+      // 塔圖片（飛船）
+      'ship_basic',
+      'ship_cannon',
+      'ship_laser',
+      'ship_ice',
+      
+      // 子彈資源
+      'bullets',
+      
+      // UI資源
+      'ui_buttons',
+      
+      // 背景資源
+      'space-bg'
     ];
     
     const missingAssets = criticalAssets.filter(asset => 
@@ -607,8 +649,15 @@ export class AssetLoader {
     );
     
     if (missingAssets.length > 0) {
-      console.error('缺少關鍵資源:', missingAssets);
-      // 可以在這裡顯示錯誤訊息或載入預設資源
+      console.error('❌ 缺少關鍵資源:', missingAssets);
+      console.log('💡 請檢查這些資源是否正確載入');
+      
+      // 詳細列出每個缺失的資源
+      missingAssets.forEach(asset => {
+        console.log(`   - ${asset}`);
+      });
+    } else {
+      console.log('✅ 所有關鍵資源驗證通過！');
     }
   }
 

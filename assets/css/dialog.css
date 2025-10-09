@@ -1,0 +1,102 @@
+/* 對話框遮罩 */
+.dialog-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: var(--z-dialog);
+  animation: fadeIn var(--transition-normal);
+}
+
+/* 對話框容器 */
+.dialog-container {
+  width: 80%;
+  max-width: 600px;
+  background: rgba(26, 26, 46, 0.95);
+  border: 2px solid var(--primary);
+  border-radius: 12px;
+  padding: var(--spacing-lg);
+  color: var(--light);
+  animation: scaleIn var(--transition-normal);
+}
+
+/* 對話框標題 */
+.dialog-title {
+  font-size: 2rem;
+  color: var(--primary);
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+  font-weight: bold;
+}
+
+/* 對話框內容 */
+.dialog-content {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* 對話框按鈕容器 */
+.dialog-buttons {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+}
+
+/* 對話框按鈕 */
+.dialog-button {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  border-radius: 6px;
+  background: var(--danger);
+  color: var(--light);
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform var(--transition-fast) ease;
+}
+
+.dialog-button:hover {
+  transform: scale(1.1);
+}
+
+.dialog-button.primary {
+  background: var(--primary);
+}
+
+.dialog-button.secondary {
+  background: var(--secondary);
+}
+
+/* 設置對話框 */
+.settings-dialog .dialog-content {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+/* 音量滑塊 */
+.volume-slider {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--primary);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform var(--transition-fast) ease;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}

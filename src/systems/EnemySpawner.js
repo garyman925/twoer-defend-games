@@ -346,14 +346,19 @@ export class EnemySpawner {
     // 檢查波次是否完成
     this.checkWaveComplete();
     
-    console.log(`🏰 ${enemy.enemyType}敵人到達基地並攻擊！`);
+    // console.log(`🏰 ${enemy.enemyType}敵人到達基地並攻擊！`);
   }
 
   /**
-   * 處理敵人攻擊基地
+   * 處理敵人攻擊基地（已停用）
    */
   handleEnemyAttackBase(enemy) {
-    console.log(`💥 敵人攻擊基地，造成 ${enemy.damage} 點傷害！`);
+    // ❌ 禁用敵人到達基地時攻擊玩家（改用物理碰撞處理）
+    console.log('⚠️ 敵人到達基地攻擊已禁用，使用物理碰撞代替');
+    return;
+    
+    /* 以下代碼已停用
+    // console.log(`💥 敵人攻擊基地，造成 ${enemy.damage} 點傷害！`);
     
     // 通知遊戲管理器敵人攻擊基地（會重定向到玩家受傷）
     if (this.scene.gameManager && this.scene.gameManager.onBaseAttacked) {
@@ -364,6 +369,7 @@ export class EnemySpawner {
         this.scene.player.takeDamage(enemy.damage);
       }
     }
+    */
   }
 
   /**

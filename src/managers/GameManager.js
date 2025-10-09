@@ -316,10 +316,15 @@ export class GameManager {
   }
   
   /**
-   * 基地被攻擊（重定向到玩家受傷）
+   * 基地被攻擊（已停用 - 改用物理碰撞處理）
    */
   onBaseAttacked(damage) {
-    console.log(`🏰 基地受到 ${damage} 點傷害，重定向到玩家`);
+    // ❌ 禁用基地被攻擊邏輯（改用物理碰撞處理）
+    console.log('⚠️ 基地被攻擊已禁用，使用物理碰撞代替');
+    return;
+    
+    /* 以下代碼已停用
+    // console.log(`🏰 基地受到 ${damage} 點傷害，重定向到玩家`);
     
     // 直接調用玩家受傷方法
     if (this.game.scene.getScene('GameplayScene') && this.game.scene.getScene('GameplayScene').player) {
@@ -336,6 +341,7 @@ export class GameManager {
       damage: damage,
       timestamp: Date.now()
     });
+    */
   }
 
   /**

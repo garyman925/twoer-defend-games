@@ -298,8 +298,8 @@ export class TowerPlacementSystem {
     this.placementIndicator.setVisible(false);
     this.rangePreview.setVisible(false);
     
-    // 取消塔卡片選擇
-    if (this.scene.towerCardUI) {
+    // 取消塔卡片選擇（同時相容 DOM 版本與舊版）
+    if (this.scene.towerCardUI && typeof this.scene.towerCardUI.deselectAll === 'function') {
       this.scene.towerCardUI.deselectAll();
     }
     

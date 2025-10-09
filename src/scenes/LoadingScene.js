@@ -288,23 +288,26 @@ export class LoadingScene extends BaseScene {
    * 開始資源載入
    */
   startAssetLoading() {
-    
-    // 設置載入事件監聽器
-    this.assetLoader.scene.load.on('progress', (progress) => {
-      this.updateLoadingProgress(progress);
-    });
-    
-    this.assetLoader.scene.load.on('filecomplete', (key, type, data) => {
-      this.updateLoadingText(`載入 ${key}...`);
-    });
-    
-    this.assetLoader.scene.load.on('complete', () => {
-      this.onLoadingComplete();
-    });
+    console.log('🚀 開始資源載入流程...');
     
     // 開始載入
     this.assetLoader.loadAllAssets();
+    
+    // 監聽進度更新
+    this.load.on('progress', (progress) => {
+      this.updateLoadingProgress(progress);
+    });
+    
+    // 監聽 AssetLoader 的載入完成事件
+    this.events.once('allAssetsLoaded', () => {
+      console.log('📢 收到資源載入完成事件');
+      this.onLoadingComplete();
+    });
+    
+    // 啟動載入
     this.load.start();
+    
+    console.log('✅ 載入器已啟動');
   }
 
   /**

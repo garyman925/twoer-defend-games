@@ -7,10 +7,10 @@ export class TowerCardUI {
     this.scene = scene;
     this.cards = [];
     this.selectedCard = null;
-    this.cardSpacing = 20; // 卡片間距
-    this.cardWidth = 97;   // 卡片寬度
-    this.cardHeight = 129; // 卡片高度
-    this.uiHeight = 130;   // 底部UI區域高度
+    this.cardSpacing = 10; // 卡片間距 (參考舊系統)
+    this.cardWidth = 80;   // 卡片寬度 (參考舊系統)
+    this.cardHeight = 60;  // 卡片高度 (參考舊系統)
+    this.uiHeight = 120;   // 底部UI區域高度 (參考舊系統)
     
     // 塔類型配置
     this.towerTypes = [
@@ -26,10 +26,10 @@ export class TowerCardUI {
    */
   create() {
     
-    // 計算卡片區域位置
+    // 計算卡片區域位置 (參考舊系統)
     const { width, height } = this.scene.scale.gameSize;
-    const startX = this.cardSpacing;
-    const cardY = height - this.uiHeight + (this.uiHeight - this.cardHeight) / 2;
+    const startX = 20; // 參考舊系統的起始位置
+    const cardY = height - this.uiHeight + 40; // 參考舊系統的按鈕Y位置
     
     // 創建背景
     this.createBackground(width, height);
@@ -57,16 +57,6 @@ export class TowerCardUI {
       0.8
     );
     this.background.setDepth(1000);
-    
-    // 添加頂部邊框
-    this.border = this.scene.add.rectangle(
-      width / 2,
-      height - this.uiHeight,
-      width,
-      2,
-      0x444444
-    );
-    this.border.setDepth(1001);
   }
 
   /**
@@ -80,8 +70,9 @@ export class TowerCardUI {
       cardFrame: towerConfig.cardFrame,
       index: index,
       container: null,
-      sprite: null,
-      shadow: null,
+      background: null,
+      icon: null,
+      nameText: null,
       highlight: null,
       costText: null,
       isSelected: false
@@ -93,37 +84,58 @@ export class TowerCardUI {
     card.container.setSize(this.cardWidth, this.cardHeight);
     card.container.setInteractive();
 
-    // 創建陰影
-    card.shadow = this.scene.add.rectangle(2, 2, this.cardWidth, this.cardHeight, 0x000000, 0.3);
-    card.shadow.setOrigin(0.5);
-    card.container.add(card.shadow);
+    // 使用 ui2 的 frame-btn-sm 作為背景
+    card.background = this.scene.add.image(0, 0, 'ui2', 'frame-btn-sm.png');
+    card.background.setOrigin(0.5);
+    card.background.setScale(this.cardWidth / 287, this.cardHeight / 301); // 根據原始尺寸縮放
+    card.container.add(card.background);
 
-    // 創建卡片精靈
-    card.sprite = this.scene.add.image(0, 0, 'tower-sprites', card.cardFrame);
-    card.sprite.setOrigin(0.5);
-    card.container.add(card.sprite);
+    // 創建塔圖標 (使用文字圖標，類似舊系統)
+    const iconText = this.getTowerIcon(towerConfig.type);
+    card.icon = this.scene.add.text(0, -15, iconText, {
+      fontSize: '20px',
+      fill: '#ffffff'
+    });
+    card.icon.setOrigin(0.5);
+    card.container.add(card.icon);
 
-    // 創建高亮效果（初始隱藏）
-    card.highlight = this.scene.add.rectangle(0, 0, this.cardWidth + 8, this.cardHeight + 8, 0x00ff00, 0);
-    card.highlight.setStrokeStyle(3, 0x00ff00, 0.8);
-    card.highlight.setOrigin(0.5);
-    card.container.add(card.highlight);
+    // 創建塔名稱
+    card.nameText = this.scene.add.text(0, 5, towerConfig.name, {
+      fontSize: '10px',
+      fill: '#ffffff',
+      fontWeight: 'bold'
+    });
+    card.nameText.setOrigin(0.5);
+    card.container.add(card.nameText);
 
     // 創建價格文字
-    card.costText = this.scene.add.text(0, this.cardHeight / 2 - 10, `$${card.cost}`, {
-      fontSize: '14px',
+    card.costText = this.scene.add.text(0, 18, `$${card.cost}`, {
+      fontSize: '10px',
       fill: '#ffd93d',
-      fontWeight: 'bold',
-      backgroundColor: '#000000',
-      padding: { x: 4, y: 2 }
+      fontWeight: 'bold'
     });
     card.costText.setOrigin(0.5);
     card.container.add(card.costText);
+
+    // 不使用描邊高亮，改以縮放與位移呈現狀態
 
     // 添加交互事件
     this.addCardInteractions(card);
 
     return card;
+  }
+
+  /**
+   * 獲取塔圖標
+   */
+  getTowerIcon(towerType) {
+    const icons = {
+      'basic': '●',
+      'cannon': '💥',
+      'laser': '⚡',
+      'ice': '❄️'
+    };
+    return icons[towerType] || '●';
   }
 
   /**
@@ -133,16 +145,14 @@ export class TowerCardUI {
     // Hover 效果
     card.container.on('pointerover', () => {
       if (!card.isSelected) {
-        card.sprite.setScale(1.1);
-        card.shadow.setScale(1.1);
+        card.background.setScale(this.cardWidth / 287 * 1.1, this.cardHeight / 301 * 1.1);
         card.container.y -= 5;
       }
     });
 
     card.container.on('pointerout', () => {
       if (!card.isSelected) {
-        card.sprite.setScale(1.0);
-        card.shadow.setScale(1.0);
+        card.background.setScale(this.cardWidth / 287, this.cardHeight / 301);
         card.container.y += 5;
       }
     });
@@ -164,9 +174,7 @@ export class TowerCardUI {
 
     // 選中新的卡片
     selectedCard.isSelected = true;
-    selectedCard.highlight.setVisible(true);
-    selectedCard.sprite.setScale(1.1);
-    selectedCard.shadow.setScale(1.1);
+    selectedCard.background.setScale(this.cardWidth / 287 * 1.1, this.cardHeight / 301 * 1.1);
     selectedCard.container.y -= 5;
 
     this.selectedCard = selectedCard;
@@ -186,9 +194,7 @@ export class TowerCardUI {
    */
   deselectCard(card) {
     card.isSelected = false;
-    card.highlight.setVisible(false);
-    card.sprite.setScale(1.0);
-    card.shadow.setScale(1.0);
+    card.background.setScale(this.cardWidth / 287, this.cardHeight / 301);
     card.container.y += 5;
   }
 
@@ -216,7 +222,9 @@ export class TowerCardUI {
   updateCardAvailability(playerMoney) {
     this.cards.forEach(card => {
       const canAfford = playerMoney >= card.cost;
-      card.sprite.setAlpha(canAfford ? 1.0 : 0.5);
+      card.background.setAlpha(canAfford ? 1.0 : 0.5);
+      card.icon.setAlpha(canAfford ? 1.0 : 0.5);
+      card.nameText.setAlpha(canAfford ? 1.0 : 0.5);
       card.costText.setAlpha(canAfford ? 1.0 : 0.5);
       
       // 如果無法負擔且已選中，取消選擇

@@ -102,20 +102,22 @@ export class BaseTower extends Phaser.GameObjects.Container {
    * 更新血條
    */
   updateHealthBar() {
-    if (!this.healthBar) {
-      this.createHealthBar();
-    }
+    if (!this.healthBar) return;
     
     const healthPercent = this.health / this.maxHealth;
-    this.healthBar.setScale(healthPercent, 1);
+    const maxWidth = 40;
+    const currentWidth = Math.max(0, maxWidth * healthPercent);
     
-    // 根據血量改變顏色
+    // 更新寬度
+    this.healthBar.width = currentWidth;
+    
+    // 更新顏色（使用 setFillStyle，Rectangle 不支援 setTint）
     if (healthPercent > 0.6) {
-      this.healthBar.setTint(0x00ff00); // 綠色
+      this.healthBar.setFillStyle(0x00ff00); // 綠色
     } else if (healthPercent > 0.3) {
-      this.healthBar.setTint(0xffff00); // 黃色
+      this.healthBar.setFillStyle(0xffff00); // 黃色
     } else {
-      this.healthBar.setTint(0xff0000); // 紅色
+      this.healthBar.setFillStyle(0xff0000); // 紅色
     }
   }
   
@@ -260,29 +262,29 @@ export class BaseTower extends Phaser.GameObjects.Container {
    * 創建塔主體
    */
   createTowerBody() {
-    // 使用塔圖片而不是顏色方塊
-    const towerFrameMap = {
-      basic: 'basic-tower.png',
-      cannon: 'canon-tower.png', 
-      laser: 'laser-tower.png',
-      ice: 'ice-tower.png',
-      poison: 'canon-tower.png'  // 暫時使用加農炮塔圖片
+    // 使用飛船圖片作為塔的圖片
+    const towerImageMap = {
+      basic: 'ship_basic',
+      cannon: 'ship_cannon', 
+      laser: 'ship_laser',
+      ice: 'ship_ice',
+      poison: 'ship_cannon'  // 暫時使用 cannon
     };
     
-    const frameName = towerFrameMap[this.towerType] || 'tower-1.png';
+    const imageKey = towerImageMap[this.towerType] || 'ship_basic';
     
-    // 創建塔精靈
-    this.towerSprite = this.scene.add.image(0, 0, 'tower-sprites', frameName);
+    // 創建塔精靈（使用單個圖片）
+    this.towerSprite = this.scene.add.image(0, 0, imageKey);
     
-    // 縮放到合適大小 (64x64 -> 96x96 以佔3x3網格)
-    this.towerSprite.setScale(1.5);
+    // 縮放到合適大小（飛船圖片可能需要調整大小）
+    this.towerSprite.setScale(0.15);
     
     // 設置錨點為中心
     this.towerSprite.setOrigin(0.5, 0.5);
     
     this.add(this.towerSprite);
     
-    console.log(`創建 ${this.towerType} 塔，使用圖片: ${frameName}`);
+    console.log(`創建 ${this.towerType} 塔，使用飛船圖片: ${imageKey}`);
   }
 
   /**

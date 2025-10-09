@@ -1,0 +1,74 @@
+/* 主選單背景 */
+.menu-background {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-base);
+  background-image: url('../bg/game-start-screen.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* 輕微暗色遮罩 */
+.menu-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: calc(var(--z-base) + 1);
+}
+
+/* 主選單容器 */
+#menu-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding: var(--spacing-lg);
+  pointer-events: none;
+  z-index: var(--z-ui);
+}
+
+/* 按鈕容器 */
+.menu-button-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  pointer-events: auto;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* 選單按鈕 */
+.menu-button {
+  width: 200px;
+  padding: var(--spacing-md);
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--light);
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--transition-normal) ease;
+}
+
+.menu-button:hover {
+  transform: translateX(-10px);
+  background: rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.menu-button:active {
+  transform: translateX(-5px);
+}
+
+/* 版本資訊 */
+.version-info {
+  position: absolute;
+  bottom: var(--spacing-md);
+  right: var(--spacing-md);
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.8rem;
+  pointer-events: none;
+}

@@ -1,0 +1,47 @@
+/* UI Overlay CSS: 可在此調整 DOM 疊加 UI 的外觀與布局 */
+:root {
+    --ui-overlay-z: 10;
+    --towerbar-height: 120px;
+    --towerbar-bg: rgba(0,0,0,.8);
+    --towerbar-border: #00ffff;
+    --towercard-size-w: 80px;
+    --towercard-size-h: 60px;
+    --towercard-bg: #222;
+    --towercard-fg: #fff;
+    --towercard-accent: #ffd93d;
+    --towercard-border: #00ffff;
+}
+
+#ui-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none; /* 只讓內部元素可點擊 */
+    z-index: var(--ui-overlay-z);
+}
+
+#ui-overlay .tower-card-bg {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--towerbar-height);
+    background: transparent;
+    pointer-events: none;
+}
+
+#tower-card-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    gap: 10px;
+    padding: 12px 16px;
+    justify-content: flex-start;
+    align-items: flex-end;
+    pointer-events: auto; /* 允許點擊 */
+}
+
+/* .tower-card 樣式已移至 tower-bar.css */
+
+

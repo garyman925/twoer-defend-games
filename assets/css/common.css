@@ -1,0 +1,68 @@
+/* 全局變數定義 */
+:root {
+  /* 顏色變數 */
+  --primary: #00ffff;
+  --secondary: #ffd93d;
+  --danger: #ff6b6b;
+  --dark: #1a1a2e;
+  --light: #ffffff;
+  
+  /* 層級變數 */
+  --z-base: 1;
+  --z-ui: 10;
+  --z-dialog: 100;
+  
+  /* 動畫變數 */
+  --transition-fast: 0.2s;
+  --transition-normal: 0.3s;
+  
+  /* 間距變數 */
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+}
+
+/* 全局重置 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 通用動畫 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* 通用類別 */
+.fade-in {
+  animation: fadeIn var(--transition-normal) ease-out;
+}
+
+.slide-in-right {
+  animation: slideInRight var(--transition-normal) ease-out;
+}
+
+.slide-in-left {
+  animation: slideInLeft var(--transition-normal) ease-out;
+}
+
+.scale-in {
+  animation: scaleIn var(--transition-normal) ease-out;
+}

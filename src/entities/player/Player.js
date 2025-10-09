@@ -15,7 +15,7 @@ export class Player extends Phaser.GameObjects.Container {
     this.health = GameConfig.PLAYER.HEALTH.MAX;
     this.maxHealth = GameConfig.PLAYER.HEALTH.MAX;
     this.isAlive = true;
-    this.lives = 3; // 玩家生命次數
+    // this.lives = 3; // ❌ 已移除：不再使用 lives 系統，改用 10 格血量系統
     this.money = GameConfig.RESOURCES.STARTING_MONEY; // 初始金錢
     
     // 武器相關
@@ -160,7 +160,12 @@ export class Player extends Phaser.GameObjects.Container {
     // 設置碰撞體 - 基於玩家精靈的縮放尺寸動態設置
     const collisionRadius = (this.playerSprite ? this.playerSprite.displayWidth : 106) * 0.4;
     this.body.setCircle(collisionRadius);
-    this.body.setImmovable(true);
+    
+    // ✅ 改為 false，避免碰撞後被"卡住"
+    this.body.setImmovable(false);
+    
+    // ✅ 添加邊界碰撞，防止玩家超出遊戲區域
+    this.body.setCollideWorldBounds(true);
   }
 
   /**
@@ -217,6 +222,20 @@ export class Player extends Phaser.GameObjects.Container {
    * 處理移動
    */
   handleMovement(time, delta) {
+    // ✅ 添加調試：檢查是否能接收輸入
+    const hasInput = this.keys.up || this.keys.down || this.keys.left || this.keys.right;
+    
+    if (hasInput) {
+      console.log('🎮 玩家輸入檢測:', {
+        up: this.keys.up,
+        down: this.keys.down,
+        left: this.keys.left,
+        right: this.keys.right,
+        isAlive: this.isAlive,
+        position: { x: this.x, y: this.y }
+      });
+    }
+    
     // 重置速度
     this.velocity.x = 0;
     this.velocity.y = 0;
@@ -241,9 +260,21 @@ export class Player extends Phaser.GameObjects.Container {
       this.velocity.y *= 0.707;
     }
     
+    // ✅ 添加調試：記錄位置更新
+    const oldX = this.x;
+    const oldY = this.y;
+    
     // 更新位置
     this.x += this.velocity.x * (delta / 1000);
     this.y += this.velocity.y * (delta / 1000);
+    
+    if (this.x !== oldX || this.y !== oldY) {
+      console.log('📍 玩家位置更新:', {
+        from: { x: oldX, y: oldY },
+        to: { x: this.x, y: this.y },
+        velocity: { x: this.velocity.x, y: this.velocity.y }
+      });
+    }
     
     // 檢查邊界
     this.checkBoundaries();
@@ -323,13 +354,28 @@ export class Player extends Phaser.GameObjects.Container {
    * 受到傷害
    */
   takeDamage(damage) {
-    if (!this.isAlive || this.isImmune) return false;
+    console.log('💔 takeDamage() 被調用！');
+    console.log('   damage:', damage);
+    console.log('   當前血量:', this.health);
+    console.log('   isAlive:', this.isAlive);
+    console.log('   isImmune:', this.isImmune);
     
-    this.health -= damage;
-    this.updateHealthBar();
+    if (!this.isAlive || this.isImmune) {
+      console.log('   ⚠️ 無法受傷（已死或無敵）');
+      return false;
+    }
     
-    // 設置無敵時間
+    // ✅ 立即設置無敵時間（在扣血之前，防止同一幀多次扣血）
+    console.log('   → 調用 setImmunity()...');
     this.setImmunity();
+    console.log('   ✓ setImmunity() 完成');
+    
+    // 扣除血量並確保不會是負數
+    this.health -= damage;
+    this.health = Math.max(0, this.health);
+    console.log('   ✓ 扣血後血量:', this.health);
+    
+    this.updateHealthBar();
     
     // 播放受傷效果
     this.playDamageEffect();
@@ -341,11 +387,13 @@ export class Player extends Phaser.GameObjects.Container {
       damage: damage
     });
     
-    // 檢查是否死亡
+    // 檢查是否死亡（血量歸零才死亡）
     if (this.health <= 0) {
+      console.log('   ☠️ 血量歸零，調用 die()');
       this.die();
     }
     
+    console.log('   ✓ takeDamage() 完成');
     return true;
   }
 
@@ -356,23 +404,22 @@ export class Player extends Phaser.GameObjects.Container {
     if (!this.isAlive) return;
     
     this.isAlive = false;
-    this.lives--;
     
-    console.log(`玩家死亡，剩餘生命: ${this.lives}`);
+    console.log('玩家死亡，血量歸零，遊戲結束');
     
-    if (this.lives > 0) {
-      // 還有生命，復活
-      this.respawn();
-    } else {
-      // 沒有生命了，播放死亡動畫
-      this.playDeathAnimation();
-    }
+    // 直接播放死亡動畫，不復活
+    this.playDeathAnimation();
+    
+    // 通知場景遊戲結束
+    this.eventEmitter.emit('playerDied');
   }
 
   /**
-   * 復活
+   * 復活（已停用 - 不再使用 lives 系統）
    */
+  /*
   respawn() {
+    // ❌ 已停用：不再需要復活功能，改用 10 格血量系統
     console.log('玩家復活');
     
     // 重置狀態
@@ -392,6 +439,7 @@ export class Player extends Phaser.GameObjects.Container {
     this.playerSprite.setVisible(true);
     this.damageFlash.setAlpha(0);
   }
+  */
 
   /**
    * 播放死亡動畫
@@ -443,16 +491,75 @@ export class Player extends Phaser.GameObjects.Container {
    * 設置無敵時間
    */
   setImmunity() {
+    console.log('🛡️ 設置無敵狀態！');
+    console.log('   this.scene:', this.scene ? '存在' : 'undefined');
+    console.log('   this.scene.time:', this.scene && this.scene.time ? '存在' : 'undefined');
+    console.log('   this.scene.time.now:', this.scene && this.scene.time ? this.scene.time.now : 'undefined');
+    
     this.isImmune = true;
-    this.immunityStartTime = this.scene.time.now;
+    
+    // ✅ 安全設置無敵開始時間
+    if (this.scene && this.scene.time && typeof this.scene.time.now === 'number') {
+      this.immunityStartTime = this.scene.time.now;
+      console.log('   ✓ 無敵開始時間:', this.immunityStartTime);
+    } else {
+      // 備用方案：使用 Date.now()
+      this.immunityStartTime = Date.now();
+      console.warn('   ⚠️ scene.time.now 不可用，使用 Date.now() 作為備用:', this.immunityStartTime);
+    }
+    
+    // ✅ 將玩家重新定位到畫面中間（避免被敵人包圍）
+    const { width, height } = this.scene.scale.gameSize;
+    this.x = width / 2;
+    this.y = height / 2;
+    
+    console.log('   ✓ 玩家重新定位到中心:', this.x, this.y);
+    
+    // ✅ 添加閃爍效果表示無敵狀態
+    if (this.scene && this.scene.tweens) {
+      this.scene.tweens.add({
+        targets: this,
+        alpha: 0.5,
+        duration: 100,
+        yoyo: true,
+        repeat: 10, // 閃爍 10 次（約 1 秒）
+        onComplete: () => {
+          this.alpha = 1; // 恢復不透明
+        }
+      });
+    }
   }
 
   /**
    * 更新無敵時間
    */
   updateImmunity(time) {
-    if (time.now - this.immunityStartTime >= this.immunityDuration) {
-      this.isImmune = false;
+    if (this.isImmune) {
+      // ✅ 添加安全檢查
+      if (!time || typeof time.now !== 'number' || typeof this.immunityStartTime !== 'number') {
+        console.warn('⚠️ 無敵時間數據無效:', {
+          'time': time ? '存在' : 'undefined',
+          'time.now': time ? time.now : 'undefined',
+          'immunityStartTime': this.immunityStartTime
+        });
+        // 如果數據無效，直接結束無敵狀態
+        this.isImmune = false;
+        console.log('   → 強制結束無敵狀態（數據無效）');
+        return;
+      }
+      
+      const elapsed = time.now - this.immunityStartTime;
+      console.log('⏱️ 無敵時間檢查:', {
+        isImmune: this.isImmune,
+        elapsed: elapsed.toFixed(0),
+        duration: this.immunityDuration,
+        remaining: (this.immunityDuration - elapsed).toFixed(0)
+      });
+      
+      if (elapsed >= this.immunityDuration) {
+        console.log('🛡️ 無敵狀態結束！經過時間:', elapsed.toFixed(0), 'ms');
+        this.isImmune = false;
+      }
     }
   }
 
@@ -460,6 +567,12 @@ export class Player extends Phaser.GameObjects.Container {
    * 播放受傷效果
    */
   playDamageEffect() {
+    // 檢查傷害閃光是否存在
+    if (!this.damageFlash) {
+      console.warn('⚠️ damageFlash 不存在，跳過傷害效果');
+      return;
+    }
+    
     // 傷害閃光
     this.damageFlash.setAlpha(0.5);
     this.scene.tweens.add({
@@ -469,10 +582,10 @@ export class Player extends Phaser.GameObjects.Container {
       ease: 'Power2'
     });
     
-    // 屏幕震動
-    if (this.scene.screenShake) {
-      this.scene.screenShake.shake(200, 0.01);
-    }
+    // ❌ 屏幕震動已移除
+    // if (this.scene.screenShake) {
+    //   this.scene.screenShake.shake(200, 0.01);
+    // }
   }
 
   /**

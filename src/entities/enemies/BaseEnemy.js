@@ -145,14 +145,8 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
       }
     }
     
-    // 創建血條背景 (調整位置適應圖片)
-    const healthBarY = -size - 12;
-    this.healthBarBg = this.scene.add.rectangle(0, healthBarY, 30, 4, 0x330000);
-    this.add(this.healthBarBg);
-    
-    // 創建血條
-    this.healthBar = this.scene.add.rectangle(0, healthBarY, 30, 4, 0xff0000);
-    this.add(this.healthBar);
+    // 建立血條
+    this.createHealthBar(size);
     
     // 創建敵人類型標識
     this.typeIndicator = this.scene.add.text(0, 0, this.enemyType[0].toUpperCase(), {
@@ -171,6 +165,17 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
     this.setDepth(50);
     
     console.log(`${this.enemyType}敵人視覺元素創建完成，位置: (${this.x}, ${this.y})`);
+  }
+
+  /**
+   * 建立血條元件
+   */
+  createHealthBar(size) {
+    const healthBarY = -size - 12;
+    this.healthBarBg = this.scene.add.rectangle(0, healthBarY, 30, 4, 0x330000);
+    this.add(this.healthBarBg);
+    this.healthBar = this.scene.add.rectangle(0, healthBarY, 30, 4, 0xff0000);
+    this.add(this.healthBar);
   }
 
   /**
@@ -208,7 +213,7 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
   showAttackRange(visible) {
     if (this.attackRangeIndicator) {
       this.attackRangeIndicator.setVisible(visible);
-      console.log(`🎯 ${this.enemyType}敵人攻擊範圍指示器: ${visible ? '顯示' : '隱藏'}`);
+      // console.log(`🎯 ${this.enemyType}敵人攻擊範圍指示器: ${visible ? '顯示' : '隱藏'}`);
     }
   }
 
@@ -349,7 +354,7 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
     this.targetType = bestTargetType;
     
     if (this.target) {
-      console.log(`🎯 ${this.enemyType}敵人選擇目標: ${this.targetType} (距離: ${bestDistance.toFixed(1)})`);
+      // console.log(`🎯 ${this.enemyType}敵人選擇目標: ${this.targetType} (距離: ${bestDistance.toFixed(1)})`);
       this.moveToTarget();
     }
   }
@@ -403,15 +408,15 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
    */
   meleeAttack() {
     if (this.targetType === 'tower') {
-      // 攻擊炮塔
+      // 攻擊炮塔（保持不變）
       this.target.takeDamage(this.damage);
-      console.log(`🗡️ ${this.enemyType}敵人近戰攻擊炮塔，造成 ${this.damage} 點傷害`);
+      // console.log(`🗡️ ${this.enemyType}敵人近戰攻擊炮塔，造成 ${this.damage} 點傷害`);
     } else if (this.targetType === 'player') {
-      // 攻擊玩家
-      if (this.scene.player) {
-        this.scene.player.takeDamage(this.damage);
-        console.log(`🗡️ ${this.enemyType}敵人近戰攻擊玩家，造成 ${this.damage} 點傷害`);
-      }
+      // ❌ 禁用近戰攻擊玩家（改用物理碰撞處理）
+      // if (this.scene.player) {
+      //   this.scene.player.takeDamage(this.damage);
+      // }
+      console.log('⚠️ 敵人近戰攻擊玩家已禁用，使用物理碰撞代替');
     }
   }
 
@@ -421,11 +426,17 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
   fireProjectile() {
     if (!this.target) return;
     
-    // 創建投射物
+    // ✅ 如果目標是玩家，不發射投射物（改用物理碰撞處理）
+    if (this.targetType === 'player' || this.target === this.scene.player) {
+      console.log('⚠️ 敵人遠程攻擊玩家已禁用，使用物理碰撞代替');
+      return;
+    }
+    
+    // 創建投射物（只對炮塔）
     const projectile = new EnemyProjectile(this.scene, this, this.target);
     this.projectiles.push(projectile);
     
-    console.log(`🏹 ${this.enemyType}敵人發射投射物攻擊 ${this.targetType}`);
+    // console.log(`🏹 ${this.enemyType}敵人發射投射物攻擊炮塔`);
   }
 
   /**
@@ -439,7 +450,7 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
     
     // 使用尋路系統計算智能路徑
     if (this.scene.pathfindingManager) {
-      console.log(`🛣️ ${this.enemyType}敵人開始智能尋路...`);
+      // console.log(`🛣️ ${this.enemyType}敵人開始智能尋路...`);
       try {
         const intelligentPath = this.scene.pathfindingManager.getPath(
           this.x, this.y,
@@ -448,8 +459,8 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
         
         if (intelligentPath && Array.isArray(intelligentPath) && intelligentPath.length > 0) {
           this.path = intelligentPath;
-          console.log(`✅ ${this.enemyType}敵人智能尋路成功: ${this.path.length}個路徑點`);
-          console.log(`📍 路徑詳情:`, this.path.map(p => `(${p.x}, ${p.y})`));
+          // console.log(`✅ ${this.enemyType}敵人智能尋路成功: ${this.path.length}個路徑點`);
+          // console.log(`📍 路徑詳情:`, this.path.map(p => `(${p.x}, ${p.y})`));
         } else {
           console.log(`⚠️ 智能尋路失敗，使用備用路徑`, intelligentPath);
           this.path = [
@@ -472,7 +483,7 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
         { x: playerPos.x, y: playerPos.y } // 目標：玩家位置
       ];
       
-      console.log(`${this.enemyType}敵人直線路徑: 從(${this.x}, ${this.y})到(${playerPos.x}, ${playerPos.y})`);
+      // console.log(`${this.enemyType}敵人直線路徑: 從(${this.x}, ${this.y})到(${playerPos.x}, ${playerPos.y})`);
     }
     
     this.pathIndex = 0;
@@ -780,9 +791,14 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
   }
 
   /**
-   * 攻擊玩家
+   * 攻擊玩家（已停用）
    */
   attackPlayer() {
+    // ❌ 禁用所有攻擊玩家的邏輯（改用物理碰撞處理）
+    console.log('⚠️ 敵人攻擊玩家已禁用，使用物理碰撞代替');
+    return;
+    
+    /* 以下代碼已停用
     if (!this.scene.player || !this.scene.player.isAlive) return;
     
     this.lastAttackTime = this.scene.time.now;
@@ -792,7 +808,7 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
     if (damageDealt) {
       this.stats.damageDealt += this.damage;
       
-      console.log(`${this.enemyType}敵人攻擊玩家，造成 ${this.damage} 點傷害`);
+      // console.log(`${this.enemyType}敵人攻擊玩家，造成 ${this.damage} 點傷害`);
       
       // 播放攻擊音效
       this.scene.playSound && this.scene.playSound('enemy_attack');
@@ -800,6 +816,7 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
       // 創建攻擊特效
       this.createAttackEffect();
     }
+    */
   }
 
   /**
@@ -836,7 +853,7 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
     this.health -= actualDamage;
     this.health = Math.max(0, this.health);
     
-    console.log(`${this.enemyType}敵人受到 ${actualDamage} 點${damageType}傷害，剩餘生命: ${this.health}`);
+    // console.log(`${this.enemyType}敵人受到 ${actualDamage} 點${damageType}傷害，剩餘生命: ${this.health}`);
     
     // 更新血條
     this.updateHealthBar();
@@ -865,6 +882,10 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
    * 更新血條
    */
   updateHealthBar() {
+    if (!this.healthBar) {
+      // 防呆：若血條尚未建立則直接跳出，避免崩潰
+      return;
+    }
     const healthPercentage = this.health / this.maxHealth;
     const maxWidth = 30;
     const currentWidth = maxWidth * healthPercentage;
@@ -964,7 +985,7 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
         break;
     }
     
-    console.log(`${this.enemyType}敵人受到${effectType}效果`);
+    // console.log(`${this.enemyType}敵人受到${effectType}效果`);
   }
 
   /**
@@ -990,7 +1011,7 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
         this.pathIndex = 0;
         this.setNextTarget();
         
-        console.log(`${this.enemyType}敵人重新尋路: ${this.path.length}個路徑點`);
+        // console.log(`${this.enemyType}敵人重新尋路: ${this.path.length}個路徑點`);
       }
     }
   }
@@ -1018,7 +1039,7 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
    * 到達目的地
    */
   reachDestination() {
-    console.log(`${this.enemyType}敵人到達玩家位置`);
+    // console.log(`${this.enemyType}敵人到達玩家位置`);
     
     // 立即攻擊玩家
     if (this.scene.player && this.scene.player.isAlive) {
@@ -1039,15 +1060,30 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
    * 敵人死亡
    */
   die() {
-    if (!this.isAlive) return;
+    console.log('🎯 die() 被調用！enemyType:', this.enemyType);
+    console.log('   this.isAlive:', this.isAlive);
+    console.log('   this.scene:', this.scene ? '存在' : 'undefined');
+    console.log('   this.body:', this.body ? '存在' : 'undefined');
+    
+    if (!this.isAlive) {
+      console.log('⚠️ 敵人已死（isAlive=false），跳過 die() 的剩餘邏輯');
+      console.log('   ❌ 這是問題！敵人被標記為已死但沒有執行完整的死亡流程');
+      return;
+    }
     
     this.isAlive = false;
     
-    console.log(`${this.enemyType}敵人死亡`);
+    console.log(`💀 ${this.enemyType}敵人死亡流程開始`);
+    console.log('   位置:', this.x, this.y);
     
-    // 停止移動
+    // ✅ 立即禁用物理體（避免與玩家持續碰撞導致卡住）
     if (this.body) {
+      console.log('   → 禁用物理體...');
       this.body.setVelocity(0, 0);
+      this.scene.physics.world.disable(this);
+      console.log('   ✓ 物理體已禁用');
+    } else {
+      console.log('   ⚠️ 沒有物理體');
     }
     
     // 播放死亡音效
@@ -1055,8 +1091,10 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
       this.scene.enhancedAudio.playSound('enemy_death');
     }
     
-    // 創建死亡特效
+    // 創建死亡特效（爆炸）
+    console.log('   → 創建死亡特效（爆炸）...');
     this.createDeathEffect();
+    console.log('   ✓ 死亡特效創建完成');
     
     // 給予玩家獎勵
     this.giveRewards();
@@ -1090,8 +1128,14 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
    * 創建死亡特效
    */
   createDeathEffect() {
+    console.log('💥 createDeathEffect() 開始執行');
+    console.log('   this.scene:', this.scene ? '存在' : 'undefined');
+    console.log('   this.scene.add:', this.scene && this.scene.add ? '存在' : 'undefined');
+    console.log('   位置:', this.x, this.y);
+    
     // 爆炸效果
     const explosion = this.scene.add.circle(this.x, this.y, 5, 0xffff00, 0.8);
+    console.log('   ✓ 爆炸圓形已創建:', explosion ? '成功' : '失敗');
     
     this.scene.tweens.add({
       targets: explosion,
@@ -1149,7 +1193,7 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
       console.warn('⚠️ GameManager不可用，無法給予獎勵');
     }
     
-    console.log(`💰 擊殺${this.enemyType}敵人獲得 ${actualReward} 金幣獎勵`);
+    // console.log(`💰 擊殺${this.enemyType}敵人獲得 ${actualReward} 金幣獎勵`);
   }
 
   /**
@@ -1270,7 +1314,7 @@ class EnemyProjectile extends Phaser.GameObjects.Container {
     this.body.setCircle(5);
     this.body.setVelocity(this.velocity.x, this.velocity.y);
     
-    console.log(`🏹 敵人投射物創建，目標: ${target.constructor.name}`);
+    // console.log(`🏹 敵人投射物創建，目標: ${target.constructor.name}`);
   }
 
   /**
@@ -1327,10 +1371,19 @@ class EnemyProjectile extends Phaser.GameObjects.Container {
   hitTarget() {
     if (!this.isActive) return;
     
+    this.isActive = false;
+    
     // 造成傷害
     if (this.target.takeDamage) {
-      this.target.takeDamage(this.damage);
-      console.log(`💥 敵人投射物擊中目標，造成 ${this.damage} 點傷害`);
+      // ✅ 檢查目標是否為玩家
+      if (this.target === this.scene.player) {
+        // ❌ 禁用投射物攻擊玩家（改用物理碰撞處理）
+        console.log('⚠️ 敵人投射物擊中玩家，但傷害已禁用（使用物理碰撞代替）');
+      } else {
+        // 攻擊炮塔（保持不變）
+        this.target.takeDamage(this.damage);
+        // console.log(`💥 敵人投射物擊中炮塔，造成 ${this.damage} 點傷害`);
+      }
     }
     
     // 創建擊中效果

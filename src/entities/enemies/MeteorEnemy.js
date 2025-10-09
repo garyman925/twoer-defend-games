@@ -32,8 +32,12 @@ export class MeteorEnemy extends BaseEnemy {
     this.sprite.setScale(0.2); // 縮小到30%
     this.sprite.setOrigin(0.5, 0.5);
     this.add(this.sprite);
-    
 
+    // 建立血條（沿用基底方法，確保 Meteor 也有血條）
+    const size = this.getEnemySize();
+    if (typeof this.createHealthBar === 'function') {
+      this.createHealthBar(size);
+    }
   }
   
   /**
@@ -74,13 +78,13 @@ export class MeteorEnemy extends BaseEnemy {
   }
   
   /**
-   * 碰撞檢測
+   * 碰撞檢測（已停用）
    */
   onCollision(other) {
     if (other === this.scene.player) {
-      // 對玩家造成傷害
-      this.scene.player.takeDamage(this.damage);
-      console.log('🌠 Meteor碰撞玩家，造成傷害:', this.damage);
+      // ❌ 禁用 Meteor 碰撞玩家的傷害（改用統一的物理碰撞處理）
+      console.log('⚠️ Meteor 碰撞玩家傷害已禁用，使用 GameplayScene.onEnemyHitPlayer 代替');
+      // this.scene.player.takeDamage(this.damage);
     }
   }
 }
