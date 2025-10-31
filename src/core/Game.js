@@ -81,7 +81,7 @@ class TowerDefenseGame {
       width: GameConfig.GAME_WIDTH || 1024,
       height: GameConfig.GAME_HEIGHT || 768,
       parent: 'game-container',
-      backgroundColor: '#1a1a2e',
+      backgroundColor: 'transparent',
       
       // 響應式縮放配置
       scale: {
@@ -356,7 +356,10 @@ class TowerDefenseGame {
     // 觸發當前場景的響應式更新
     const currentScene = this.game.scene.getScenes(true)[0];
     if (currentScene && typeof currentScene.onResize === 'function') {
-      currentScene.onResize(newWidth, newHeight);
+      // 統一傳入物件參數，避免型別不一致
+      const w = this.game.scale?.width ?? newWidth;
+      const h = this.game.scale?.height ?? newHeight;
+      currentScene.onResize({ width: w, height: h });
     }
   }
 

@@ -14,6 +14,9 @@ export class GameplayUI {
     this.moneyDisplay = null;
     this.waveDisplay = null;
     this.scoreDisplay = null;
+    
+    // 動畫控制
+    this.scoreAnimationFrame = null;
   }
 
   /**
@@ -73,7 +76,6 @@ export class GameplayUI {
     this.moneyDisplay = document.createElement('div');
     this.moneyDisplay.className = 'money-display';
     this.moneyDisplay.innerHTML = `
-      <span class="icon">💰</span>
       <span class="value" data-money="500">500</span>
     `;
     
@@ -81,24 +83,60 @@ export class GameplayUI {
     this.waveDisplay = document.createElement('div');
     this.waveDisplay.className = 'wave-display';
     this.waveDisplay.innerHTML = `
-      <span class="icon">🌊</span>
-      <span class="value" data-wave="0">波次 0</span>
+      <span class="value" data-wave="0">wave 0</span>
     `;
     
     // 分數顯示
     this.scoreDisplay = document.createElement('div');
     this.scoreDisplay.className = 'score-display';
     this.scoreDisplay.innerHTML = `
-      <span class="icon">⭐</span>
       <span class="value" data-score="0">0</span>
     `;
     
+    // 暫停按鈕（Debug用）
+    this.pauseButton = document.createElement('button');
+    this.pauseButton.className = 'pause-button';
+    this.pauseButton.innerHTML = '⏸️ 暫停';
+    this.pauseButton.title = '暫停/恢復遊戲 (或按ESC鍵)';
+    this.pauseButton.addEventListener('click', () => {
+      if (this.scene && typeof this.scene.togglePause === 'function') {
+        this.scene.togglePause();
+        // 更新按鈕文字
+        if (this.scene.isPaused) {
+          this.pauseButton.innerHTML = '▶️ 恢復';
+        } else {
+          this.pauseButton.innerHTML = '⏸️ 暫停';
+        }
+      }
+    });
+    
+    // 創建右側元素容器
+    const rightGroup = document.createElement('div');
+    rightGroup.className = 'status-bar-right';
+    rightGroup.appendChild(this.waveDisplay);
+    rightGroup.appendChild(this.pauseButton);
+    
+    // 按順序加入：左側(生命值) -> 中間(分數) -> 右側(波次+暫停)
     this.statusBar.appendChild(this.healthDisplay);
-    this.statusBar.appendChild(this.moneyDisplay);
-    this.statusBar.appendChild(this.waveDisplay);
     this.statusBar.appendChild(this.scoreDisplay);
+    this.statusBar.appendChild(rightGroup);
     
     this.container.appendChild(this.statusBar);
+  }
+
+  /**
+   * 將金錢顯示移到塔卡片列左側（與建造最相關）
+   */
+  mountMoneyToTowerBar() {
+    if (!this.moneyDisplay) return;
+    const towerBar = document.getElementById('tower-card-bar');
+    if (!towerBar) return;
+    // 若還在狀態欄，先移除
+    if (this.moneyDisplay.parentNode) {
+      this.moneyDisplay.parentNode.removeChild(this.moneyDisplay);
+    }
+    // 插入為塔列的第一個元素
+    towerBar.insertBefore(this.moneyDisplay, towerBar.firstChild);
   }
 
   /**
@@ -192,7 +230,7 @@ export class GameplayUI {
   updateWave(wave, enemies) {
     const valueEl = this.waveDisplay.querySelector('.value');
     if (valueEl) {
-      valueEl.textContent = `波次 ${wave}`;
+      valueEl.textContent = `wave ${wave}`;
       valueEl.setAttribute('data-wave', wave);
       
       // 添加動畫效果
@@ -202,17 +240,107 @@ export class GameplayUI {
   }
 
   /**
-   * 更新分數顯示
+   * 更新分數顯示（帶數字計數動畫）
    */
   updateScore(score) {
     const valueEl = this.scoreDisplay.querySelector('.value');
-    if (valueEl) {
-      valueEl.textContent = score;
-      valueEl.setAttribute('data-score', score);
+    if (!valueEl) return;
+    
+    const currentScore = parseInt(valueEl.getAttribute('data-score')) || 0;
+    const targetScore = score;
+    
+    // 如果目標分數與當前相同，直接返回
+    if (currentScore === targetScore) return;
+    
+    // 如果已有動畫在進行，先清除
+    if (this.scoreAnimationFrame) {
+      cancelAnimationFrame(this.scoreAnimationFrame);
+    }
+    
+    // 添加視覺動畫效果
+    valueEl.classList.add('value-change');
+    
+    // 數字計數動畫
+    this.animateScoreCount(valueEl, currentScore, targetScore);
+  }
+
+  /**
+   * 數字計數動畫
+   */
+  animateScoreCount(element, startValue, endValue) {
+    const duration = 600; // 動畫持續時間（毫秒）
+    const startTime = performance.now();
+    const difference = endValue - startValue;
+    let hasShownIncrease = false; // 標記是否已顯示增量提示
+    
+    const updateScore = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
       
-      // 添加動畫效果
-      valueEl.classList.add('value-change');
-      setTimeout(() => valueEl.classList.remove('value-change'), 300);
+      // 使用緩動函數（ease-out）
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      const currentValue = Math.floor(startValue + (difference * easeOut));
+      
+      element.textContent = currentValue;
+      element.setAttribute('data-score', currentValue);
+      
+      // 當動畫進度達到 80% 時，顯示增量提示（只顯示一次）
+      if (progress >= 0.8 && !hasShownIncrease && difference > 0) {
+        hasShownIncrease = true;
+        this.showScoreIncrease(element, difference);
+      }
+      
+      if (progress < 1) {
+        this.scoreAnimationFrame = requestAnimationFrame(updateScore);
+      } else {
+        // 確保最終值正確
+        element.textContent = endValue;
+        element.setAttribute('data-score', endValue);
+        
+        // 移除動畫效果
+        setTimeout(() => {
+          element.classList.remove('value-change');
+        }, 300);
+        
+        this.scoreAnimationFrame = null;
+      }
+    };
+    
+    this.scoreAnimationFrame = requestAnimationFrame(updateScore);
+  }
+
+  /**
+   * 顯示分數增加提示
+   */
+  showScoreIncrease(scoreElement, increase) {
+    // 創建增量文字元素
+    const increaseEl = document.createElement('span');
+    increaseEl.className = 'score-increase';
+    increaseEl.textContent = `+${increase}`;
+    
+    // 添加到分數顯示容器
+    const container = scoreElement.parentElement;
+    if (container) {
+      // 確保容器是相對定位
+      const containerStyle = window.getComputedStyle(container);
+      if (containerStyle.position === 'static') {
+        container.style.position = 'relative';
+      }
+      
+      container.appendChild(increaseEl);
+      
+      // 淡出動畫
+      setTimeout(() => {
+        increaseEl.style.transition = 'opacity 0.5s ease-out';
+        increaseEl.style.opacity = '0';
+        
+        // 移除元素
+        setTimeout(() => {
+          if (increaseEl.parentNode) {
+            increaseEl.parentNode.removeChild(increaseEl);
+          }
+        }, 500);
+      }, 1500); // 顯示 1.5 秒後開始淡出
     }
   }
 
@@ -260,6 +388,12 @@ export class GameplayUI {
    * 清理 UI
    */
   destroy() {
+    // 清除動畫
+    if (this.scoreAnimationFrame) {
+      cancelAnimationFrame(this.scoreAnimationFrame);
+      this.scoreAnimationFrame = null;
+    }
+    
     // 移除遊戲場景背景類
     document.body.classList.remove('gameplay-scene');
     

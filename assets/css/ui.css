@@ -4,8 +4,6 @@
     --towerbar-height: 120px;
     --towerbar-bg: rgba(0,0,0,.8);
     --towerbar-border: #00ffff;
-    --towercard-size-w: 80px;
-    --towercard-size-h: 60px;
     --towercard-bg: #222;
     --towercard-fg: #fff;
     --towercard-accent: #ffd93d;
@@ -40,6 +38,11 @@
     justify-content: flex-start;
     align-items: flex-end;
     pointer-events: auto; /* 允許點擊 */
+}
+
+/* 將金錢顯示嵌入塔列左側時的間距 */
+#tower-card-bar .money-display {
+  margin-right: 12px;
 }
 
 /* .tower-card 樣式已移至 tower-bar.css */

@@ -234,28 +234,38 @@ export class GameplayScene extends BaseScene {
    * 創建遊戲背景
    */
   createGameBackground(width, height) {
-    // 創建太空背景圖片
+    // 創建太空背景圖片（固定在鏡頭上）
     this.background = this.add.image(
-      this.scale.width / 2, 
-      this.scale.height / 2, 
+      width / 2,
+      height / 2,
       'space-bg'
     );
-    
-    // 縮放背景圖片以填滿整個螢幕
-    const scaleX = this.scale.width / this.background.width;
-    const scaleY = this.scale.height / this.background.height;
-    const scale = Math.max(scaleX, scaleY);
-    
-    this.background.setScale(scale);
+
+    // 讓背景不跟隨世界捲動，永遠貼齊可視區域
+    this.background.setScrollFactor(0);
+    this.background.setDisplaySize(width, height);
     this.background.setDepth(-100);
-    
-    // 設置遊戲邊界
+
+    // 設置遊戲邊界（若用於碰撞可保留；視覺背景已由 display size 覆蓋）
     this.gameBounds = {
       left: 0,
-      right: this.scale.width,
+      right: width,
       top: 0,
-      bottom: this.scale.height
+      bottom: height
     };
+  }
+
+  /**
+   * 重新佈局：背景隨可視區域更新
+   */
+  onResize(gameSize) {
+    super.onResize(gameSize);
+    const w = gameSize?.width ?? this.scale.width;
+    const h = gameSize?.height ?? this.scale.height;
+    if (this.background) {
+      this.background.setPosition(w / 2, h / 2);
+      this.background.setDisplaySize(w, h);
+    }
   }
 
   /**
@@ -356,6 +366,11 @@ export class GameplayScene extends BaseScene {
     // 創建塔卡片選擇UI（底部，改為 DOM 疊加版）
     this.towerCardUI = new TowerCardOverlay(this);
     this.towerCardUI.create();
+
+    // 將金錢顯示移到塔列左側
+    if (this.gameplayUI && typeof this.gameplayUI.mountMoneyToTowerBar === 'function') {
+      this.gameplayUI.mountMoneyToTowerBar();
+    }
 
     // 初始化卡片可用性（以當前金錢）
     const initMoney = this.gameManager ? this.gameManager.playerData.money : 500;
@@ -924,8 +939,11 @@ export class GameplayScene extends BaseScene {
     // 監聽塔選擇事件
     this.events.on('tower:selected', this.onTowerSelected, this);
     
-    // 監聽敵人死亡事件
+    // 監聽敵人死亡事件（兩種事件名稱都監聽）
     this.events.on('enemy:died', this.onEnemyDied, this);
+    this.events.on('enemyKilled', (data) => {
+      this.onEnemyDied({ enemy: data.enemy, reward: data.reward });
+    });
     
     // 監聽玩家受傷事件
     this.events.on('player:damaged', this.onPlayerDamaged, this);
@@ -955,12 +973,24 @@ export class GameplayScene extends BaseScene {
   onEnemyDied(data) {
     const { enemy, reward } = data;
     
-    // 更新金錢
-    this.gameManager.addMoney(reward);
+    // 通過 GameManager 處理敵人擊殺（會計算金錢和分數）
+    if (this.gameManager && typeof this.gameManager.enemyKilled === 'function') {
+      this.gameManager.enemyKilled(enemy);
+    } else {
+      // 備用方案：直接更新金錢
+      if (reward) {
+        this.gameManager.addMoney(reward);
+      }
+    }
     
     // 更新 UI
     this.events.emit('money:update', {
       money: this.gameManager.playerData.money
+    });
+    
+    // 更新分數並發送事件（GameManager.enemyKilled 已經計算了分數）
+    this.events.emit('score:update', {
+      score: this.gameManager.playerData.score
     });
   }
 

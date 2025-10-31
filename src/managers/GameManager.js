@@ -25,6 +25,7 @@ export class GameManager {
       money: GameConfig.PLAYER.STARTING_MONEY || 500,
       health: GameConfig.PLAYER.HEALTH.MAX || 100,
       maxHealth: GameConfig.PLAYER.HEALTH.MAX || 100,
+      score: 0, // 初始分數為0
       
       // 玩家位置
       position: {
@@ -392,16 +393,47 @@ export class GameManager {
       this.addMoney(enemy.reward);
     }
     
-    console.log(`敵人被擊殺，剩餘敵人: ${this.gameData.enemiesAlive}`);
+    // 計算分數（簡單方式：基礎100分 × 敵人種類倍數）
+    let scoreGain = 0;
+    if (enemy.score !== undefined && enemy.score !== null) {
+      // 如果敵人有設定 score，直接使用（未來擴展用）
+      scoreGain = enemy.score;
+    } else {
+      // 按照敵人種類決定分數倍數
+      const scoreMultiplier = this.getEnemyScoreMultiplier(enemy.enemyType || enemy.type || 'basic');
+      scoreGain = 100 * scoreMultiplier;
+    }
+    
+    this.playerData.score += scoreGain;
+    
+    const enemyType = enemy.enemyType || enemy.type || 'basic';
+    console.log(`敵人被擊殺（種類: ${enemyType}），獲得 ${scoreGain} 分，總分: ${this.playerData.score}`);
     
     // 發送敵人死亡事件
     this.eventEmitter.emit('enemyKilled', {
       enemy: enemy,
-      totalKilled: this.playerData.stats.enemiesKilled
+      totalKilled: this.playerData.stats.enemiesKilled,
+      score: this.playerData.score,
+      scoreGain: scoreGain
     });
     
     // 檢查波次是否完成
     this.checkWaveComplete();
+  }
+
+  /**
+   * 根據敵人種類取得分數倍數
+   */
+  getEnemyScoreMultiplier(enemyType) {
+    const scoreMultipliers = {
+      'basic': 1,    // 基礎敵人：100分
+      'fast': 2,     // 快速敵人：200分
+      'tank': 3,     // 坦克敵人：300分
+      'flying': 2,   // 飛行敵人：200分
+      'boss': 10     // Boss敵人：1000分
+    };
+    
+    return scoreMultipliers[enemyType] || 1; // 預設為1（100分）
   }
 
   /**

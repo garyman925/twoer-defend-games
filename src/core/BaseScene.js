@@ -39,7 +39,7 @@ export class BaseScene extends Phaser.Scene {
   initializeCamera() {
     const { width, height } = this.scale.gameSize;
     this.cameras.main.setViewport(0, 0, width, height);
-    this.cameras.main.setBackgroundColor('#000000');
+    this.cameras.main.setBackgroundColor();
   }
 
   /**
@@ -54,8 +54,20 @@ export class BaseScene extends Phaser.Scene {
    * 視窗大小改變處理
    */
   onResize(gameSize) {
-    const width = gameSize.width;
-    const height = gameSize.height;
+    let width;
+    let height;
+    // 兼容兩種呼叫方式：onResize({ width, height }) 與 onResize(width, height)
+    if (typeof gameSize === 'number') {
+      width = gameSize;
+      height = arguments[1];
+    } else if (gameSize && typeof gameSize.width === 'number' && typeof gameSize.height === 'number') {
+      width = gameSize.width;
+      height = gameSize.height;
+    } else {
+      // 從 scale 讀取當前尺寸作為保底
+      width = this.scale?.width ?? this.game?.scale?.width ?? 1024;
+      height = this.scale?.height ?? this.game?.scale?.height ?? 768;
+    }
     
     // 確保相機已初始化
     if (!this.cameras || !this.cameras.main) {

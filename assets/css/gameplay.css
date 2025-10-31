@@ -19,68 +19,6 @@ body.gameplay-scene {
   z-index: var(--z-ui, 100);
 }
 
-
-/* 狀態顯示項目 */
-.money-display,
-.wave-display,
-.score-display {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  background: rgba(0, 0, 0, 0.8);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  font-size: 18px;
-  font-weight: bold;
-  color: white;
-  transition: all 0.2s;
-  min-width: 140px;
-}
-
-.money-display {
-  border-color: #ffd93d;
-  color: #ffd93d;
-}
-
-.wave-display {
-  border-color: #00ffff;
-  color: #00ffff;
-}
-
-.score-display {
-  border-color: #ffdd57;
-  color: #ffdd57;
-}
-
-/* 圖標和數值 */
-.icon {
-  font-size: 22px;
-  line-height: 1;
-}
-
-.value {
-  font-family: 'Arial', sans-serif;
-  font-size: 18px;
-  transition: transform 0.2s;
-}
-
-.value.value-change {
-  animation: value-pop 0.3s ease-out;
-}
-
-@keyframes value-pop {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
 /* 遊戲狀態顯示 */
 .game-status {
   position: absolute;
