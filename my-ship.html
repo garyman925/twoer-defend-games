@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的戰機 - 升級系統</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Squada+One&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 頂部導航 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #00ffff;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #00ffff;
+            font-size: 2rem;
+            font-family: 'Squada One', cursive;
+        }
+
+        .back-btn {
+            padding: 12px 24px;
+            background: linear-gradient(0deg, #000000c4 0%, #009fb991 100%);
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 0 0 4px #ffffff36;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        /* 玩家狀態面板 */
+        .player-stats {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #009fb9;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(0, 159, 185, 0.1);
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            color: #00ffff;
+            font-weight: bold;
+        }
+
+        .stat-value {
+            color: #ffff00;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* 升級區域 */
+        .upgrade-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            color: #00ffff;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #009fb9;
+        }
+
+        .upgrade-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .upgrade-card {
+            background: rgba(0, 159, 185, 0.1);
+            border: 2px solid #009fb9;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upgrade-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.3), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .upgrade-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 255, 255, 0.2);
+        }
+
+        .upgrade-card:hover::before {
+            opacity: 1;
+        }
+
+        .upgrade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .upgrade-name {
+            font-size: 1.3rem;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .upgrade-level {
+            background: #009fb9;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .upgrade-stats {
+            margin: 16px 0;
+        }
+
+        .upgrade-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 159, 185, 0.3);
+        }
+
+        .upgrade-stat:last-child {
+            border-bottom: none;
+        }
+
+        .current-value {
+            color: #ffffff;
+        }
+
+        .next-value {
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .upgrade-progress {
+            margin: 16px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ffff, #009fb9);
+            transition: width 0.3s ease;
+        }
+
+        .upgrade-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(0deg, #000000c4 0%, #009fb991 100%);
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 0 0 2px #ffffff36;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+        }
+
+        .upgrade-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3);
+        }
+
+        .upgrade-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .upgrade-cost {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+        }
+
+        .cost-icon {
+            color: #ffff00;
+        }
+
+        /* 戰機預覽區 */
+        .ship-preview {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #009fb9;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .ship-image {
+            max-width: 300px;
+            margin: 0 auto;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.5));
+        }
+
+        .ship-name {
+            font-size: 2rem;
+            color: #00ffff;
+            margin-top: 20px;
+            font-family: 'Squada One', cursive;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .upgrade-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .player-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 頂部導航 -->
+        <div class="header">
+            <h1>🚀 我的戰機</h1>
+            <button class="back-btn" onclick="window.close()">← 返回遊戲</button>
+        </div>
+
+        <!-- 戰機預覽 -->
+        <div class="ship-preview">
+            <img src="assets/sprites/player/blue/blue-ship.png" alt="我的戰機" class="ship-image" style="width: 200px;" onerror="this.style.display='none'">
+            <div class="ship-name">藍色閃電戰機</div>
+        </div>
+
+        <!-- 玩家狀態 -->
+        <div class="player-stats">
+            <div class="stat-item">
+                <span class="stat-label">💰 金幣</span>
+                <span class="stat-value" id="player-money">5000</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">⭐ 總等級</span>
+                <span class="stat-value" id="total-level">12</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">🏆 勝場</span>
+                <span class="stat-value" id="wins">25</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">💀 擊殺數</span>
+                <span class="stat-value" id="kills">1547</span>
+            </div>
+        </div>
+
+        <!-- 升級區域 -->
+        <div class="upgrade-section">
+            <h2 class="section-title">⚡ 戰機屬性升級</h2>
+            <div class="upgrade-grid">
+                <!-- 生命值升級卡 -->
+                <div class="upgrade-card">
+                    <div class="upgrade-header">
+                        <span class="upgrade-name">❤️ 生命值</span>
+                        <span class="upgrade-level">Lv.3</span>
+                    </div>
+                    <div class="upgrade-stats">
+                        <div class="upgrade-stat">
+                            <span>當前值</span>
+                            <span class="current-value">150 HP</span>
+                        </div>
+                        <div class="upgrade-stat">
+                            <span>升級後</span>
+                            <span class="next-value">+30 → 180 HP</span>
+                        </div>
+                    </div>
+                    <div class="upgrade-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                    <button class="upgrade-btn">
+                        <span class="upgrade-cost">
+                            <span class="cost-icon">💰</span>
+                            <span>300 金幣</span>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- 攻擊力升級卡 -->
+                <div class="upgrade-card">
+                    <div class="upgrade-header">
+                        <span class="upgrade-name">⚔️ 攻擊力</span>
+                        <span class="upgrade-level">Lv.4</span>
+                    </div>
+                    <div class="upgrade-stats">
+                        <div class="upgrade-stat">
+                            <span>當前值</span>
+                            <span class="current-value">25 DMG</span>
+                        </div>
+                        <div class="upgrade-stat">
+                            <span>升級後</span>
+                            <span class="next-value">+8 → 33 DMG</span>
+                        </div>
+                    </div>
+                    <div class="upgrade-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 80%;"></div>
+                        </div>
+                    </div>
+                    <button class="upgrade-btn">
+                        <span class="upgrade-cost">
+                            <span class="cost-icon">💰</span>
+                            <span>450 金幣</span>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- 射速升級卡 -->
+                <div class="upgrade-card">
+                    <div class="upgrade-header">
+                        <span class="upgrade-name">🔫 射速</span>
+                        <span class="upgrade-level">Lv.2</span>
+                    </div>
+                    <div class="upgrade-stats">
+                        <div class="upgrade-stat">
+                            <span>當前值</span>
+                            <span class="current-value">5 發/秒</span>
+                        </div>
+                        <div class="upgrade-stat">
+                            <span>升級後</span>
+                            <span class="next-value">+1 → 6 發/秒</span>
+                        </div>
+                    </div>
+                    <div class="upgrade-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 40%;"></div>
+                        </div>
+                    </div>
+                    <button class="upgrade-btn">
+                        <span class="upgrade-cost">
+                            <span class="cost-icon">💰</span>
+                            <span>400 金幣</span>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- 移動速度升級卡 -->
+                <div class="upgrade-card">
+                    <div class="upgrade-header">
+                        <span class="upgrade-name">🚀 移動速度</span>
+                        <span class="upgrade-level">Lv.3</span>
+                    </div>
+                    <div class="upgrade-stats">
+                        <div class="upgrade-stat">
+                            <span>當前值</span>
+                            <span class="current-value">300 像素/秒</span>
+                        </div>
+                        <div class="upgrade-stat">
+                            <span>升級後</span>
+                            <span class="next-value">+50 → 350 像素/秒</span>
+                        </div>
+                    </div>
+                    <div class="upgrade-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                    <button class="upgrade-btn">
+                        <span class="upgrade-cost">
+                            <span class="cost-icon">💰</span>
+                            <span>350 金幣</span>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- 護盾升級卡 -->
+                <div class="upgrade-card">
+                    <div class="upgrade-header">
+                        <span class="upgrade-name">🛡️ 護盾</span>
+                        <span class="upgrade-level">Lv.1</span>
+                    </div>
+                    <div class="upgrade-stats">
+                        <div class="upgrade-stat">
+                            <span>當前值</span>
+                            <span class="current-value">50 HP</span>
+                        </div>
+                        <div class="upgrade-stat">
+                            <span>升級後</span>
+                            <span class="next-value">+25 → 75 HP</span>
+                        </div>
+                    </div>
+                    <div class="upgrade-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 20%;"></div>
+                        </div>
+                    </div>
+                    <button class="upgrade-btn">
+                        <span class="upgrade-cost">
+                            <span class="cost-icon">💰</span>
+                            <span>500 金幣</span>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- 暴擊率升級卡 -->
+                <div class="upgrade-card">
+                    <div class="upgrade-header">
+                        <span class="upgrade-name">💥 暴擊率</span>
+                        <span class="upgrade-level">Lv.2</span>
+                    </div>
+                    <div class="upgrade-stats">
+                        <div class="upgrade-stat">
+                            <span>當前值</span>
+                            <span class="current-value">10%</span>
+                        </div>
+                        <div class="upgrade-stat">
+                            <span>升級後</span>
+                            <span class="next-value">+5% → 15%</span>
+                        </div>
+                    </div>
+                    <div class="upgrade-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 40%;"></div>
+                        </div>
+                    </div>
+                    <button class="upgrade-btn" disabled>
+                        <span class="upgrade-cost">
+                            <span class="cost-icon">💰</span>
+                            <span>8000 金幣（金幣不足）</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 簡單的互動效果
+        document.querySelectorAll('.upgrade-btn:not(:disabled)').forEach(btn => {
+            btn.addEventListener('click', function() {
+                alert('升級功能開發中！\n\n未來將與遊戲資料連動，實現真正的升級功能。');
+            });
+        });
+
+        // 模擬從遊戲讀取數據（未來實現）
+        function loadPlayerData() {
+            // 這裡未來可以從 localStorage 或後端 API 讀取玩家數據
+            const savedData = localStorage.getItem('playerData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('player-money').textContent = data.money || 5000;
+                document.getElementById('total-level').textContent = data.level || 12;
+                document.getElementById('wins').textContent = data.wins || 25;
+                document.getElementById('kills').textContent = data.kills || 1547;
+            }
+        }
+
+        // 頁面載入時讀取數據
+        window.addEventListener('load', loadPlayerData);
+    </script>
+</body>
+</html>
+
+
+
+

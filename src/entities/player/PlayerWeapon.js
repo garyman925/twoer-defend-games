@@ -455,12 +455,12 @@ class PlayerProjectile extends Phaser.GameObjects.Container {
     this.x += this.velocity.x * (delta / 1000);
     this.y += this.velocity.y * (delta / 1000);
     
-    // 檢查邊界
-    const { width, height } = this.scene.scale.gameSize;
-    if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
-      this.deactivate();
-      return;
-    }
+    // ✅ 移除邊界檢查，支援無限世界飛行
+    // const { width, height } = this.scene.scale.gameSize;
+    // if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+    //   this.deactivate();
+    //   return;
+    // }
     
     // 導向更新
     if (this.config.homing) {

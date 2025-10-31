@@ -29,7 +29,7 @@ export const GameConfig = {
   
   // 響應式設計設置
   RESPONSIVE: {
-    ENABLED: true,
+    ENABLED: false, // 禁用響應式縮放，固定遊戲尺寸
     MIN_WIDTH: 1024,
     MIN_HEIGHT: 768, // 4:3 比例的最小高度
     MAX_WIDTH: 2560,  // 增加到你的螢幕寬度

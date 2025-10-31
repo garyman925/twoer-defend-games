@@ -164,8 +164,10 @@ export class Player extends Phaser.GameObjects.Container {
     // ✅ 改為 false，避免碰撞後被"卡住"
     this.body.setImmovable(false);
     
-    // ✅ 添加邊界碰撞，防止玩家超出遊戲區域
-    this.body.setCollideWorldBounds(true);
+    // ❌ 移除邊界碰撞限制（無邊界地圖）
+    // this.body.setCollideWorldBounds(true);
+    
+    console.log('🎮 玩家物理體設置完成（無邊界模式）');
   }
 
   /**
@@ -276,8 +278,8 @@ export class Player extends Phaser.GameObjects.Container {
       });
     }
     
-    // 檢查邊界
-    this.checkBoundaries();
+    // ❌ 移除邊界檢查（無邊界地圖）
+    // this.checkBoundaries();
   }
 
   /**

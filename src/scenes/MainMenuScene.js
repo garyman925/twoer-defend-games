@@ -68,6 +68,26 @@ export class MainMenuScene extends BaseScene {
   }
 
   /**
+   * 打開我的戰機
+   */
+  openMyShip() {
+    console.log('打開我的戰機');
+    
+    // 在新分頁打開 HTML 頁面
+    window.open('my-ship.html', '_blank');
+  }
+
+  /**
+   * 打開排行榜
+   */
+  openLeaderboard() {
+    console.log('打開排行榜');
+    
+    // 在新分頁打開 HTML 頁面
+    window.open('leaderboard.html', '_blank');
+  }
+
+  /**
    * 清理場景
    */
   cleanupScene() {

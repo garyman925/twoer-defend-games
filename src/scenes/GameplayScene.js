@@ -324,6 +324,17 @@ export class GameplayScene extends BaseScene {
     
     this.player = new Player(this, playerX, playerY);
     
+    // ✅ 設置鏡頭追蹤玩家（無邊界地圖模式）
+    this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+    
+    // ✅ 設置無限的鏡頭邊界
+    this.cameras.main.setBounds(
+      -10000, -10000,  // 左上角
+      20000, 20000     // 右下角（10000 x 10000 的大地圖）
+    );
+    
+    console.log('📷 鏡頭追蹤玩家已啟用（無邊界模式）');
+    
     // 設置玩家事件監聽器
     this.player.eventEmitter.on('playerDied', this.onPlayerDied, this);
     this.player.eventEmitter.on('playerDamaged', this.onPlayerDamaged, this);

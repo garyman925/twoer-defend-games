@@ -34,9 +34,19 @@ export class MenuUI {
         class: 'primary'
       },
       { 
+        text: '我的戰機',
+        action: () => this.scene.openMyShip(),
+        class: 'secondary'
+      },
+      { 
         text: '商店',
         action: () => this.scene.openShop(),
         class: 'secondary'
+      },
+      { 
+        text: '排行榜',
+        action: () => this.scene.openLeaderboard(),
+        class: ''
       },
       { 
         text: '說明',

@@ -23,8 +23,8 @@
   inset: 0;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-end;
+  justify-content: center;  /* 改為 center，垂直置中 */
+  align-items: center;       /* 改為 center，水平置中 */
   padding: var(--spacing-lg);
   pointer-events: none;
   z-index: var(--z-ui);
@@ -36,16 +36,16 @@
   flex-direction: column;
   gap: var(--spacing-lg);
   pointer-events: auto;
-  margin-bottom: var(--spacing-lg);
 }
 
 /* 選單按鈕 */
 .menu-button {
   width: 200px;
   padding: var(--spacing-md);
-  border: 2px solid var(--primary);
+  border: none;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.6);
+  background: linear-gradient(0deg, #000000c4 0%, #009fb991 100%);
+  box-shadow: 0 0 0 4px #ffffff36;
   color: var(--light);
   font-size: 1.2rem;
   font-weight: bold;
@@ -54,13 +54,13 @@
 }
 
 .menu-button:hover {
-  transform: translateX(-10px);
+  transform: translateY(-10px);
   background: rgba(0, 255, 255, 0.2);
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
 }
 
 .menu-button:active {
-  transform: translateX(-5px);
+  transform: translateY(-5px);
 }
 
 /* 版本資訊 */

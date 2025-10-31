@@ -78,9 +78,10 @@ export class TowerPlacementSystem {
    * 初始化網格系統
    */
   initializeGrid() {
-    const { width, height } = this.scene.scale.gameSize;
-    const cols = Math.ceil(width / this.gridSize);
-    const rows = Math.ceil(height / this.gridSize);
+    // ✅ 使用無限世界大小（與物理世界同步）
+    const worldSize = 20000; // 與物理世界邊界一致
+    const cols = Math.ceil(worldSize / this.gridSize);
+    const rows = Math.ceil(worldSize / this.gridSize);
     
     // 創建2D網格陣列
     for (let y = 0; y < rows; y++) {
@@ -89,8 +90,9 @@ export class TowerPlacementSystem {
         this.placementGrid[y][x] = {
           x: x,
           y: y,
-          worldX: x * this.gridSize + this.gridSize / 2,
-          worldY: y * this.gridSize + this.gridSize / 2,
+          // ✅ 調整世界坐標從 -10000 開始（與物理世界同步）
+          worldX: -10000 + x * this.gridSize + this.gridSize / 2,
+          worldY: -10000 + y * this.gridSize + this.gridSize / 2,
           occupied: false,
           buildable: true,
           tower: null
@@ -166,9 +168,10 @@ export class TowerPlacementSystem {
    * 定義可建造區域
    */
   defineBuildableAreas() {
-    const { width, height } = this.scene.scale.gameSize;
+    // ✅ 移除舊的螢幕邊界限制，支援無限世界建造
+    // const { width, height } = this.scene.scale.gameSize;
     
-    // 玩家周圍不能建造
+    // ✅ 玩家周圍不能建造（保留這個限制）
     const playerX = GameConfig.PLAYER.POSITION.X;
     const playerY = GameConfig.PLAYER.POSITION.Y;
     const playerRadius = 100;
@@ -180,14 +183,14 @@ export class TowerPlacementSystem {
       radius: playerRadius
     });
     
-    // 邊界區域不能建造
-    const borderSize = 50;
-    this.restrictedAreas.push(
-      { type: 'rect', x: 0, y: 0, width: width, height: borderSize }, // 上邊界
-      { type: 'rect', x: 0, y: height - borderSize, width: width, height: borderSize }, // 下邊界
-      { type: 'rect', x: 0, y: 0, width: borderSize, height: height }, // 左邊界
-      { type: 'rect', x: width - borderSize, y: 0, width: borderSize, height: height } // 右邊界
-    );
+    // ✅ 移除邊界區域限制，支援無限世界建造
+    // const borderSize = 50;
+    // this.restrictedAreas.push(
+    //   { type: 'rect', x: 0, y: 0, width: width, height: borderSize }, // 上邊界
+    //   { type: 'rect', x: 0, y: height - borderSize, width: width, height: borderSize }, // 下邊界
+    //   { type: 'rect', x: 0, y: 0, width: borderSize, height: height }, // 左邊界
+    //   { type: 'rect', x: width - borderSize, y: 0, width: borderSize, height: height } // 右邊界
+    // );
     
     // 更新網格可建造狀態
     this.updateGridBuildability();
@@ -454,9 +457,10 @@ export class TowerPlacementSystem {
    * 世界坐標轉網格坐標
    */
   worldToGrid(worldX, worldY) {
+    // ✅ 調整為從 -10000 開始的世界坐標
     return {
-      x: Math.floor(worldX / this.gridSize),
-      y: Math.floor(worldY / this.gridSize)
+      x: Math.floor((worldX + 10000) / this.gridSize),
+      y: Math.floor((worldY + 10000) / this.gridSize)
     };
   }
 

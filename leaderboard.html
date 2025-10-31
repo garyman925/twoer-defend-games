@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排行榜</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Squada+One&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #00ffff;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #00ffff;
+            font-size: 2rem;
+            font-family: 'Squada One', cursive;
+        }
+
+        .back-btn {
+            padding: 12px 24px;
+            background: linear-gradient(0deg, #000000c4 0%, #009fb991 100%);
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 0 0 4px #ffffff36;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        /* 篩選器 */
+        .filter-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .filter-tab {
+            padding: 10px 20px;
+            background: rgba(0, 159, 185, 0.2);
+            border: 2px solid #009fb9;
+            border-radius: 8px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab:hover {
+            background: rgba(0, 159, 185, 0.4);
+        }
+
+        .filter-tab.active {
+            background: #009fb9;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        /* 排行榜 */
+        .leaderboard {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #009fb9;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .leaderboard-item {
+            display: grid;
+            grid-template-columns: 60px 1fr 120px 120px;
+            gap: 16px;
+            align-items: center;
+            padding: 16px;
+            background: rgba(0, 159, 185, 0.1);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .leaderboard-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.2);
+            background: rgba(0, 159, 185, 0.2);
+        }
+
+        .leaderboard-item.highlight {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+        }
+
+        .rank {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .rank-1 { 
+            color: #FFD700;
+            text-shadow: 0 0 10px #FFD700;
+        }
+        .rank-2 { 
+            color: #C0C0C0;
+            text-shadow: 0 0 10px #C0C0C0;
+        }
+        .rank-3 { 
+            color: #CD7F32;
+            text-shadow: 0 0 10px #CD7F32;
+        }
+
+        .player-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .player-name {
+            font-size: 1.2rem;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .player-meta {
+            font-size: 0.85rem;
+            color: #00ffff;
+            opacity: 0.8;
+        }
+
+        .score {
+            color: #ffff00;
+            font-weight: bold;
+            text-align: right;
+            font-size: 1.1rem;
+        }
+
+        .level {
+            color: #00ffff;
+            text-align: right;
+            font-size: 0.95rem;
+        }
+
+        /* 統計資訊 */
+        .stats-summary {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #009fb9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 12px;
+            background: rgba(0, 159, 185, 0.1);
+            border-radius: 8px;
+        }
+
+        .stat-box-label {
+            color: #00ffff;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-box-value {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .leaderboard-item {
+                grid-template-columns: 50px 1fr 80px;
+            }
+            .level {
+                display: none;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            .filter-tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 排行榜</h1>
+            <button class="back-btn" onclick="window.close()">← 返回遊戲</button>
+        </div>
+
+        <!-- 統計摘要 -->
+        <div class="stats-summary">
+            <div class="stat-box">
+                <div class="stat-box-label">總玩家數</div>
+                <div class="stat-box-value">1,234</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-label">你的排名</div>
+                <div class="stat-box-value">#47</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-label">你的最高分</div>
+                <div class="stat-box-value">32,150</div>
+            </div>
+        </div>
+
+        <!-- 篩選標籤 -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterLeaderboard('all')">全部</button>
+            <button class="filter-tab" onclick="filterLeaderboard('daily')">今日</button>
+            <button class="filter-tab" onclick="filterLeaderboard('weekly')">本週</button>
+            <button class="filter-tab" onclick="filterLeaderboard('monthly')">本月</button>
+        </div>
+
+        <!-- 排行榜列表 -->
+        <div class="leaderboard" id="leaderboard">
+            <div class="leaderboard-item">
+                <div class="rank rank-1">1</div>
+                <div class="player-info">
+                    <div class="player-name">🚀 閃電玩家</div>
+                    <div class="player-meta">最後遊玩：2小時前</div>
+                </div>
+                <div class="level">Lv.25</div>
+                <div class="score">98,750 分</div>
+            </div>
+
+            <div class="leaderboard-item">
+                <div class="rank rank-2">2</div>
+                <div class="player-info">
+                    <div class="player-name">⭐ 星際戰士</div>
+                    <div class="player-meta">最後遊玩：5小時前</div>
+                </div>
+                <div class="level">Lv.22</div>
+                <div class="score">87,320 分</div>
+            </div>
+
+            <div class="leaderboard-item">
+                <div class="rank rank-3">3</div>
+                <div class="player-info">
+                    <div class="player-name">🔥 火焰之心</div>
+                    <div class="player-meta">最後遊玩：1天前</div>
+                </div>
+                <div class="level">Lv.20</div>
+                <div class="score">76,540 分</div>
+            </div>
+
+            <div class="leaderboard-item">
+                <div class="rank">4</div>
+                <div class="player-info">
+                    <div class="player-name">💎 鑽石守衛</div>
+                    <div class="player-meta">最後遊玩：2天前</div>
+                </div>
+                <div class="level">Lv.19</div>
+                <div class="score">65,890 分</div>
+            </div>
+
+            <div class="leaderboard-item">
+                <div class="rank">5</div>
+                <div class="player-info">
+                    <div class="player-name">⚡ 雷神之怒</div>
+                    <div class="player-meta">最後遊玩：3天前</div>
+                </div>
+                <div class="level">Lv.18</div>
+                <div class="score">58,720 分</div>
+            </div>
+
+            <div class="leaderboard-item">
+                <div class="rank">6</div>
+                <div class="player-info">
+                    <div class="player-name">🌟 光速追擊</div>
+                    <div class="player-meta">最後遊玩：3天前</div>
+                </div>
+                <div class="level">Lv.17</div>
+                <div class="score">52,340 分</div>
+            </div>
+
+            <div class="leaderboard-item">
+                <div class="rank">7</div>
+                <div class="player-info">
+                    <div class="player-name">🎯 精準射手</div>
+                    <div class="player-meta">最後遊玩：4天前</div>
+                </div>
+                <div class="level">Lv.16</div>
+                <div class="score">48,920 分</div>
+            </div>
+
+            <!-- 省略部分排名... -->
+            <div style="text-align: center; padding: 20px; color: #009fb9;">
+                <span>...</span>
+            </div>
+
+            <!-- 玩家自己的排名（高亮顯示） -->
+            <div class="leaderboard-item highlight">
+                <div class="rank">47</div>
+                <div class="player-info">
+                    <div class="player-name">🎮 你</div>
+                    <div class="player-meta">最後遊玩：剛才</div>
+                </div>
+                <div class="level">Lv.12</div>
+                <div class="score">32,150 分</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 篩選排行榜
+        function filterLeaderboard(type) {
+            // 更新按鈕狀態
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // 這裡未來可以根據 type 從後端載入不同的排行榜數據
+            console.log('切換到排行榜類型:', type);
+            
+            // 模擬載入動畫
+            const leaderboard = document.getElementById('leaderboard');
+            leaderboard.style.opacity = '0.5';
+            setTimeout(() => {
+                leaderboard.style.opacity = '1';
+                // alert(`載入 ${type} 排行榜（功能開發中）`);
+            }, 300);
+        }
+
+        // 點擊排行榜項目查看詳細資訊
+        document.querySelectorAll('.leaderboard-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const playerName = this.querySelector('.player-name').textContent;
+                console.log('查看玩家:', playerName);
+                // 未來可以顯示玩家詳細資訊對話框
+            });
+        });
+
+        // 模擬從後端載入排行榜數據
+        function loadLeaderboardData() {
+            // 未來可以從後端 API 載入真實數據
+            const savedRank = localStorage.getItem('playerRank');
+            if (savedRank) {
+                console.log('玩家當前排名:', savedRank);
+            }
+        }
+
+        // 頁面載入時執行
+        window.addEventListener('load', loadLeaderboardData);
+    </script>
+</body>
+</html>
+
+
+
+
