@@ -123,6 +123,11 @@ export class EnemySpawner {
       return false;
     }
     
+    // 計算圓形生成點（圍繞玩家）
+    const totalEnemies = waveConfig.count || 5;
+    this.circularSpawnPoints = this.getCircularSpawnPoints(totalEnemies);
+    console.log(`🎯 為 ${totalEnemies} 個敵人準備圓形生成點`);
+    
     // 創建生成隊列
     this.createSpawnQueue(waveConfig);
     
@@ -194,16 +199,16 @@ export class EnemySpawner {
     const count = waveConfig.count;
     const interval = waveConfig.interval;
     
-    // 創建生成時間表
+    // 創建生成時間表（所有敵人同時生成）
     for (let i = 0; i < count; i++) {
       this.spawnQueue.push({
         enemyType: enemyType,
-        spawnTime: i * interval,
+        spawnTime: 0, // 改為 0，讓所有敵人同時生成
         spawned: false
       });
     }
     
-    console.log(`創建生成隊列：${count} 個 ${enemyType} 敵人，間隔 ${interval}ms`);
+    console.log(`創建生成隊列：${count} 個 ${enemyType} 敵人，同時生成`);
   }
 
   /**
@@ -286,15 +291,46 @@ export class EnemySpawner {
   }
 
   /**
+   * 計算圓形生成點（圍繞玩家）
+   */
+  getCircularSpawnPoints(totalEnemies) {
+    if (!this.scene.player) {
+      return [];
+    }
+    
+    const playerX = this.scene.player.x;
+    const playerY = this.scene.player.y;
+    const radius = 800; // 圍繞玩家的半徑
+    
+    const points = [];
+    for (let i = 0; i < totalEnemies; i++) {
+      const angle = (i / totalEnemies) * Math.PI * 2; // 均勻分布角度
+      points.push({
+        x: playerX + Math.cos(angle) * radius,
+        y: playerY + Math.sin(angle) * radius,
+        angle: angle,
+        index: i
+      });
+    }
+    
+    return points;
+  }
+
+  /**
    * 獲取 Tiled 地圖生成點
    */
   getTiledSpawnPoint() {
-    // 優先使用 Tiled 地圖的生成點
+    // 優先使用圓形生成模式
+    if (this.circularSpawnPoints && this.circularSpawnPoints.length > 0) {
+      return this.circularSpawnPoints.shift(); // 取出第一個點
+    }
+    
+    // 其次使用 Tiled 地圖的生成點
     if (this.scene.enemySpawnPoint) {
       return this.scene.enemySpawnPoint;
     }
     
-    // 備用：使用隨機生成點
+    // 最後備用：使用隨機生成點
     return this.getRandomSpawnPoint();
   }
 

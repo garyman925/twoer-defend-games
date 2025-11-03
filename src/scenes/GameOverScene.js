@@ -5,14 +5,14 @@
 
 import { BaseScene } from '../core/BaseScene.js';
 import { GameConfig } from '../core/GameConfig.js';
+import { GameOverUI } from '../ui/GameOverUI.js';
 
 export class GameOverScene extends BaseScene {
   constructor() {
     super('GameOverScene');
     
     this.gameData = null;
-    this.menuButtons = [];
-    this.particles = null;
+    this.gameOverUI = null;
   }
 
   /**
@@ -40,28 +40,12 @@ export class GameOverScene extends BaseScene {
     
     console.log('創建遊戲結束場景');
     
-    const { width, height } = this.scale.gameSize;
-    
-    // 創建背景
-    this.createBackground(width, height);
-    
-    // 創建粒子效果
-    this.createParticleEffects(width, height);
-    
-    // 創建遊戲結束UI
-    this.createGameOverUI(width, height);
-    
-    // 創建統計信息
-    this.createStatistics(width, height);
-    
-    // 創建菜單按鈕
-    this.createMenuButtons(width, height);
+    // 創建 DOM UI
+    this.gameOverUI = new GameOverUI(this, this.gameData);
+    this.gameOverUI.create();
     
     // 播放遊戲結束音效
     this.playGameOverSound();
-    
-    // 場景淡入效果
-    this.cameras.main.fadeIn(1000, 0, 0, 0);
   }
 
   /**
@@ -673,6 +657,12 @@ export class GameOverScene extends BaseScene {
    * 清理場景
    */
   cleanupScene() {
+    // 清理 DOM UI
+    if (this.gameOverUI) {
+      this.gameOverUI.destroy();
+      this.gameOverUI = null;
+    }
+    
     console.log('遊戲結束場景清理完成');
   }
 }
