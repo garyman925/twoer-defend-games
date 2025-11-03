@@ -757,12 +757,13 @@ export class BaseEnemy extends Phaser.GameObjects.Container {
       this.body.setVelocity(0, 0);
     }
     
+    // 攻擊玩家（碰到玩家扣血）
+    if (this.scene.player && this.scene.player.isAlive) {
+      this.attackPlayer();
+    }
     
-    // 發送攻擊基地事件
-    this.eventEmitter.emit('enemyReachedDestination', this);
-    
-    // 創建攻擊特效
-    this.createAttackEffect();
+    // 攻擊完後敵人死亡（視為被擊破，計入擊破數）
+    this.die(); // 改用 die() 而非發送 enemyReachedDestination 事件
   }
 
   /**

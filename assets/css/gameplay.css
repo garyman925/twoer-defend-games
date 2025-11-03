@@ -68,6 +68,15 @@ body.gameplay-scene {
   transform: translateY(0);
 }
 
+/* 準備計時器中的波次名稱 */
+.preparation-timer .wave-name {
+  display: block;
+  margin-top: 8px;
+  font-size: 1.2em;
+  color: #00ffff;
+  font-weight: bold;
+}
+
 /* 響應式設計 */
 @media (max-width: 768px) {
   .status-bar {

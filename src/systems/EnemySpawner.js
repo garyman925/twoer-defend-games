@@ -110,7 +110,11 @@ export class EnemySpawner {
     this.enemiesInWave = [];
     this.spawnQueue = [];
     
-    console.log(`開始生成波次 ${waveNumber}`);
+    // 重置本波擊殺數（每波重新計算）
+    this.stats.enemiesKilled = 0;
+    
+    console.log(`🌊 開始生成波次 ${waveNumber}`);
+    console.log(`📊 波次開始前統計: totalSpawned=${this.stats.totalEnemiesSpawned}, alive=${this.stats.enemiesAlive}, killed=${this.stats.enemiesKilled}`);
     
     // 獲取波次配置
     const waveConfig = this.getWaveConfig(waveNumber);
@@ -156,6 +160,19 @@ export class EnemySpawner {
     }
     
     return config;
+  }
+
+  /**
+   * 計算指定波次的敵人總數
+   */
+  getWaveEnemyCount(waveNumber) {
+    const config = this.getWaveConfig(waveNumber);
+    // 根據配置類型計算總數
+    if (config.count !== undefined) {
+      return config.count;
+    }
+    // 默認配置
+    return 5 + waveNumber * 2;
   }
 
   /**
@@ -255,7 +272,8 @@ export class EnemySpawner {
     this.stats.enemiesAlive++;
     
     console.log(`✅ 生成 ${enemyType} 敵人於 (${spawnPoint.x}, ${spawnPoint.y})`);
-    console.log(`當前存活敵人數: ${this.stats.enemiesAlive}`);
+    console.log(`📊 統計更新: totalSpawned=${this.stats.totalEnemiesSpawned}, alive=${this.stats.enemiesAlive}, killed=${this.stats.enemiesKilled}`);
+    console.log(`📋 當前波次敵人列表長度: ${this.enemiesInWave.length}`);
     
     // 發送生成事件
     this.eventEmitter.emit('enemySpawned', {
@@ -313,40 +331,57 @@ export class EnemySpawner {
    * 敵人死亡處理
    */
   onEnemyDied(enemy) {
-    this.stats.enemiesAlive--;
-    this.stats.enemiesKilled++;
+    console.log(`💀 onEnemyDied 被調用: enemyType=${enemy.enemyType}`);
+    console.log(`   當前統計: totalSpawned=${this.stats.totalEnemiesSpawned}, alive=${this.stats.enemiesAlive}, killed=${this.stats.enemiesKilled}`);
+    
+    // 防止重複處理同一個敵人的死亡
+    const index = this.enemiesInWave.indexOf(enemy);
+    console.log(`   敵人在列表中的索引: ${index}, 列表長度: ${this.enemiesInWave.length}`);
+    
+    if (index === -1) {
+      console.warn('⚠️ 敵人已被移除，跳過死亡處理');
+      return;
+    }
     
     // 從敵人列表中移除
-    const index = this.enemiesInWave.indexOf(enemy);
-    if (index > -1) {
-      this.enemiesInWave.splice(index, 1);
+    this.enemiesInWave.splice(index, 1);
+    
+    // 更新統計（防止負數）
+    if (this.stats.enemiesAlive > 0) {
+      this.stats.enemiesAlive--;
     }
+    this.stats.enemiesKilled++;
+    
+    console.log(`   更新後統計: totalSpawned=${this.stats.totalEnemiesSpawned}, alive=${this.stats.enemiesAlive}, killed=${this.stats.enemiesKilled}`);
     
     // 檢查波次是否完成
     this.checkWaveComplete();
-    
-    console.log(`敵人死亡，剩餘敵人: ${this.stats.enemiesAlive}`);
   }
 
   /**
    * 敵人到達終點處理
    */
   onEnemyReachedDestination(enemy) {
-    this.stats.enemiesAlive--;
-    
-    // 從敵人列表中移除
+    // 防止重複處理
     const index = this.enemiesInWave.indexOf(enemy);
-    if (index > -1) {
-      this.enemiesInWave.splice(index, 1);
+    if (index === -1) {
+      console.warn('⚠️ 敵人已被移除，跳過到達終點處理');
+      return;
     }
     
-    // 敵人攻擊基地，對玩家造成傷害
-    this.handleEnemyAttackBase(enemy);
+    // 從敵人列表中移除
+    this.enemiesInWave.splice(index, 1);
+    
+    // 更新統計（防止負數）
+    if (this.stats.enemiesAlive > 0) {
+      this.stats.enemiesAlive--;
+    }
+    
+    // 敵人攻擊基地（已停用，僅記錄）
+    console.log('⚠️ 敵人到達終點（碰撞處理已接管）');
     
     // 檢查波次是否完成
     this.checkWaveComplete();
-    
-    // console.log(`🏰 ${enemy.enemyType}敵人到達基地並攻擊！`);
   }
 
   /**

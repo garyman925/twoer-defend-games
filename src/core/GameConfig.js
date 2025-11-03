@@ -24,7 +24,8 @@ export const GameConfig = {
       GAME_OVER: 'GAME_OVER',
       VICTORY: 'VICTORY',
       SHOP: 'SHOP'
-    }
+    },
+    TIME_LIMIT: 180 // 遊戲時間限制（秒），3分鐘 = 180秒
   },
   
   // 響應式設計設置
@@ -58,8 +59,8 @@ export const GameConfig = {
   // 玩家設置
   PLAYER: {
     HEALTH: {
-      MAX: 100,
-      REGENERATION: 1 // 每秒恢復1點
+      MAX: 5,  // 改為 5 格血量
+      REGENERATION: 0 // 關閉自動回血（限時模式）
     },
     WEAPON: {
       DAMAGE: 30,
@@ -193,29 +194,29 @@ export const GameConfig = {
 
   // 波次設置
   WAVE: {
-    PREPARATION_TIME: 3000, // 3秒準備時間（調試用）
+    PREPARATION_TIME: 10000, // 10秒準備時間
     WAVE_INTERVAL: 3000, // 波次間隔
     ENEMY_COUNT_MULTIPLIER: 1.2, // 每波敵人數量增長
     DIFFICULTY_MULTIPLIER: 1.1, // 每波難度增長
     MAX_WAVES: 50,
     
-    // 波次配置
+    // 波次配置（效能測試：每波20個敵人）
     PATTERNS: [
-      { enemyType: 'BASIC', count: 2, interval: 1500 }, // 第1波：近戰敵人測試
-      { enemyType: 'RANGED', count: 2, interval: 1500 }, // 第2波：遠程敵人測試
-      { enemyType: 'BASIC', count: 5, interval: 1000 },
-      { enemyType: 'BASIC', count: 8, interval: 800 },
-      { enemyType: 'FAST', count: 6, interval: 600 },
-      { enemyType: 'BASIC', count: 4, interval: 1200 }, // 添加近戰敵人
-      { enemyType: 'BASIC', count: 10, interval: 700 },
-      { enemyType: 'TANK', count: 3, interval: 2000 },
-      { enemyType: 'RANGED', count: 3, interval: 1500 }, // 添加遠程敵人
-      { enemyType: 'FAST', count: 12, interval: 500 },
-      { enemyType: 'BASIC', count: 6, interval: 1000 }, // 更多近戰敵人
-      { enemyType: 'BASIC', count: 15, interval: 600 },
-      { enemyType: 'RANGED', count: 5, interval: 1200 }, // 更多遠程敵人
-      { enemyType: 'FLYING', count: 8, interval: 800 },
-      { enemyType: 'TANK', count: 5, interval: 1500 },
+      { enemyType: 'BASIC', count: 20, interval: 500 }, // 第1波：20個基礎敵人
+      { enemyType: 'RANGED', count: 20, interval: 500 }, // 第2波：20個遠程敵人
+      { enemyType: 'BASIC', count: 20, interval: 500 },
+      { enemyType: 'BASIC', count: 20, interval: 500 },
+      { enemyType: 'FAST', count: 20, interval: 400 },
+      { enemyType: 'BASIC', count: 20, interval: 500 },
+      { enemyType: 'BASIC', count: 20, interval: 500 },
+      { enemyType: 'TANK', count: 20, interval: 600 },
+      { enemyType: 'RANGED', count: 20, interval: 500 },
+      { enemyType: 'FAST', count: 20, interval: 400 },
+      { enemyType: 'BASIC', count: 20, interval: 500 },
+      { enemyType: 'BASIC', count: 20, interval: 500 },
+      { enemyType: 'RANGED', count: 20, interval: 500 },
+      { enemyType: 'FLYING', count: 20, interval: 500 },
+      { enemyType: 'TANK', count: 20, interval: 600 },
       { enemyType: 'BOSS', count: 1, interval: 3000 }
     ]
   },

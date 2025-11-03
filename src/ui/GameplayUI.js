@@ -14,6 +14,8 @@ export class GameplayUI {
     this.moneyDisplay = null;
     this.waveDisplay = null;
     this.scoreDisplay = null;
+    this.timeDisplay = null;
+    this.enemyCountDisplay = null;
     
     // 動畫控制
     this.scoreAnimationFrame = null;
@@ -57,15 +59,25 @@ export class GameplayUI {
     this.statusBar = document.createElement('div');
     this.statusBar.className = 'status-bar';
     
-    // 生命值顯示 - 分段式設計
+    // 敵人計數顯示（左上角）
+    this.enemyCountDisplay = document.createElement('div');
+    this.enemyCountDisplay.className = 'enemy-count-display';
+    this.enemyCountDisplay.innerHTML = `
+      <span class="killed-count" data-killed="0">0</span>
+      <span class="label">擊破</span>
+      <span class="separator">|</span>
+      <span class="total-count" data-total="0">0</span>
+      <span class="label">總數</span>
+    `;
+    
+    // 生命值顯示 - 分段式設計（改為5格）
     this.healthDisplay = document.createElement('div');
     this.healthDisplay.className = 'health-display';
     this.healthDisplay.innerHTML = `
-      <span class="health-icon"></span>
       <div class="health-info">
         <div class="health-title">Healthy Power</div>
-        <div class="health-segments" data-health="100">
-          ${Array.from({length: 10}, (_, i) => 
+        <div class="health-segments" data-health="5">
+          ${Array.from({length: 5}, (_, i) => 
             `<div class="health-segment" data-segment="${i}"></div>`
           ).join('')}
         </div>
@@ -83,7 +95,7 @@ export class GameplayUI {
     this.waveDisplay = document.createElement('div');
     this.waveDisplay.className = 'wave-display';
     this.waveDisplay.innerHTML = `
-      <span class="value" data-wave="0">wave 0</span>
+      <span class="value" data-wave="0">0</span>
     `;
     
     // 分數顯示
@@ -91,6 +103,13 @@ export class GameplayUI {
     this.scoreDisplay.className = 'score-display';
     this.scoreDisplay.innerHTML = `
       <span class="value" data-score="0">0</span>
+    `;
+    
+    // 時間顯示
+    this.timeDisplay = document.createElement('div');
+    this.timeDisplay.className = 'time-display';
+    this.timeDisplay.innerHTML = `
+      <span class="value" data-time="0">00:00</span>
     `;
     
     // 暫停按鈕（Debug用）
@@ -110,16 +129,18 @@ export class GameplayUI {
       }
     });
     
-    // 創建右側元素容器
-    const rightGroup = document.createElement('div');
-    rightGroup.className = 'status-bar-right';
-    rightGroup.appendChild(this.waveDisplay);
-    rightGroup.appendChild(this.pauseButton);
+    // 創建中間容器（分數 + 時間垂直排列）
+    const centerContainer = document.createElement('div');
+    centerContainer.className = 'status-bar-center-container';
+    centerContainer.appendChild(this.scoreDisplay);
+    centerContainer.appendChild(this.timeDisplay);
     
-    // 按順序加入：左側(生命值) -> 中間(分數) -> 右側(波次+暫停)
+    // 按順序加入：敵人計數、暫停按鈕（都在左上角）-> 生命值 -> 中間(分數+時間) -> 右側(波次)
+    this.statusBar.appendChild(this.enemyCountDisplay);
+    this.statusBar.appendChild(this.pauseButton);
     this.statusBar.appendChild(this.healthDisplay);
-    this.statusBar.appendChild(this.scoreDisplay);
-    this.statusBar.appendChild(rightGroup);
+    this.statusBar.appendChild(centerContainer);
+    this.statusBar.appendChild(this.waveDisplay);
     
     this.container.appendChild(this.statusBar);
   }
@@ -345,6 +366,54 @@ export class GameplayUI {
   }
 
   /**
+   * 更新時間顯示（倒數計時）
+   */
+  updateTime(elapsedSeconds) {
+    const valueEl = this.timeDisplay.querySelector('.value');
+    if (!valueEl) return;
+    
+    // 防止 NaN：確保 elapsedSeconds 是有效數字
+    const elapsed = typeof elapsedSeconds === 'number' && !isNaN(elapsedSeconds) ? elapsedSeconds : 0;
+    
+    const timeLimit = 180; // 3分鐘
+    const remainingSeconds = Math.max(0, timeLimit - elapsed);
+    const minutes = Math.floor(remainingSeconds / 60);
+    const secs = remainingSeconds % 60;
+    const timeString = `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    valueEl.textContent = timeString;
+    valueEl.setAttribute('data-time', remainingSeconds);
+    
+    // 時間少於30秒時變紅色警告
+    if (remainingSeconds <= 30) {
+      valueEl.style.color = '#ff0000';
+      valueEl.style.textShadow = '0 0 10px rgba(255, 0, 0, 0.8)';
+    } else {
+      valueEl.style.color = 'inherit';
+      valueEl.style.textShadow = 'none';
+    }
+  }
+
+  /**
+   * 更新敵人計數顯示（擊破數/總數）
+   */
+  updateEnemyCount(killed, total) {
+    const killedEl = this.enemyCountDisplay.querySelector('.killed-count');
+    const totalEl = this.enemyCountDisplay.querySelector('.total-count');
+    
+    // 更新擊破數
+    if (killedEl && killed !== undefined) {
+      killedEl.textContent = killed;
+      killedEl.setAttribute('data-killed', killed);
+    }
+    
+    // 只在總數變化時更新（通常只在波次開始時）
+    if (totalEl && total !== undefined) {
+      totalEl.textContent = total;
+      totalEl.setAttribute('data-total', total);
+    }
+  }
+
+  /**
    * 顯示遊戲狀態訊息
    */
   showGameStatus(message, duration = 2000) {
@@ -365,10 +434,14 @@ export class GameplayUI {
   /**
    * 更新準備計時器
    */
-  updatePreparationTimer(time) {
+  updatePreparationTimer(time, waveName = null) {
     const timerEl = this.gameStatus.querySelector('.preparation-timer');
     if (timerEl) {
-      timerEl.textContent = `準備時間: ${time}秒`;
+      if (waveName) {
+        timerEl.innerHTML = `準備時間: ${time}秒<br><span class="wave-name">${waveName}</span>`;
+      } else {
+        timerEl.textContent = `準備時間: ${time}秒`;
+      }
       timerEl.classList.add('show');
     }
   }

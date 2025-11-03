@@ -40,6 +40,12 @@ export class GameplayScene extends BaseScene {
     this.currentWave = 0;
     this.preparationTimer = null;
     this.isPaused = false;
+    
+    // 遊戲計時（使用累計方式）
+    this.elapsedTime = 0;
+    
+    // 當前波次預期敵人總數
+    this.currentWaveExpectedEnemies = 0;
   }
 
   /**
@@ -228,6 +234,11 @@ export class GameplayScene extends BaseScene {
     
     // 場景淡入效果
     this.cameras.main.fadeIn(1000, 0, 0, 0);
+    
+    // 初始化時間顯示為 03:00
+    if (this.gameplayUI) {
+      this.gameplayUI.updateTime(0);
+    }
   }
 
   /**
@@ -465,6 +476,8 @@ export class GameplayScene extends BaseScene {
     // 監聽敵人生成事件
     this.enemySpawner.eventEmitter.on('enemySpawned', (data) => {
       console.log(`敵人已生成: ${data.type}`);
+      // 不在生成時更新計數，因為波次開始時已預先顯示總數
+      // 只在擊殺時更新（減少尚餘數量）
     });
     
     // 監聽敵人死亡事件
@@ -475,7 +488,13 @@ export class GameplayScene extends BaseScene {
     // 監聽波次完成事件
     this.enemySpawner.eventEmitter.on('waveComplete', (data) => {
       console.log(`波次 ${data.wave} 完成`);
-      // 延遲開始下一波
+      
+      // 顯示全滅訊息
+      if (this.gameplayUI) {
+        this.gameplayUI.showGameStatus(`全滅！`, 2000);
+      }
+      
+      // 延遲2秒後開始準備階段
       this.time.delayedCall(2000, () => {
         this.endWave();
       });
@@ -992,6 +1011,13 @@ export class GameplayScene extends BaseScene {
     this.events.emit('score:update', {
       score: this.gameManager.playerData.score
     });
+    
+    // 更新敵人計數顯示（擊破數/總數）
+    if (this.enemySpawner && this.gameplayUI) {
+      const killed = this.enemySpawner.stats.enemiesKilled;
+      console.log(`📊 更新 UI: killed=${killed}, expectedTotal=${this.currentWaveExpectedEnemies}`);
+      this.gameplayUI.updateEnemyCount(killed, undefined); // 只更新擊破數，總數不變
+    }
   }
 
   /**
@@ -1034,11 +1060,13 @@ export class GameplayScene extends BaseScene {
   onWaveComplete(data) {
     const { wave } = data;
     
-    // 更新 UI
-    this.gameplayUI.showGameStatus(`第 ${wave} 波完成！`);
+    // 顯示全滅訊息
+    this.gameplayUI.showGameStatus(`全滅！`, 2000);
     
-    // 開始準備階段
-    this.startPreparationPhase();
+    // 延遲後開始準備階段
+    this.time.delayedCall(2000, () => {
+      this.startPreparationPhase();
+    });
   }
 
   /**
@@ -1048,25 +1076,42 @@ export class GameplayScene extends BaseScene {
     this.gameState = 'preparation';
     this.currentWave++;
     
-    // 更新 UI
+    console.log(`🕐 開始準備階段 - 第 ${this.currentWave} 波`);
+    console.log(`   gameState: ${this.gameState}`);
+    
+    // 更新 UI - 使用狀態訊息顯示波次（短暫顯示）
     if (this.gameplayUI) {
-      this.gameplayUI.showGameStatus(`第 ${this.currentWave} 波 - 準備階段`);
+      this.gameplayUI.showGameStatus(`第 ${this.currentWave} 波`, 1000);
     }
     
     // 開始準備計時器
     const preparationTime = GameConfig.WAVE ? GameConfig.WAVE.PREPARATION_TIME : 10000;
     let timeLeft = preparationTime / 1000;
     
+    console.log(`   準備時間: ${timeLeft}秒`);
+    
+    // 立即顯示準備倒數（帶波次名稱）
+    if (this.gameplayUI) {
+      this.gameplayUI.updatePreparationTimer(timeLeft, `第${this.currentWave}波`);
+    }
+    
     this.preparationTimer = this.time.addEvent({
       delay: 1000,
       callback: () => {
         timeLeft--;
+        console.log(`   ⏱️ 準備倒數: ${timeLeft}秒`);
         
+        // 使用準備計時器專用方法顯示倒數（帶波次名稱）
         if (this.gameplayUI) {
-          this.gameplayUI.showGameStatus(`準備時間: ${timeLeft}秒`);
+          this.gameplayUI.updatePreparationTimer(timeLeft, `第${this.currentWave}波`);
         }
         
         if (timeLeft <= 0) {
+          console.log(`   ✅ 準備結束，開始波次`);
+          // 隱藏準備計時器
+          if (this.gameplayUI) {
+            this.gameplayUI.hidePreparationTimer();
+          }
           this.startWavePhase();
         }
       },
@@ -1083,11 +1128,22 @@ export class GameplayScene extends BaseScene {
   startWavePhase() {
     this.gameState = 'playing';
     
-    console.log(`開始波次 ${this.currentWave}`);
+    console.log(`⚔️ 開始波次 ${this.currentWave}`);
+    console.log(`   gameState: ${this.gameState}`);
+    console.log(`   elapsedTime: ${this.elapsedTime}`);
     
     // 更新 UI
     if (this.gameplayUI) {
       this.gameplayUI.showGameStatus(`第 ${this.currentWave} 波 - 戰鬥中`);
+      // 預先顯示本波敵人總數（準備結束立即顯示）
+      if (this.enemySpawner) {
+        const totalEnemies = this.enemySpawner.getWaveEnemyCount(this.currentWave);
+        this.currentWaveExpectedEnemies = totalEnemies; // 儲存預期總數
+        console.log(`🎯 波次 ${this.currentWave} 預期敵人總數: ${totalEnemies}`);
+        console.log(`📊 當前 EnemySpawner 統計: alive=${this.enemySpawner.stats.enemiesAlive}, total=${this.enemySpawner.stats.totalEnemiesSpawned}`);
+        // 初始化為 0 擊破 / 總數
+        this.gameplayUI.updateEnemyCount(0, totalEnemies);
+      }
     }
     
     // 發送波次開始事件
@@ -1144,18 +1200,36 @@ export class GameplayScene extends BaseScene {
   }
 
   /**
+   * 時間到達處理
+   */
+  onTimeUp() {
+    console.log('⏰ 時間到！遊戲結束');
+    
+    // 切換到遊戲結束場景（勝利）
+    this.switchToScene('GameOverScene', {
+      score: this.gameManager.playerData.score,
+      level: this.currentWave,
+      enemiesKilled: this.gameManager.playerData.stats.enemiesKilled,
+      timePlayed: this.elapsedTime,
+      isVictory: true, // 撐滿3分鐘視為勝利
+      reason: 'timeUp'
+    });
+  }
+
+  /**
    * 玩家死亡處理
    */
   onPlayerDied() {
     console.log('玩家死亡，遊戲結束');
     
-    // 切換到遊戲結束場景
+    // 切換到遊戲結束場景（失敗）
     this.switchToScene('GameOverScene', {
-      score: this.currentWave * 1000,
+      score: this.gameManager.playerData.score,
       level: this.currentWave,
-      enemiesKilled: 0,
-      timePlayed: Math.floor(this.time.now / 1000),
-      isVictory: false
+      enemiesKilled: this.gameManager.playerData.stats.enemiesKilled,
+      timePlayed: this.elapsedTime,
+      isVictory: false,
+      reason: 'playerDied'
     });
   }
 
@@ -1170,6 +1244,29 @@ export class GameplayScene extends BaseScene {
    * 場景更新
    */
   updateSceneLogic(time, delta) {
+    // 更新遊戲時間（僅在遊戲進行中且未暫停時）
+    if (this.gameState === 'playing' && !this.isPaused) {
+      // 累計遊戲時間（使用 delta 累加，避免暫停時計時）
+      const previousElapsed = this.elapsedTime;
+      this.elapsedTime += delta / 1000; // delta 是毫秒，轉換為秒
+      const elapsedSeconds = Math.floor(this.elapsedTime);
+      
+      // 檢查時間限制（3分鐘）
+      const timeLimit = GameConfig.GAME.TIME_LIMIT || 180;
+      if (elapsedSeconds >= timeLimit) {
+        console.log(`⏰ 時間到達: ${elapsedSeconds}秒`);
+        this.onTimeUp();
+        return;
+      }
+      
+      // 更新時間顯示（每秒更新一次）
+      const prevSeconds = Math.floor(previousElapsed);
+      if (this.gameplayUI && elapsedSeconds !== prevSeconds) {
+        console.log(`⏱️ 更新時間顯示: ${elapsedSeconds}秒`);
+        this.gameplayUI.updateTime(elapsedSeconds);
+      }
+    }
+    
     // 更新玩家
     if (this.player && this.player.isAlive) {
       this.player.update(time, delta);
