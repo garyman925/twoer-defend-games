@@ -46,6 +46,9 @@ export class GameplayScene extends BaseScene {
     
     // 當前波次預期敵人總數
     this.currentWaveExpectedEnemies = 0;
+    
+    // 🆕 遊戲結束標記（防止重複調用）
+    this.isGameOver = false;
   }
 
   /**
@@ -54,6 +57,14 @@ export class GameplayScene extends BaseScene {
   init(data) {
     super.init(data);
     console.log('遊戲場景初始化');
+    
+    // 🆕 重置所有遊戲狀態（確保每次重新開始都是全新的）
+    this.currentWave = 0;
+    this.elapsedTime = 0;
+    this.gameState = 'preparation';
+    this.isPaused = false;
+    this.isGameOver = false;
+    this.currentWaveExpectedEnemies = 0;
     
     // 獲取管理器引用
     this.gameManager = this.registry.get('gameManager');
@@ -1198,6 +1209,12 @@ export class GameplayScene extends BaseScene {
    * 時間到達處理
    */
   onTimeUp() {
+    // 🔴 防止重複調用
+    if (this.isGameOver) {
+      return;
+    }
+    this.isGameOver = true;
+    
     console.log('⏰ 時間到！遊戲結束');
     
     // 切換到遊戲結束場景（勝利）
@@ -1215,6 +1232,12 @@ export class GameplayScene extends BaseScene {
    * 玩家死亡處理
    */
   onPlayerDied() {
+    // 🔴 防止重複調用
+    if (this.isGameOver) {
+      return;
+    }
+    this.isGameOver = true;
+    
     console.log('玩家死亡，遊戲結束');
     
     // 切換到遊戲結束場景（失敗）
@@ -1394,6 +1417,9 @@ export class GameplayScene extends BaseScene {
     this.events.off('wave:complete');
     this.events.off('moneyChanged');
     this.events.off('enemyKilled');
+    
+    // 🆕 重置遊戲結束標記
+    this.isGameOver = false;
     
     console.log('遊戲場景清理完成');
   }
