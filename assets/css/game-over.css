@@ -20,27 +20,13 @@
 .game-over-background {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.95));
-  backdrop-filter: blur(10px);
+  background-image: url('../maps/space-bg.png'); /* 使用遊戲背景圖 */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-/* 勝利背景 */
-#game-over-container.victory .game-over-background {
-  background: radial-gradient(
-    circle at center,
-    rgba(44, 85, 48, 0.9),
-    rgba(13, 51, 18, 0.95)
-  );
-}
-
-/* 失敗背景 */
-#game-over-container.defeat .game-over-background {
-  background: radial-gradient(
-    circle at center,
-    rgba(74, 26, 26, 0.9),
-    rgba(26, 6, 6, 0.95)
-  );
-}
+/* 移除覆蓋層，讓星空背景直接顯示 */
 
 /* 內容區域 */
 .game-over-content {
@@ -48,7 +34,7 @@
   z-index: 1;
   text-align: center;
   padding: 60px 80px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.85); /* 加深內容區塊背景以確保文字清晰 */
   border: 3px solid var(--primary);
   border-radius: 20px;
   box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
@@ -56,6 +42,7 @@
   width: 90%;
   transform: translateY(-20px);
   animation: slideInDown 0.5s ease forwards;
+  font-family: 'Noto Sans HK', sans-serif; /* 應用中文字體 */
 }
 
 #game-over-container.victory .game-over-content {
@@ -80,13 +67,14 @@
 }
 
 .title-text {
-  font-family: 'Squada One', cursive;
+  font-family: 'Noto Sans HK', sans-serif;
   font-size: 4rem;
   margin: 0 0 10px 0;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 20px;
+  font-weight: 700; /* 使用粗體讓標題更醒目 */
 }
 
 .title-text .icon {
@@ -114,7 +102,7 @@
 }
 
 .subtitle-text {
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Noto Sans HK', sans-serif;
   font-size: 1.2rem;
   color: #aaa;
   margin: 0;
@@ -162,7 +150,7 @@
 }
 
 .stat-label {
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Noto Sans HK', sans-serif;
   font-size: 0.9rem;
   color: #888;
   margin-bottom: 8px;
@@ -175,6 +163,12 @@
   font-size: 2.5rem;
   color: var(--primary);
   text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+/* 時間統計使用較小的字體 */
+.stat-time .stat-value {
+  font-size: 1.8rem;
+  letter-spacing: 2px;
 }
 
 #game-over-container.victory .stat-value {
@@ -212,7 +206,7 @@
 }
 
 .game-over-btn {
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Noto Sans HK', sans-serif;
   font-size: 1.1rem;
   padding: 15px 40px;
   border: 2px solid var(--primary);

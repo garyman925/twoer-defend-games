@@ -108,22 +108,82 @@
   opacity: 0.8;
 }
 
-/* 準備階段計時器 */
-.preparation-timer {
+/* 遊戲狀態顯示 */
+.game-status {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 2em;
-  font-weight: bold;
-  color: var(--primary);
-  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-  animation: timerPulse 1s infinite;
+  text-align: center;
+  pointer-events: none;
+  z-index: 200;
 }
 
-@keyframes timerPulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(1.1); }
+.status-message {
+  letter-spacing: 3px;
+  line-height: 1.3;
+  padding: 20px 40px;
+  background-image: url('../export/card-frame-sm-long.png');
+  background-size: 100% 100%; /* 拉伸填滿 */
+  background-position: center;
+  background-repeat: no-repeat;
+  border: none; /* 移除邊框，圖片本身有框 */
+  border-radius: 0;
+  font-size: 32px;
+  font-weight: bold;
+  color: #fff; /* 改為白色以適應卡片背景 */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 255, 255, 0.5);
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s;
+  width: 30vw;
+  min-width: 500px; /* 確保卡片有最小寬度 */
+  min-height: 80px;
+}
+
+.status-message:before {
+  content: '';
+  position: absolute;
+  left: -30px;
+  top: -45px;
+  width: 70px;
+  height: 202px;
+  background-image: url('../export/rframe-wing-left.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.status-message:after {
+  content: '';
+  position: absolute;
+  right: -88px;
+  top: -45px;
+  width: 70px;
+  height: 202px;
+  background-image: url('../export/rframe-wing-right.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.status-message.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 狀態訊息中的波次名稱 */
+.status-message .wave-name {
+  display: block;
+  font-size: 1.6rem;
+  color: #00ffff;
+  font-weight: bold;
+}
+
+/* 全滅訊息使用特殊背景 */
+.status-message.victory {
+  background-image: url('../export/victory-panel.png');
+  color: #ffd700; /* 金色文字 */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.8);
+  font-size: 3rem;
 }
 
 /* 資源變化動畫 */
@@ -276,8 +336,8 @@
 /* 敵人計數顯示（左上角）*/
 .enemy-count-display {
   position: absolute;
-  left: 20px;
-  top: 70px; /* 在暫停按鈕下方 */
+  left: 100px;
+  top: 0; /* 在暫停按鈕下方 */
   font-family: 'Squada One', cursive;
   font-size: 1.2rem;
   color: #ff6666;
@@ -292,7 +352,15 @@
   align-items: center;
 }
 
+.enemy-count-display-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
 .enemy-count-display .label {
+  font-family: 'Noto Sans HK', sans-serif;
   font-size: 0.9em;
   opacity: 0.8;
 }
@@ -324,4 +392,14 @@
 
 .pause-button:active {
   transform: translateY(0);
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .status-message {
+    font-size: 24px;
+    padding: 15px 30px;
+    min-width: 250px;
+    min-height: 70px;
+  }
 }

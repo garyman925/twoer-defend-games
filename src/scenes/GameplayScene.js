@@ -489,14 +489,14 @@ export class GameplayScene extends BaseScene {
     this.enemySpawner.eventEmitter.on('waveComplete', (data) => {
       console.log(`波次 ${data.wave} 完成`);
       
-      // 顯示全滅訊息
+      // 顯示全滅訊息（使用特殊背景）
       if (this.gameplayUI) {
-        this.gameplayUI.showGameStatus(`全滅！`, 2000);
+        this.gameplayUI.showGameStatus(`全滅！`, 2000, 'victory');
       }
       
-      // 延遲2秒後開始準備階段
+      // 延遲2秒後直接開始準備階段（不經過 endWave）
       this.time.delayedCall(2000, () => {
-        this.endWave();
+        this.startPreparationPhase();
       });
     });
   }
@@ -1012,10 +1012,11 @@ export class GameplayScene extends BaseScene {
       score: this.gameManager.playerData.score
     });
     
-    // 更新敵人計數顯示（擊破數/總數）
+    // 🆕 更新敵人計數顯示（使用 waveActualKills）
     if (this.enemySpawner && this.gameplayUI) {
-      const killed = this.enemySpawner.stats.enemiesKilled;
-      console.log(`📊 更新 UI: killed=${killed}, expectedTotal=${this.currentWaveExpectedEnemies}`);
+      const killed = this.enemySpawner.waveActualKills; // 改用 waveActualKills
+      const total = this.enemySpawner.waveTargetKills;  // 使用 waveTargetKills
+      console.log(`📊 更新 UI: killed=${killed}, total=${total}`);
       this.gameplayUI.updateEnemyCount(killed, undefined); // 只更新擊破數，總數不變
     }
   }
@@ -1060,8 +1061,8 @@ export class GameplayScene extends BaseScene {
   onWaveComplete(data) {
     const { wave } = data;
     
-    // 顯示全滅訊息
-    this.gameplayUI.showGameStatus(`全滅！`, 2000);
+    // 顯示全滅訊息（使用特殊背景）
+    this.gameplayUI.showGameStatus(`全滅！`, 2000, 'victory');
     
     // 延遲後開始準備階段
     this.time.delayedCall(2000, () => {
@@ -1079,10 +1080,7 @@ export class GameplayScene extends BaseScene {
     console.log(`🕐 開始準備階段 - 第 ${this.currentWave} 波`);
     console.log(`   gameState: ${this.gameState}`);
     
-    // 更新 UI - 使用狀態訊息顯示波次（短暫顯示）
-    if (this.gameplayUI) {
-      this.gameplayUI.showGameStatus(`第 ${this.currentWave} 波`, 1000);
-    }
+    // 準備計時器會顯示波次，不需要額外訊息
     
     // 開始準備計時器
     const preparationTime = GameConfig.WAVE ? GameConfig.WAVE.PREPARATION_TIME : 10000;
@@ -1132,31 +1130,28 @@ export class GameplayScene extends BaseScene {
     console.log(`   gameState: ${this.gameState}`);
     console.log(`   elapsedTime: ${this.elapsedTime}`);
     
-    // 更新 UI
+    // 開始生成敵人（這會設定 waveTargetKills）
+    this.spawnEnemies();
+    
+    // 更新 UI（使用 waveTargetKills）
     if (this.gameplayUI) {
       this.gameplayUI.showGameStatus(`第 ${this.currentWave} 波 - 戰鬥中`);
-      // 預先顯示本波敵人總數（準備結束立即顯示）
+      
+      // 🆕 使用 EnemySpawner 的 waveTargetKills
       if (this.enemySpawner) {
-        const totalEnemies = this.enemySpawner.getWaveEnemyCount(this.currentWave);
-        this.currentWaveExpectedEnemies = totalEnemies; // 儲存預期總數
-        console.log(`🎯 波次 ${this.currentWave} 預期敵人總數: ${totalEnemies}`);
-        console.log(`📊 當前 EnemySpawner 統計: alive=${this.enemySpawner.stats.enemiesAlive}, total=${this.enemySpawner.stats.totalEnemiesSpawned}`);
-        // 初始化為 0 擊破 / 總數
-        this.gameplayUI.updateEnemyCount(0, totalEnemies);
+        const targetEnemies = this.enemySpawner.waveTargetKills || 20;
+        console.log(`🎯 波次 ${this.currentWave} 目標敵人數: ${targetEnemies}`);
+        
+        // 初始化為 0 擊破 / 目標總數
+        this.gameplayUI.updateEnemyCount(0, targetEnemies);
       }
     }
     
     // 發送波次開始事件
     this.events.emit('wave:start', {
       wave: this.currentWave,
-      enemies: 0
+      enemies: this.enemySpawner ? this.enemySpawner.waveTargetKills : 20
     });
-    
-    // 播放波次開始音效 (已移除)
-    // this.playSound('wave_start');
-    
-    // 開始生成敵人
-    this.spawnEnemies();
   }
 
   /**

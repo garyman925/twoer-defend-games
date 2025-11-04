@@ -82,12 +82,10 @@ export class GameOverUI {
     
     if (this.gameData.isVictory) {
       title.innerHTML = `
-        <span class="icon">🎉</span>
         <span class="text">勝利！</span>
       `;
     } else {
       title.innerHTML = `
-        <span class="icon">💥</span>
         <span class="text">遊戲結束</span>
       `;
     }
@@ -134,7 +132,7 @@ export class GameOverUI {
     
     // 遊戲時間
     const minutes = Math.floor(this.gameData.timePlayed / 60);
-    const seconds = this.gameData.timePlayed % 60;
+    const seconds = Math.floor(this.gameData.timePlayed % 60); // 取整，避免小數位
     const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     this.createStatItem(statsContainer, '遊戲時間', timeString, 'time');
     

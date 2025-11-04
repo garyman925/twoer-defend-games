@@ -19,63 +19,7 @@ body.gameplay-scene {
   z-index: var(--z-ui, 100);
 }
 
-/* 遊戲狀態顯示 */
-.game-status {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  pointer-events: none;
-  z-index: 200;
-}
-
-.status-message {
-  padding: 20px 40px;
-  background: rgba(0, 0, 0, 0.9);
-  border: 3px solid #00ffff;
-  border-radius: 12px;
-  font-size: 32px;
-  font-weight: bold;
-  color: #00ffff;
-  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-  opacity: 0;
-  transform: translateY(-20px);
-  transition: all 0.3s;
-}
-
-.status-message.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.preparation-timer {
-  margin-top: 15px;
-  padding: 15px 30px;
-  background: rgba(0, 0, 0, 0.8);
-  border: 2px solid #ffdd57;
-  border-radius: 8px;
-  font-size: 24px;
-  font-weight: bold;
-  color: #ffdd57;
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: all 0.3s;
-}
-
-.preparation-timer.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* 準備計時器中的波次名稱 */
-.preparation-timer .wave-name {
-  display: block;
-  margin-top: 8px;
-  font-size: 1.2em;
-  color: #00ffff;
-  font-weight: bold;
-}
+/* 遊戲狀態樣式已移至 status-bar.css */
 
 /* 響應式設計 */
 @media (max-width: 768px) {
@@ -101,13 +45,5 @@ body.gameplay-scene {
     font-size: 16px;
   }
   
-  .status-message {
-    font-size: 24px;
-    padding: 15px 30px;
-  }
-  
-  .preparation-timer {
-    font-size: 20px;
-    padding: 12px 24px;
-  }
+  /* 響應式樣式已移至 status-bar.css */
 }

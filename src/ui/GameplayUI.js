@@ -63,11 +63,14 @@ export class GameplayUI {
     this.enemyCountDisplay = document.createElement('div');
     this.enemyCountDisplay.className = 'enemy-count-display';
     this.enemyCountDisplay.innerHTML = `
-      <span class="killed-count" data-killed="0">0</span>
-      <span class="label">擊破</span>
-      <span class="separator">|</span>
-      <span class="total-count" data-total="0">0</span>
-      <span class="label">總數</span>
+      <div class="enemy-count-display-item">
+       <span class="killed-count" data-killed="0">0</span>
+       <span class="label">擊破</span>
+      </div>
+      <div class="enemy-count-display-item">
+        <span class="total-count" data-total="0">0</span>
+        <span class="label">總數</span>
+      </div>
     `;
     
     // 生命值顯示 - 分段式設計（改為5格）
@@ -168,7 +171,6 @@ export class GameplayUI {
     this.gameStatus.className = 'game-status';
     this.gameStatus.innerHTML = `
       <div class="status-message"></div>
-      <div class="preparation-timer"></div>
     `;
     this.container.appendChild(this.gameStatus);
   }
@@ -416,14 +418,22 @@ export class GameplayUI {
   /**
    * 顯示遊戲狀態訊息
    */
-  showGameStatus(message, duration = 2000) {
+  showGameStatus(message, duration = 2000, customClass = '') {
     const statusMessage = this.gameStatus.querySelector('.status-message');
     if (statusMessage) {
       statusMessage.textContent = message;
       statusMessage.classList.add('show');
       
+      // 添加自定義樣式類別
+      if (customClass) {
+        statusMessage.classList.add(customClass);
+      }
+      
       setTimeout(() => {
         statusMessage.classList.remove('show');
+        if (customClass) {
+          statusMessage.classList.remove(customClass);
+        }
         setTimeout(() => {
           statusMessage.textContent = '';
         }, 300);
@@ -432,17 +442,17 @@ export class GameplayUI {
   }
 
   /**
-   * 更新準備計時器
+   * 更新準備計時器（使用 status-message 顯示）
    */
   updatePreparationTimer(time, waveName = null) {
-    const timerEl = this.gameStatus.querySelector('.preparation-timer');
-    if (timerEl) {
+    const messageEl = this.gameStatus.querySelector('.status-message');
+    if (messageEl) {
       if (waveName) {
-        timerEl.innerHTML = `準備時間: ${time}秒<br><span class="wave-name">${waveName}</span>`;
+        messageEl.innerHTML = `準備時間: ${time}秒<br><span class="wave-name">${waveName}</span>`;
       } else {
-        timerEl.textContent = `準備時間: ${time}秒`;
+        messageEl.textContent = `準備時間: ${time}秒`;
       }
-      timerEl.classList.add('show');
+      messageEl.classList.add('show');
     }
   }
 
@@ -450,10 +460,10 @@ export class GameplayUI {
    * 隱藏準備計時器
    */
   hidePreparationTimer() {
-    const timerEl = this.gameStatus.querySelector('.preparation-timer');
-    if (timerEl) {
-      timerEl.classList.remove('show');
-      timerEl.textContent = '';
+    const messageEl = this.gameStatus.querySelector('.status-message');
+    if (messageEl) {
+      messageEl.classList.remove('show');
+      messageEl.innerHTML = '';
     }
   }
 

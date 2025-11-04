@@ -28,6 +28,10 @@ export class EnemySpawner {
       enemiesKilled: 0
     };
     
+    // 🆕 波次目標計數（簡化機制）
+    this.waveTargetKills = 0;  // 本波需要消滅的敵人數
+    this.waveActualKills = 0;  // 本波實際消滅的敵人數
+    
     // 事件發送器
     this.eventEmitter = new Phaser.Events.EventEmitter();
     
@@ -87,6 +91,7 @@ export class EnemySpawner {
   setupEventListeners() {
     // 監聽敵人死亡事件
     this.eventEmitter.on('enemyDied', (data) => {
+      console.log(`📨 EnemySpawner 接收到 enemyDied 事件`);
       this.onEnemyDied(data.enemy);
     });
     
@@ -100,8 +105,18 @@ export class EnemySpawner {
    * 開始生成波次
    */
   startWave(waveNumber) {
+    console.log(`🌊🌊🌊 startWave 被調用！波次: ${waveNumber}`);
+    console.log(`   調用堆疊:`, new Error().stack);
+    
     if (this.isSpawning) {
       console.warn('⚠️ 已在生成敵人中，無法開始新波次');
+      return false;
+    }
+    
+    // 🔴 如果上一波還沒完成，禁止開始新波次
+    if (!this.waveComplete && this.currentWave > 0) {
+      console.error(`❌ 波次 ${this.currentWave} 還沒完成！無法開始波次 ${waveNumber}`);
+      console.error(`   當前統計: waveActualKills=${this.waveActualKills}/${this.waveTargetKills}, alive=${this.stats.enemiesAlive}`);
       return false;
     }
     
@@ -113,9 +128,6 @@ export class EnemySpawner {
     // 重置本波擊殺數（每波重新計算）
     this.stats.enemiesKilled = 0;
     
-    console.log(`🌊 開始生成波次 ${waveNumber}`);
-    console.log(`📊 波次開始前統計: totalSpawned=${this.stats.totalEnemiesSpawned}, alive=${this.stats.enemiesAlive}, killed=${this.stats.enemiesKilled}`);
-    
     // 獲取波次配置
     const waveConfig = this.getWaveConfig(waveNumber);
     if (!waveConfig) {
@@ -123,10 +135,17 @@ export class EnemySpawner {
       return false;
     }
     
+    // 🆕 設定本波目標擊殺數
+    this.waveTargetKills = waveConfig.count || 20;
+    this.waveActualKills = 0;
+    
+    console.log(`🌊 開始生成波次 ${waveNumber}`);
+    console.log(`🎯 波次目標: 消滅 ${this.waveTargetKills} 個敵人`);
+    console.log(`📊 波次開始前統計: totalSpawned=${this.stats.totalEnemiesSpawned}, alive=${this.stats.enemiesAlive}`);
+    
     // 計算圓形生成點（圍繞玩家）
-    const totalEnemies = waveConfig.count || 5;
-    this.circularSpawnPoints = this.getCircularSpawnPoints(totalEnemies);
-    console.log(`🎯 為 ${totalEnemies} 個敵人準備圓形生成點`);
+    this.circularSpawnPoints = this.getCircularSpawnPoints(this.waveTargetKills);
+    console.log(`🎯 為 ${this.waveTargetKills} 個敵人準備圓形生成點`);
     
     // 創建生成隊列
     this.createSpawnQueue(waveConfig);
@@ -255,6 +274,7 @@ export class EnemySpawner {
     
     // 監聽敵人事件
     enemy.eventEmitter.on('enemyDied', (data) => {
+      console.log(`📡 敵人發送 enemyDied 事件，轉發到 EnemySpawner`);
       this.eventEmitter.emit('enemyDied', data);
     });
     
@@ -367,13 +387,10 @@ export class EnemySpawner {
    * 敵人死亡處理
    */
   onEnemyDied(enemy) {
-    console.log(`💀 onEnemyDied 被調用: enemyType=${enemy.enemyType}`);
-    console.log(`   當前統計: totalSpawned=${this.stats.totalEnemiesSpawned}, alive=${this.stats.enemiesAlive}, killed=${this.stats.enemiesKilled}`);
+    console.log(`💀 敵人死亡: enemyType=${enemy.enemyType}`);
     
     // 防止重複處理同一個敵人的死亡
     const index = this.enemiesInWave.indexOf(enemy);
-    console.log(`   敵人在列表中的索引: ${index}, 列表長度: ${this.enemiesInWave.length}`);
-    
     if (index === -1) {
       console.warn('⚠️ 敵人已被移除，跳過死亡處理');
       return;
@@ -388,10 +405,17 @@ export class EnemySpawner {
     }
     this.stats.enemiesKilled++;
     
-    console.log(`   更新後統計: totalSpawned=${this.stats.totalEnemiesSpawned}, alive=${this.stats.enemiesAlive}, killed=${this.stats.enemiesKilled}`);
+    // 🆕 更新本波擊殺數
+    this.waveActualKills++;
     
-    // 檢查波次是否完成
-    this.checkWaveComplete();
+    console.log(`📊 波次進度: ${this.waveActualKills}/${this.waveTargetKills}`);
+    console.log(`   全局統計: alive=${this.stats.enemiesAlive}, totalKilled=${this.stats.enemiesKilled}`);
+    
+    // 🆕 檢查是否完成本波目標
+    if (this.waveActualKills >= this.waveTargetKills) {
+      console.log(`✅ 波次 ${this.currentWave} 完成！已消滅 ${this.waveActualKills}/${this.waveTargetKills}`);
+      this.completeWave();
+    }
   }
 
   /**
@@ -444,11 +468,12 @@ export class EnemySpawner {
   }
 
   /**
-   * 檢查波次是否完成
+   * 檢查波次是否完成（備用檢查）
    */
   checkWaveComplete() {
-    // 如果所有敵人都已生成且沒有存活的敵人
-    if (!this.isSpawning && this.stats.enemiesAlive === 0) {
+    // 這個方法現在只作為備用，主要檢查邏輯在 onEnemyDied() 中
+    if (!this.isSpawning && this.stats.enemiesAlive === 0 && !this.waveComplete) {
+      console.log(`🔄 備用檢查觸發 completeWave()`);
       this.completeWave();
     }
   }
@@ -457,17 +482,23 @@ export class EnemySpawner {
    * 完成波次
    */
   completeWave() {
-    if (this.waveComplete) return;
+    if (this.waveComplete) {
+      console.warn('⚠️ 波次已完成，跳過重複觸發');
+      return;
+    }
     
     this.waveComplete = true;
     this.waveStartTime = null;
     
-    console.log(`波次 ${this.currentWave} 完成！`);
+    console.log(`🎉 波次 ${this.currentWave} 正式完成！`);
+    console.log(`   完成時統計: kills=${this.waveActualKills}/${this.waveTargetKills}`);
+    console.log(`   全局統計: totalSpawned=${this.stats.totalEnemiesSpawned}, alive=${this.stats.enemiesAlive}`);
     
     // 發送波次完成事件
     this.eventEmitter.emit('waveComplete', {
       wave: this.currentWave,
-      enemiesKilled: this.stats.enemiesKilled,
+      enemiesKilled: this.waveActualKills,
+      targetKills: this.waveTargetKills,
       stats: { ...this.stats }
     });
   }
