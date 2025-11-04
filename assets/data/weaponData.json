@@ -1,0 +1,144 @@
+{
+  "WEAPONS": {
+    "vulcan": {
+      "id": "vulcan",
+      "name": "Vulcan",
+      "displayName": "Vulcan",
+      "type": "rapid",
+      "category": "primary",
+      "icon": "🔫",
+      "description": "快速連發機槍",
+      
+      "stats": {
+        "damage": 20,
+        "fireRate": 150,
+        "projectileSpeed": 600,
+        "range": 400,
+        "piercing": false,
+        "spread": 5
+      },
+      
+      "ammo": {
+        "type": "infinite",
+        "maxAmmo": -1,
+        "cooldown": 0,
+        "reloadTime": 0,
+        "autoReload": false
+      },
+      
+      "visuals": {
+        "projectileColor": "0x00ffff",
+        "projectileSize": 4,
+        "muzzleFlashColor": "0xffffff",
+        "trailEffect": true
+      },
+      
+      "unlock": {
+        "cost": 0,
+        "unlocked": true,
+        "level": 1
+      }
+    },
+    
+    "missile": {
+      "id": "missile",
+      "name": "Missile",
+      "displayName": "Missile",
+      "type": "homing",
+      "category": "secondary",
+      "icon": "🚀",
+      "description": "追蹤敵人的導彈",
+      
+      "stats": {
+        "damage": 100,
+        "fireRate": 1000,
+        "projectileSpeed": 400,
+        "range": 500,
+        "piercing": false
+      },
+      
+      "ammo": {
+        "type": "cooldown",
+        "maxAmmo": 3,
+        "cooldown": 5000,
+        "reloadTime": 5000,
+        "autoReload": true
+      },
+      
+      "special": {
+        "homing": true,
+        "homingStrength": 2,
+        "explosionRadius": 80,
+        "explosionDamage": 50
+      },
+      
+      "visuals": {
+        "projectileColor": "0xff0000",
+        "projectileSize": 8,
+        "trailEffect": true,
+        "trailColor": "0xff6600",
+        "explosionEffect": "missile_explosion"
+      },
+      
+      "unlock": {
+        "cost": 1000,
+        "unlocked": true,
+        "level": 1
+      }
+    },
+    
+    "bomb": {
+      "id": "bomb",
+      "name": "Bomb",
+      "displayName": "Bomb",
+      "type": "aoe",
+      "category": "special",
+      "icon": "💣",
+      "description": "大範圍爆炸炸彈",
+      
+      "stats": {
+        "damage": 200,
+        "fireRate": 0,
+        "projectileSpeed": 300,
+        "range": 600
+      },
+      
+      "ammo": {
+        "type": "cooldown",
+        "maxAmmo": 1,
+        "cooldown": 10000,
+        "reloadTime": 10000,
+        "autoReload": true
+      },
+      
+      "special": {
+        "explosionRadius": 200,
+        "explosionDamage": 150,
+        "damageDropoff": 0.5,
+        "screenShake": true,
+        "shakeIntensity": 10
+      },
+      
+      "visuals": {
+        "projectileColor": "0xffff00",
+        "projectileSize": 12,
+        "trailEffect": true,
+        "trailColor": "0xffaa00",
+        "explosionEffect": "bomb_explosion"
+      },
+      
+      "unlock": {
+        "cost": 2000,
+        "unlocked": true,
+        "level": 1
+      }
+    }
+  },
+  
+  "DEFAULT_LOADOUT": {
+    "slot1": "vulcan",
+    "slot2": "missile",
+    "slot3": "bomb"
+  }
+}
+

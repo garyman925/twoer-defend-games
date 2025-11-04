@@ -111,7 +111,7 @@
 /* 遊戲狀態顯示 */
 .game-status {
   position: absolute;
-  top: 50%;
+  top: 25%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
@@ -176,6 +176,30 @@
   font-size: 1.6rem;
   color: #00ffff;
   font-weight: bold;
+  margin-top: 8px;
+}
+
+/* 🆕 準備階段的提示文字 */
+.status-message .description-text {
+  display: block;
+  font-size: 1.6rem;
+  color: #ffd93d;
+  font-weight: normal;
+  letter-spacing: 2px;
+  font-family: 'Squada One', cursive;
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* 🆕 提示文字發光脈動動畫 */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(255, 217, 61, 0.5);
+  }
+  50% {
+    opacity: 0.7;
+    text-shadow: 0 0 20px rgba(255, 217, 61, 0.8), 0 0 30px rgba(255, 217, 61, 0.6);
+  }
 }
 
 /* 全滅訊息使用特殊背景 */

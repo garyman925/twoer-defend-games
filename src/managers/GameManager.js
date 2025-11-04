@@ -388,10 +388,10 @@ export class GameManager {
     this.playerData.stats.enemiesKilled++;
     this.gameData.enemiesAlive--;
     
-    // 獲得獎勵
-    if (enemy.reward) {
-      this.addMoney(enemy.reward);
-    }
+    // 🆕 敵人不再給金錢獎勵，只給分數
+    // if (enemy.reward) {
+    //   this.addMoney(enemy.reward);
+    // }
     
     // 計算分數（簡單方式：基礎100分 × 敵人種類倍數）
     let scoreGain = 0;

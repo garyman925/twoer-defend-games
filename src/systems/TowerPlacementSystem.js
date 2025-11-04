@@ -240,6 +240,12 @@ export class TowerPlacementSystem {
    * 開始建造模式
    */
   startBuilding(towerType) {
+    // 🆕 檢查遊戲狀態：只允許在準備階段建造
+    if (this.scene.gameState !== 'preparation') {
+      console.warn(`❌ 只能在準備階段建造炮塔！當前狀態: ${this.scene.gameState}`);
+      return;
+    }
+    
     if (this.isBuilding) {
       this.cancelBuilding();
     }
@@ -249,8 +255,8 @@ export class TowerPlacementSystem {
     
     console.log(`開始建造${towerType}塔`);
     
-    // 顯示網格
-    this.gridOverlay.setVisible(true);
+    // 格網已在準備階段顯示，保持顯示即可
+    // this.gridOverlay.setVisible(true); // 不需要重複設置
     
     // 創建建造預覽
     this.createBuildPreview();
@@ -296,10 +302,17 @@ export class TowerPlacementSystem {
     this.selectedTowerType = null;
     this.isDragging = false;
     
-    // 隱藏視覺輔助
-    this.gridOverlay.setVisible(false);
-    this.placementIndicator.setVisible(false);
-    this.rangePreview.setVisible(false);
+    // 🆕 隱藏視覺輔助（但準備階段時格網保持顯示）
+    if (this.scene.gameState === 'preparation') {
+      // 準備階段：格網保持顯示，只隱藏預覽
+      this.placementIndicator.setVisible(false);
+      this.rangePreview.setVisible(false);
+    } else {
+      // 戰鬥階段：全部隱藏
+      this.gridOverlay.setVisible(false);
+      this.placementIndicator.setVisible(false);
+      this.rangePreview.setVisible(false);
+    }
     
     // 取消塔卡片選擇（同時相容 DOM 版本與舊版）
     if (this.scene.towerCardUI && typeof this.scene.towerCardUI.deselectAll === 'function') {
@@ -689,21 +702,31 @@ export class TowerPlacementSystem {
   consumeResources() {
     if (!this.selectedTowerType) return;
     
-    const towerData = GameConfig.TOWER.TYPES[this.selectedTowerType];
-    const cost = towerData ? towerData.buildCost : 100;
-    
-    // 扣除玩家金錢
-    if (this.scene.player && this.scene.player.money >= cost) {
-      this.scene.player.money -= cost;
-      console.log(`消耗 ${cost} 金幣建造塔，剩餘金錢: ${this.scene.player.money}`);
+    // 🆕 使用次數制：減少塔卡片的使用次數
+    if (this.scene.towerCardUI && typeof this.scene.towerCardUI.useTower === 'function') {
+      const success = this.scene.towerCardUI.useTower(this.selectedTowerType);
       
-      // 更新塔卡片可用性
-      if (this.scene.towerCardUI) {
-        this.scene.towerCardUI.updateCardAvailability(this.scene.player.money);
+      if (success) {
+        console.log(`✅ ${this.selectedTowerType}塔建造成功`);
+      } else {
+        console.warn(`❌ ${this.selectedTowerType}塔沒有剩餘使用次數`);
       }
     } else {
-      console.warn(`金錢不足，無法建造塔 (需要 ${cost} 金幣)`);
+      console.warn('⚠️ TowerCardUI 未正確初始化或缺少 useTower 方法');
     }
+    
+    // ❌ 移除原有的金錢扣除邏輯
+    // const towerData = GameConfig.TOWER.TYPES[this.selectedTowerType];
+    // const cost = towerData ? towerData.buildCost : 100;
+    // if (this.scene.player && this.scene.player.money >= cost) {
+    //   this.scene.player.money -= cost;
+    //   console.log(`消耗 ${cost} 金幣建造塔，剩餘金錢: ${this.scene.player.money}`);
+    //   if (this.scene.towerCardUI) {
+    //     this.scene.towerCardUI.updateCardAvailability(this.scene.player.money);
+    //   }
+    // } else {
+    //   console.warn(`金錢不足，無法建造塔 (需要 ${cost} 金幣)`);
+    // }
   }
 
   /**

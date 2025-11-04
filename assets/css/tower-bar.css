@@ -86,7 +86,11 @@
 }
 
 .tower-cost {
-  font-size: 12px;
+  position: absolute;
+  right: 22px;
+  top: 5px;
+  font-family: 'Squada One', cursive;
+  font-size: 2rem;
   color: var(--secondary);
 }
 
@@ -129,4 +133,23 @@
 
 .tower-card:hover .build-hint {
   opacity: 1;
+}
+
+/* 🆕 戰鬥階段時，整個塔卡片欄半透明且不可點擊 */
+#tower-card-bar.combat-mode {
+  opacity: 0.5;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+#tower-card-bar.combat-mode .tower-card {
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* 🆕 準備階段時，塔卡片欄完全可見 */
+#tower-card-bar.preparation-mode {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.3s ease;
 }

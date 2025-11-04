@@ -63,7 +63,7 @@ export class TowerBuildUI extends Phaser.GameObjects.Container {
     this.towerTypes = [
       {
         type: 'basic',
-        name: '基礎塔',
+        name: 'Gatling',
         description: '平衡的攻擊和射程',
         cost: 50,
         damage: 30,
@@ -74,7 +74,7 @@ export class TowerBuildUI extends Phaser.GameObjects.Container {
       },
       {
         type: 'cannon',
-        name: '加農炮',
+        name: 'Striker',
         description: '高傷害，慢射速',
         cost: 100,
         damage: 80,
@@ -96,7 +96,7 @@ export class TowerBuildUI extends Phaser.GameObjects.Container {
       },
       {
         type: 'ice',
-        name: '冰凍塔',
+        name: 'Frost',
         description: '減速敵人',
         cost: 70,
         damage: 20,

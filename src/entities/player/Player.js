@@ -59,8 +59,8 @@ export class Player extends Phaser.GameObjects.Container {
     // 創建玩家視覺
     this.createPlayerVisuals();
     
-    // 創建生命值條
-    this.createHealthBar();
+    // ❌ 移除玩家底下的生命值條（血量顯示在 UI 上）
+    // this.createHealthBar();
     
     // 創建武器
     this.createWeapon();
@@ -471,6 +471,11 @@ export class Player extends Phaser.GameObjects.Container {
    * 更新生命值條
    */
   updateHealthBar() {
+    // 🆕 如果生命值條不存在，不執行更新（已移除玩家底下的血條）
+    if (!this.healthBarFill || !this.healthText) {
+      return;
+    }
+    
     const healthPercentage = this.health / this.maxHealth;
     
     // 更新生命值條寬度

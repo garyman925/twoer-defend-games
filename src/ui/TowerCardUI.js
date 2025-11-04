@@ -14,10 +14,10 @@ export class TowerCardUI {
     
     // 塔類型配置
     this.towerTypes = [
-      { type: 'basic', name: '基礎塔', cardFrame: 'basic-tower-card.png', cost: 50 },
-      { type: 'cannon', name: '加農炮', cardFrame: 'canon-tower-card.png', cost: 100 },
-      { type: 'laser', name: '激光塔', cardFrame: 'laser-tower-card.png', cost: 150 },
-      { type: 'ice', name: '冰凍塔', cardFrame: 'ice-tower-card.png', cost: 120 }
+      { type: 'basic', name: 'Gatling', cardFrame: 'basic-tower-card.png', cost: 50 },
+      { type: 'cannon', name: 'Striker', cardFrame: 'canon-tower-card.png', cost: 100 },
+      { type: 'laser', name: 'Railgun', cardFrame: 'laser-tower-card.png', cost: 150 },
+      { type: 'ice', name: 'Frost', cardFrame: 'ice-tower-card.png', cost: 120 }
     ];
   }
 

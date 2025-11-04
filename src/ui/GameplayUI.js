@@ -11,7 +11,6 @@ export class GameplayUI {
     
     // UI 元素引用
     this.healthDisplay = null;
-    this.moneyDisplay = null;
     this.waveDisplay = null;
     this.scoreDisplay = null;
     this.timeDisplay = null;
@@ -85,13 +84,6 @@ export class GameplayUI {
           ).join('')}
         </div>
       </div>
-    `;
-    
-    // 金錢顯示
-    this.moneyDisplay = document.createElement('div');
-    this.moneyDisplay.className = 'money-display';
-    this.moneyDisplay.innerHTML = `
-      <span class="value" data-money="500">500</span>
     `;
     
     // 波次顯示
@@ -184,11 +176,6 @@ export class GameplayUI {
       this.updateHealth(data.health);
     });
     
-    // 金錢更新
-    this.scene.events.on('money:update', (data) => {
-      this.updateMoney(data.money);
-    });
-    
     // 波次更新
     this.scene.events.on('wave:update', (data) => {
       this.updateWave(data.wave, data.enemies || 0);
@@ -232,20 +219,6 @@ export class GameplayUI {
     }
   }
 
-  /**
-   * 更新金錢顯示
-   */
-  updateMoney(money) {
-    const valueEl = this.moneyDisplay.querySelector('.value');
-    if (valueEl) {
-      valueEl.textContent = money;
-      valueEl.setAttribute('data-money', money);
-      
-      // 添加動畫效果
-      valueEl.classList.add('value-change');
-      setTimeout(() => valueEl.classList.remove('value-change'), 300);
-    }
-  }
 
   /**
    * 更新波次顯示
@@ -448,7 +421,12 @@ export class GameplayUI {
     const messageEl = this.gameStatus.querySelector('.status-message');
     if (messageEl) {
       if (waveName) {
-        messageEl.innerHTML = `準備時間: ${time}秒<br><span class="wave-name">${waveName}</span>`;
+        // 🆕 添加「Place Your Towers」提示
+        messageEl.innerHTML = `
+          準備時間: ${time}秒<br>
+          <span class="wave-name">${waveName}</span><br>
+          <span class="description-text">Place Your Towers</span>
+        `;
       } else {
         messageEl.textContent = `準備時間: ${time}秒`;
       }
@@ -483,7 +461,6 @@ export class GameplayUI {
     // 移除事件監聽
     if (this.scene && this.scene.events) {
       this.scene.events.off('health:update');
-      this.scene.events.off('money:update');
       this.scene.events.off('wave:update');
       this.scene.events.off('score:update');
     }

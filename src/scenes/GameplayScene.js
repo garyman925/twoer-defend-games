@@ -14,6 +14,8 @@ import { PerformanceMonitor } from '../systems/PerformanceMonitor.js';
 // import { ScreenShake } from '../effects/ScreenShake.js'; // ❌ 已移除
 import { ComboSystem } from '../systems/ComboSystem.js';
 import { EnhancedAudioManager } from '../effects/audio/EnhancedAudioManager.js';
+import { WeaponManager } from '../managers/WeaponManager.js';
+import { WeaponBarUI } from '../ui/WeaponBarUI.js';
 
 export class GameplayScene extends BaseScene {
   constructor() {
@@ -34,6 +36,8 @@ export class GameplayScene extends BaseScene {
     // this.screenShake = null; // ❌ 已移除
     this.comboSystem = null;
     this.enhancedAudio = null;
+    this.weaponManager = null; // 🆕 武器管理器
+    this.weaponBarUI = null;   // 🆕 武器欄 UI
     
     // 遊戲狀態
     this.gameState = 'preparation'; // preparation, playing, paused
@@ -197,6 +201,9 @@ export class GameplayScene extends BaseScene {
     // 創建玩家
     this.createPlayer();
     
+    // 🆕 創建武器系統（在玩家創建後）
+    this.createWeaponSystem();
+    
     // 創建 DOM UI
     this.gameplayUI = new GameplayUI(this);
     this.gameplayUI.create();
@@ -227,9 +234,6 @@ export class GameplayScene extends BaseScene {
     
     // 設置碰撞檢測
     this.setupCollisions();
-    
-    // 設置金錢更新監聽
-    this.setupMoneyUpdateListener();
     
     // 設置事件監聽
     this.setupEventListeners();
@@ -389,15 +393,10 @@ export class GameplayScene extends BaseScene {
     this.towerCardUI = new TowerCardOverlay(this);
     this.towerCardUI.create();
 
-    // 將金錢顯示移到塔列左側
-    if (this.gameplayUI && typeof this.gameplayUI.mountMoneyToTowerBar === 'function') {
-      this.gameplayUI.mountMoneyToTowerBar();
-    }
-
-    // 初始化卡片可用性（以當前金錢）
-    const initMoney = this.gameManager ? this.gameManager.playerData.money : 500;
-    if (this.towerCardUI && typeof this.towerCardUI.updateCardAvailability === 'function') {
-      this.towerCardUI.updateCardAvailability(initMoney);
+    // 🆕 重置所有塔的使用次數為 5（新遊戲開始）
+    if (this.towerCardUI && typeof this.towerCardUI.resetAllUses === 'function') {
+      this.towerCardUI.resetAllUses();
+      console.log('✅ 塔卡片使用次數已重置');
     }
     
     // 設置塔系統事件監聽器
@@ -426,19 +425,36 @@ export class GameplayScene extends BaseScene {
    * 塔卡片選擇事件處理
    */
   onTowerCardSelected(data) {
-    const { type, name, cost } = data;
-    console.log(`🎯 選擇了塔卡片: ${name} (${type}) - 價格: $${cost}`);
+    const { type, name, usesRemaining } = data;
+    console.log(`🎯 選擇了塔卡片: ${name} (${type}) - 剩餘次數: ${usesRemaining}`);
     
-    // 檢查玩家是否有足夠的金錢
-    if (this.gameManager && this.gameManager.playerData.money >= cost) {
-      console.log(`✅ 金錢檢查通過`);
+    // 🆕 只允許在準備階段放置炮塔
+    if (this.gameState !== 'preparation') {
+      console.warn(`❌ 只能在準備階段放置炮塔！當前狀態: ${this.gameState}`);
+      
+      // 取消卡片選擇
+      if (this.towerCardUI && typeof this.towerCardUI.deselectAll === 'function') {
+        this.towerCardUI.deselectAll();
+      }
+      
+      // 顯示提示訊息
+      if (this.gameplayUI) {
+        this.gameplayUI.showGameStatus('只能在準備階段放置炮塔！', 1500);
+      }
+      
+      return;
+    }
+    
+    // 檢查是否還有使用次數
+    if (usesRemaining > 0) {
+      console.log(`✅ 次數檢查通過，剩餘: ${usesRemaining}`);
       
       // 開始塔放置模式
       if (this.towerPlacementSystem) {
         this.towerPlacementSystem.startTowerPlacement(type);
       }
     } else {
-      console.warn(`❌ 無法購買 ${name}: 金錢不足`);
+      console.warn(`❌ 無法使用 ${name}: 沒有剩餘次數`);
       
       // 取消卡片選擇
       if (this.towerCardUI && typeof this.towerCardUI.deselectAll === 'function') {
@@ -550,6 +566,26 @@ export class GameplayScene extends BaseScene {
     });
   }
   */
+
+  /**
+   * 🆕 創建武器系統
+   */
+  async createWeaponSystem() {
+    if (!this.player) {
+      console.error('❌ 玩家不存在，無法創建武器系統');
+      return;
+    }
+    
+    // 創建武器管理器
+    this.weaponManager = new WeaponManager(this, this.player);
+    await this.weaponManager.init();
+    
+    // 創建武器欄 UI
+    this.weaponBarUI = new WeaponBarUI(this, this.weaponManager);
+    this.weaponBarUI.create();
+    
+    console.log('✅ 武器系統創建完成');
+  }
 
   /**
    * 創建連擊系統
@@ -866,26 +902,6 @@ export class GameplayScene extends BaseScene {
     console.log('   ✅ 碰撞處理完成');
   }
 
-  /**
-   * 設置金錢更新監聽器
-   */
-  setupMoneyUpdateListener() {
-    // 監聽金錢變化事件
-    this.events.on('moneyChanged', (data) => {
-      // 同步 DOM UI
-      this.events.emit('money:update', { money: data.total });
-      
-      // 同步 DOM 卡片可用性
-      if (this.towerCardUI && typeof this.towerCardUI.updateCardAvailability === 'function') {
-        this.towerCardUI.updateCardAvailability(data.total);
-      }
-    });
-    
-    // 監聽敵人死亡事件（來自BaseTower的投射物擊殺）
-    this.events.on('enemyKilled', (data) => {
-      console.log(`🎯 敵人被擊殺: ${data.enemy.enemyType}, 獎勵: ${data.reward}`);
-    });
-  }
 
   /**
    * 創建簡化的遊戲管理器
@@ -1003,22 +1019,12 @@ export class GameplayScene extends BaseScene {
   onEnemyDied(data) {
     const { enemy, reward } = data;
     
-    // 通過 GameManager 處理敵人擊殺（會計算金錢和分數）
+    // 通過 GameManager 處理敵人擊殺（只計算分數，不再給金錢）
     if (this.gameManager && typeof this.gameManager.enemyKilled === 'function') {
       this.gameManager.enemyKilled(enemy);
-    } else {
-      // 備用方案：直接更新金錢
-      if (reward) {
-        this.gameManager.addMoney(reward);
-      }
     }
     
-    // 更新 UI
-    this.events.emit('money:update', {
-      money: this.gameManager.playerData.money
-    });
-    
-    // 更新分數並發送事件（GameManager.enemyKilled 已經計算了分數）
+    // 更新分數 UI
     this.events.emit('score:update', {
       score: this.gameManager.playerData.score
     });
@@ -1091,7 +1097,17 @@ export class GameplayScene extends BaseScene {
     console.log(`🕐 開始準備階段 - 第 ${this.currentWave} 波`);
     console.log(`   gameState: ${this.gameState}`);
     
-    // 準備計時器會顯示波次，不需要額外訊息
+    // 🆕 啟用塔卡片 UI（準備階段可以放置）
+    if (this.towerCardUI && typeof this.towerCardUI.setEnabled === 'function') {
+      this.towerCardUI.setEnabled(true);
+      console.log('   🃏 塔卡片已啟用');
+    }
+    
+    // 🆕 顯示放置格網（幫助玩家放置炮塔）
+    if (this.towerPlacementSystem && this.towerPlacementSystem.gridOverlay) {
+      this.towerPlacementSystem.gridOverlay.setVisible(true);
+      console.log('   📐 格網已顯示');
+    }
     
     // 開始準備計時器
     const preparationTime = GameConfig.WAVE ? GameConfig.WAVE.PREPARATION_TIME : 10000;
@@ -1099,7 +1115,7 @@ export class GameplayScene extends BaseScene {
     
     console.log(`   準備時間: ${timeLeft}秒`);
     
-    // 立即顯示準備倒數（帶波次名稱）
+    // 立即顯示準備倒數（帶波次名稱和提示）
     if (this.gameplayUI) {
       this.gameplayUI.updatePreparationTimer(timeLeft, `第${this.currentWave}波`);
     }
@@ -1117,6 +1133,13 @@ export class GameplayScene extends BaseScene {
         
         if (timeLeft <= 0) {
           console.log(`   ✅ 準備結束，開始波次`);
+          
+          // 🆕 隱藏格網（準備時間結束）
+          if (this.towerPlacementSystem && this.towerPlacementSystem.gridOverlay) {
+            this.towerPlacementSystem.gridOverlay.setVisible(false);
+            console.log('   📐 格網已隱藏');
+          }
+          
           // 隱藏準備計時器
           if (this.gameplayUI) {
             this.gameplayUI.hidePreparationTimer();
@@ -1140,6 +1163,24 @@ export class GameplayScene extends BaseScene {
     console.log(`⚔️ 開始波次 ${this.currentWave}`);
     console.log(`   gameState: ${this.gameState}`);
     console.log(`   elapsedTime: ${this.elapsedTime}`);
+    
+    // 🆕 禁用塔卡片 UI（戰鬥中不可放置）
+    if (this.towerCardUI && typeof this.towerCardUI.setEnabled === 'function') {
+      this.towerCardUI.setEnabled(false);
+      console.log('   🃏 塔卡片已禁用');
+    }
+    
+    // 🆕 強制停止任何正在進行的建造
+    if (this.towerPlacementSystem && this.towerPlacementSystem.isBuilding) {
+      this.towerPlacementSystem.cancelBuilding();
+      console.log('   🛑 已強制停止建造');
+    }
+    
+    // 🆕 強制隱藏格網（戰鬥階段不允許顯示）
+    if (this.towerPlacementSystem && this.towerPlacementSystem.gridOverlay) {
+      this.towerPlacementSystem.gridOverlay.setVisible(false);
+      console.log('   📐 格網已強制隱藏');
+    }
     
     // 開始生成敵人（這會設定 waveTargetKills）
     this.spawnEnemies();
@@ -1302,6 +1343,11 @@ export class GameplayScene extends BaseScene {
       this.enemySpawner.update(time, delta);
     }
     
+    // 🆕 更新武器管理器（冷卻計時）
+    if (this.weaponManager) {
+      this.weaponManager.update(time, delta);
+    }
+    
     // 更新塔
     this.towers.children.entries.forEach(tower => {
       if (tower.update && tower.isActive) {
@@ -1402,6 +1448,17 @@ export class GameplayScene extends BaseScene {
       this.gameplayUI = null;
     }
     
+    // 🆕 清理武器系統
+    if (this.weaponBarUI) {
+      this.weaponBarUI.destroy();
+      this.weaponBarUI = null;
+    }
+    
+    if (this.weaponManager) {
+      this.weaponManager.destroy();
+      this.weaponManager = null;
+    }
+    
     // 清理塔系統事件監聽器
     this.events.off('towerPlaced', this.onTowerPlaced, this);
     this.events.off('towerSelected', this.onTowerSelected, this);
@@ -1415,7 +1472,6 @@ export class GameplayScene extends BaseScene {
     this.events.off('player:damaged');
     this.events.off('wave:start');
     this.events.off('wave:complete');
-    this.events.off('moneyChanged');
     this.events.off('enemyKilled');
     
     // 🆕 重置遊戲結束標記
