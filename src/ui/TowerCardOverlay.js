@@ -7,12 +7,58 @@ export class TowerCardOverlay {
     this.selectedType = null;
     this.isEnabled = true; // 🆕 卡片是否可用（準備階段為 true，戰鬥階段為 false）
 
-    // 🆕 每個塔類型的初始使用次數（改為次數制）
-    this.towerTypes = [
-      { type: 'basic', name: 'Gatling', usesRemaining: 5, icon: '●' },
-      { type: 'cannon', name: 'Striker', usesRemaining: 5, icon: '💥' },
-      { type: 'laser', name: 'Railgun', usesRemaining: 5, icon: '⚡' },
-      { type: 'ice', name: 'Frost', usesRemaining: 5, icon: '❄️' }
+    // 🆕 從配置載入炮塔類型
+    this.towerTypes = this.loadTowerConfig();
+  }
+
+  /**
+   * 🆕 從配置載入炮塔類型
+   */
+  loadTowerConfig() {
+    // 所有可用的炮塔數據
+    const allTowers = {
+      basic: { type: 'basic', name: 'Gatling', icon: '●' },
+      cannon: { type: 'cannon', name: 'Striker', icon: '💥' },
+      laser: { type: 'laser', name: 'Railgun', icon: '⚡' },
+      ice: { type: 'ice', name: 'Frost', icon: '❄️' }
+    };
+
+    // 從 localStorage 讀取配置
+    const savedConfig = localStorage.getItem('playerShipConfig');
+    
+    if (savedConfig) {
+      try {
+        const config = JSON.parse(savedConfig);
+        if (config.towerSlots && config.towerSlots.length > 0) {
+          // 根據配置創建炮塔列表
+          const loadedTowers = config.towerSlots.map(slot => {
+            const towerData = allTowers[slot.towerId];
+            if (towerData) {
+              return {
+                ...towerData,
+                usesRemaining: 5,
+                maxUses: 5
+              };
+            }
+            return null;
+          }).filter(tower => tower !== null);
+          
+          if (loadedTowers.length > 0) {
+            console.log('✅ 從 my-ship.html 配置載入炮塔:', loadedTowers.map(t => t.name));
+            return loadedTowers;
+          }
+        }
+      } catch (error) {
+        console.warn('⚠️ 讀取炮塔配置失敗，使用預設配置', error);
+      }
+    }
+    
+    // 預設配置（前3個）
+    console.log('ℹ️ 未找到配置，使用預設炮塔');
+    return [
+      { type: 'basic', name: 'Gatling', usesRemaining: 5, maxUses: 5, icon: '●' },
+      { type: 'cannon', name: 'Striker', usesRemaining: 5, maxUses: 5, icon: '💥' },
+      { type: 'laser', name: 'Railgun', usesRemaining: 5, maxUses: 5, icon: '⚡' }
     ];
   }
 

@@ -66,13 +66,20 @@ export class WeaponManager {
    * 載入玩家武器配置
    */
   loadPlayerLoadout() {
-    // 從 localStorage 讀取玩家裝備
-    const savedLoadout = localStorage.getItem('playerWeaponLoadout');
+    // 🆕 從統一的 playerShipConfig 讀取
+    const savedConfig = localStorage.getItem('playerShipConfig');
     
-    if (savedLoadout) {
+    if (savedConfig) {
       try {
-        const loadout = JSON.parse(savedLoadout);
-        this.equippedWeapons = loadout.weapons || ['vulcan', 'missile', 'bomb'];
+        const config = JSON.parse(savedConfig);
+        // 從 weaponSlots 提取武器 ID
+        if (config.weaponSlots && config.weaponSlots.length > 0) {
+          this.equippedWeapons = config.weaponSlots.map(slot => slot.weaponId);
+          console.log('✅ 從 my-ship.html 配置載入武器:', this.equippedWeapons);
+        } else {
+          this.equippedWeapons = ['vulcan', 'missile', 'bomb'];
+          console.log('⚠️ 配置中無武器槽位，使用預設配置');
+        }
       } catch (error) {
         console.warn('⚠️ 讀取武器配置失敗，使用預設配置', error);
         this.equippedWeapons = ['vulcan', 'missile', 'bomb'];
@@ -80,6 +87,7 @@ export class WeaponManager {
     } else {
       // 預設配置（新手武器）
       this.equippedWeapons = ['vulcan', 'missile', 'bomb'];
+      console.log('ℹ️ 未找到配置，使用預設武器');
     }
     
     console.log('✅ 玩家武器配置:', this.equippedWeapons);
