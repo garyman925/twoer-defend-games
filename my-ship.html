@@ -185,7 +185,6 @@
             background: linear-gradient(0deg, #053d43, #00000000);
             border: 2px solid #49fff575;
             border-radius: 10px;
-            margin-bottom: 20px;
             max-width: 100%;
             box-sizing: border-box;
             word-break: break-word;
@@ -194,6 +193,35 @@
         .my-ship-name:hover {
             color: #ffd93d;
             cursor: pointer;
+        }
+
+        /* 🆕 小標題樣式 */
+        .small-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.8;
+        }
+
+        /* 🆕 戰機名稱區塊 */
+        .ship-name-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* 🆕 升級技能區塊 */
+        .upgrade-skill-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 25px;
+            background: rgba(0, 255, 255, 0.05);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
         }
 
         /* 屬性進度條 */
@@ -315,7 +343,7 @@
 
         .plane-image {
             max-width: 100%;
-            max-height: 450px;
+            max-height: 350px;
             width: auto;
             height: auto;
             filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.4));
@@ -380,7 +408,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(2, 1fr);
-            gap: 35px;
+            gap: 12px;
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
@@ -400,7 +428,7 @@
             position: relative;
             padding: 15px;
             box-sizing: border-box;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .slot:hover {
@@ -410,8 +438,31 @@
             box-shadow: 0 5px 20px rgba(0, 255, 255, 0.3);
         }
 
+        /* 已裝備槽位的特殊樣式 */
+        .slot.equipped {
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .slot.equipped:hover {
+            border-color: #00ffff;
+            box-shadow: 0 5px 20px rgba(0, 255, 255, 0.4);
+        }
+
+        /* 未裝備但可用的槽位 */
+        .slot.available {
+            opacity: 0.6;
+            border-color: #009fb9;
+        }
+
+        .slot.available:hover {
+            opacity: 1;
+            border-color: #00ffff;
+        }
+
         .slot.empty {
             cursor: default;
+            opacity: 0.4;
         }
 
         .slot.empty:hover {
@@ -419,6 +470,27 @@
             background: rgba(0, 159, 185, 0.05);
             transform: none;
             box-shadow: none;
+            opacity: 0.4;
+        }
+
+        /* Tick 標記 - 左上角 */
+        .slot-tick {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #000000;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.8);
+            z-index: 10;
         }
 
         /* 空槽位蜂窩圖標 */
@@ -463,13 +535,15 @@
             background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
             border: 3px solid #00ffff;
             border-radius: 16px;
-            max-width: 600px;
+            max-width: 450px;
             width: 90%;
             max-height: 80vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            gap: 0;
             box-shadow: 0 0 50px rgba(0, 255, 255, 0.7);
+            position: relative;
         }
 
         .dialog-header {
@@ -477,7 +551,7 @@
             background: rgba(0, 159, 185, 0.2);
             border-bottom: 2px solid #009fb9;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
         }
 
@@ -490,6 +564,10 @@
         }
 
         .dialog-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
             background: none;
             border: none;
             color: #ffffff;
@@ -601,7 +679,7 @@
             border-top: 2px solid #009fb9;
             display: flex;
             gap: 12px;
-            justify-content: flex-end;
+            justify-content: center;
         }
 
         .dialog-btn {
@@ -636,6 +714,115 @@
         .dialog-btn-secondary:hover {
             background: rgba(150, 150, 150, 0.5);
             border-color: #999999;
+        }
+
+        /* 🆕 詳情面板樣式 */
+        .detail-view {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .detail-icon {
+            font-size: 80px;
+            text-align: center;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.6));
+        }
+
+        .detail-name-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0;
+        }
+
+        .detail-section {
+            background: rgba(0, 159, 185, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .detail-section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #00ffff;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .detail-desc {
+            font-family: 'Noto Sans HK', sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
+
+        .detail-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .detail-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            font-family: 'Noto Sans HK', sans-serif;
+        }
+
+        .detail-stat .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffd93d;
+        }
+
+        .detail-abilities {
+            list-style: none;
+            padding: 0;
+            font-family: 'Noto Sans HK', sans-serif;
+        }
+
+        .detail-abilities li {
+            padding: 6px 0;
+            color: #00ff88;
+            font-size: 0.95rem;
+        }
+
+        .detail-status {
+            text-align: center;
+            padding: 8px 16px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #00ff88;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .detail-status.unequipped {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #666666;
+            color: #999999;
         }
 
         /* 響應式設計 */
@@ -822,35 +1009,42 @@
 
         <!-- 左上區 - MY AIR PLANE -->
         <div class="plane-info">
-            <div>
+            <!-- 🆕 戰機名稱區塊 -->
+            <div class="ship-name-section">
+                <div class="small-title">Your Spaceship Name</div>
                 <h1 class="my-ship-name" id="ship-name">MY AIR PLANE</h1>
                 <button class="change-name-btn" onclick="changeName()">CHANGE NAME</button>
             </div>
 
-            <!-- Health Points -->
-            <div class="attribute-row">
-                <div class="attribute-icon">❤️</div>
-                <div class="attribute-content">
-                    <div class="attribute-label">Health Points</div>
-                    <div class="progress-container">
-                        <div class="progress-blocks" id="health-progress">
-                            <!-- 10 個方格將由 JS 生成 -->
+            <!-- 🆕 升級技能區塊 -->
+            <div class="upgrade-skill-section">
+                <div class="small-title">Upgrade Skill</div>
+                
+                <!-- Health Points -->
+                <div class="attribute-row">
+                    <div class="attribute-icon">❤️</div>
+                    <div class="attribute-content">
+                        <div class="attribute-label">Health Points</div>
+                        <div class="progress-container">
+                            <div class="progress-blocks" id="health-progress">
+                                <!-- 10 個方格將由 JS 生成 -->
+                            </div>
+                            <button class="upgrade-plus-btn" id="health-upgrade-btn" onclick="upgradeAttribute('health')">+</button>
                         </div>
-                        <button class="upgrade-plus-btn" id="health-upgrade-btn" onclick="upgradeAttribute('health')">+</button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Speed Points -->
-            <div class="attribute-row">
-                <div class="attribute-icon">👊</div>
-                <div class="attribute-content">
-                    <div class="attribute-label">Speed Points</div>
-                    <div class="progress-container">
-                        <div class="progress-blocks" id="speed-progress">
-                            <!-- 10 個方格將由 JS 生成 -->
+                <!-- Speed Points -->
+                <div class="attribute-row">
+                    <div class="attribute-icon">👊</div>
+                    <div class="attribute-content">
+                        <div class="attribute-label">Speed Points</div>
+                        <div class="progress-container">
+                            <div class="progress-blocks" id="speed-progress">
+                                <!-- 10 個方格將由 JS 生成 -->
+                            </div>
+                            <button class="upgrade-plus-btn" id="speed-upgrade-btn" onclick="upgradeAttribute('moveSpeed')">+</button>
                         </div>
-                        <button class="upgrade-plus-btn" id="speed-upgrade-btn" onclick="upgradeAttribute('moveSpeed')">+</button>
                     </div>
                 </div>
             </div>
@@ -897,10 +1091,10 @@
     <!-- 武器選擇對話框 -->
     <div id="weapon-dialog" class="dialog-overlay">
         <div class="dialog-box">
-            <div class="dialog-header">
+            <button class="dialog-close" onclick="closeWeaponDialog()">✕</button>
+            <!-- <div class="dialog-header">
                 <h3 class="dialog-title">🔫 選擇武器</h3>
-                <button class="dialog-close" onclick="closeWeaponDialog()">✕</button>
-            </div>
+            </div> -->
             <div class="dialog-content" id="weapon-options">
                 <!-- 武器選項將由 JavaScript 動態生成 -->
             </div>
@@ -914,10 +1108,10 @@
     <!-- 炮塔選擇對話框 -->
     <div id="tower-dialog" class="dialog-overlay">
         <div class="dialog-box">
-            <div class="dialog-header">
+            <button class="dialog-close" onclick="closeTowerDialog()">✕</button>
+            <!-- <div class="dialog-header">
                 <h3 class="dialog-title">🏗️ 選擇炮塔</h3>
-                <button class="dialog-close" onclick="closeTowerDialog()">✕</button>
-            </div>
+            </div> -->
             <div class="dialog-content" id="tower-options">
                 <!-- 炮塔選項將由 JavaScript 動態生成 -->
             </div>
@@ -1174,15 +1368,39 @@
             const container = document.getElementById('weapon-loadout');
             container.innerHTML = '';
             
+            // 獲取所有可用武器
+            const allWeapons = Object.values(WEAPON_DATA).filter(w => w.unlocked);
+            
             // 生成 8 個槽位
             for (let i = 0; i < 8; i++) {
-                const weaponId = currentLoadout.weapons[i];
-                const weapon = WEAPON_DATA[weaponId];
+                const equippedWeaponId = currentLoadout.weapons[i];
+                
+                // 決定要顯示什麼
+                let weapon = null;
+                let isEquipped = false;
+                
+                if (equippedWeaponId) {
+                    // 已裝備的武器
+                    weapon = WEAPON_DATA[equippedWeaponId];
+                    isEquipped = true;
+                } else if (i - 3 >= 0 && i - 3 < allWeapons.length) {
+                    // 未裝備但可用的武器（從第4個槽位開始顯示其他武器）
+                    weapon = allWeapons[i - 3];
+                    // 確保不重複顯示已裝備的武器
+                    if (currentLoadout.weapons.includes(weapon.id)) {
+                        // 跳過已裝備的，找下一個
+                        const availableWeapons = allWeapons.filter(w => !currentLoadout.weapons.includes(w.id));
+                        const index = i - 3 - currentLoadout.weapons.filter(w => w).length;
+                        weapon = availableWeapons[index] || null;
+                    }
+                }
                 
                 if (weapon) {
-                    // 已裝備的槽位
                     const slotHTML = `
-                        <div class="slot" onclick="openWeaponDialog(${i})">
+                        <div class="slot ${isEquipped ? 'equipped' : 'available'}" 
+                             onclick="showWeaponDetails('${weapon.id}', ${i})"
+                             data-weapon-id="${weapon.id}">
+                            ${isEquipped ? '<div class="slot-tick">✓</div>' : ''}
                             <div class="slot-icon">${weapon.icon}</div>
                             <div class="slot-name">${weapon.name}</div>
                         </div>
@@ -1191,7 +1409,7 @@
                 } else {
                     // 空槽位
                     const emptySlotHTML = `
-                        <div class="slot empty" onclick="openWeaponDialog(${i})">
+                        <div class="slot empty">
                             <div class="slot-empty-icon">⬡</div>
                         </div>
                     `;
@@ -1205,15 +1423,35 @@
             const container = document.getElementById('tower-loadout');
             container.innerHTML = '';
             
+            // 獲取所有可用炮塔
+            const allTowers = Object.values(TOWER_DATA).filter(t => t.unlocked);
+            
             // 生成 8 個槽位
             for (let i = 0; i < 8; i++) {
-                const towerId = currentLoadout.towers[i];
-                const tower = TOWER_DATA[towerId];
+                const equippedTowerId = currentLoadout.towers[i];
+                
+                // 決定要顯示什麼
+                let tower = null;
+                let isEquipped = false;
+                
+                if (equippedTowerId) {
+                    // 已裝備的炮塔
+                    tower = TOWER_DATA[equippedTowerId];
+                    isEquipped = true;
+                } else {
+                    // 未裝備但可用的炮塔（顯示其他炮塔）
+                    const availableTowers = allTowers.filter(t => !currentLoadout.towers.includes(t.id));
+                    const equippedCount = currentLoadout.towers.filter(t => t).length;
+                    const index = i - equippedCount;
+                    tower = availableTowers[index] || null;
+                }
                 
                 if (tower) {
-                    // 已裝備的槽位
                     const slotHTML = `
-                        <div class="slot" onclick="openTowerDialog(${i})">
+                        <div class="slot ${isEquipped ? 'equipped' : 'available'}" 
+                             onclick="showTowerDetails('${tower.id}', ${i})"
+                             data-tower-id="${tower.id}">
+                            ${isEquipped ? '<div class="slot-tick">✓</div>' : ''}
                             <div class="slot-icon">${tower.icon}</div>
                             <div class="slot-name">${tower.name}</div>
                         </div>
@@ -1222,7 +1460,7 @@
                 } else {
                     // 空槽位
                     const emptySlotHTML = `
-                        <div class="slot empty" onclick="openTowerDialog(${i})">
+                        <div class="slot empty">
                             <div class="slot-empty-icon">⬡</div>
                         </div>
                     `;
@@ -1337,6 +1575,88 @@
             tempSelection = null;
         }
 
+        // ===== 🆕 顯示武器詳情 =====
+        function showWeaponDetails(weaponId, slotIndex) {
+            const weapon = WEAPON_DATA[weaponId];
+            if (!weapon) return;
+            
+            const isEquipped = currentLoadout.weapons[slotIndex] === weaponId;
+            const equippedSlotIndex = currentLoadout.weapons.indexOf(weaponId);
+            
+            const container = document.getElementById('weapon-options');
+            container.innerHTML = `
+                <div class="detail-view">
+                    <div class="detail-icon">${weapon.icon}</div>
+                    
+                    <div class="detail-name-row">
+                        <h2 class="detail-name">${weapon.name}</h2>
+                        ${isEquipped || equippedSlotIndex !== -1 ? `
+                            <div class="detail-status">✅ 槽位 ${equippedSlotIndex + 1}</div>
+                        ` : `
+                            <div class="detail-status unequipped">未裝備</div>
+                        `}
+                    </div>
+                    
+                    <p class="detail-desc" style="text-align: center; margin-bottom: 20px;">
+                        ${weapon.description}
+                    </p>
+                    
+                    <div class="detail-section">
+                        <div class="detail-stats" style="flex-direction: row; justify-content: space-around; gap: 20px;">
+                            <div class="detail-stat" style="flex: 1;">
+                                <span>傷害</span>
+                                <span class="stat-value">${weapon.damage}</span>
+                            </div>
+                            <div class="detail-stat" style="flex: 1;">
+                                <span>冷卻</span>
+                                <span class="stat-value">${weapon.cooldown || 0} 秒</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 修改對話框底部按鈕
+            const footerEl = document.querySelector('#weapon-dialog .dialog-footer');
+            if (isEquipped || equippedSlotIndex !== -1) {
+                // 已裝備：顯示解除按鈕
+                const actualSlot = equippedSlotIndex !== -1 ? equippedSlotIndex : slotIndex;
+                footerEl.innerHTML = `
+                    <button class="dialog-btn dialog-btn-secondary" onclick="closeWeaponDialog()">關閉</button>
+                    <button class="dialog-btn dialog-btn-primary" onclick="unequipWeapon(${actualSlot}); closeWeaponDialog();">
+                        解除裝備
+                    </button>
+                `;
+            } else {
+                // 未裝備：顯示裝備按鈕
+                footerEl.innerHTML = `
+                    <button class="dialog-btn dialog-btn-secondary" onclick="closeWeaponDialog()">關閉</button>
+                    <button class="dialog-btn dialog-btn-primary" onclick="equipWeapon('${weaponId}', ${slotIndex}); closeWeaponDialog();">
+                        裝備到槽位 ${slotIndex + 1}
+                    </button>
+                `;
+            }
+            
+            document.getElementById('weapon-dialog').classList.add('active');
+        }
+
+        // ===== 🆕 裝備武器 =====
+        function equipWeapon(weaponId, slotIndex) {
+            currentLoadout.weapons[slotIndex] = weaponId;
+            saveLoadout();
+            renderWeaponLoadout();
+            console.log(`✅ 已裝備 ${weaponId} 到槽位 ${slotIndex + 1}`);
+        }
+
+        // ===== 🆕 解除武器裝備 =====
+        function unequipWeapon(slotIndex) {
+            const weaponId = currentLoadout.weapons[slotIndex];
+            currentLoadout.weapons[slotIndex] = null;
+            saveLoadout();
+            renderWeaponLoadout();
+            console.log(`❌ 已解除 ${weaponId} 的裝備`);
+        }
+
         // ===== 打開炮塔選擇對話框 =====
         function openTowerDialog(slotIndex) {
             currentEditingSlot = slotIndex;
@@ -1400,6 +1720,88 @@
             document.getElementById('tower-dialog').classList.remove('active');
             currentEditingSlot = null;
             tempSelection = null;
+        }
+
+        // ===== 🆕 顯示炮塔詳情 =====
+        function showTowerDetails(towerId, slotIndex) {
+            const tower = TOWER_DATA[towerId];
+            if (!tower) return;
+            
+            const isEquipped = currentLoadout.towers[slotIndex] === towerId;
+            const equippedSlotIndex = currentLoadout.towers.indexOf(towerId);
+            
+            const container = document.getElementById('tower-options');
+            container.innerHTML = `
+                <div class="detail-view">
+                    <div class="detail-icon">${tower.icon}</div>
+                    
+                    <div class="detail-name-row">
+                        <h2 class="detail-name">${tower.name}</h2>
+                        ${isEquipped || equippedSlotIndex !== -1 ? `
+                            <div class="detail-status">✅ 槽位 ${equippedSlotIndex + 1}</div>
+                        ` : `
+                            <div class="detail-status unequipped">未裝備</div>
+                        `}
+                    </div>
+                    
+                    <p class="detail-desc" style="text-align: center; margin-bottom: 20px;">
+                        ${tower.description}
+                    </p>
+                    
+                    <div class="detail-section">
+                        <div class="detail-stats" style="flex-direction: row; justify-content: space-around; gap: 20px;">
+                            <div class="detail-stat" style="flex: 1;">
+                                <span>傷害</span>
+                                <span class="stat-value">${tower.damage}</span>
+                            </div>
+                            <div class="detail-stat" style="flex: 1;">
+                                <span>射程</span>
+                                <span class="stat-value">${tower.range}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 修改對話框底部按鈕
+            const footerEl = document.querySelector('#tower-dialog .dialog-footer');
+            if (isEquipped || equippedSlotIndex !== -1) {
+                // 已裝備：顯示解除按鈕
+                const actualSlot = equippedSlotIndex !== -1 ? equippedSlotIndex : slotIndex;
+                footerEl.innerHTML = `
+                    <button class="dialog-btn dialog-btn-secondary" onclick="closeTowerDialog()">關閉</button>
+                    <button class="dialog-btn dialog-btn-primary" onclick="unequipTower(${actualSlot}); closeTowerDialog();">
+                        解除裝備
+                    </button>
+                `;
+            } else {
+                // 未裝備：顯示裝備按鈕
+                footerEl.innerHTML = `
+                    <button class="dialog-btn dialog-btn-secondary" onclick="closeTowerDialog()">關閉</button>
+                    <button class="dialog-btn dialog-btn-primary" onclick="equipTower('${towerId}', ${slotIndex}); closeTowerDialog();">
+                        裝備到槽位 ${slotIndex + 1}
+                    </button>
+                `;
+            }
+            
+            document.getElementById('tower-dialog').classList.add('active');
+        }
+
+        // ===== 🆕 裝備炮塔 =====
+        function equipTower(towerId, slotIndex) {
+            currentLoadout.towers[slotIndex] = towerId;
+            saveLoadout();
+            renderTowerLoadout();
+            console.log(`✅ 已裝備 ${towerId} 到槽位 ${slotIndex + 1}`);
+        }
+
+        // ===== 🆕 解除炮塔裝備 =====
+        function unequipTower(slotIndex) {
+            const towerId = currentLoadout.towers[slotIndex];
+            currentLoadout.towers[slotIndex] = null;
+            saveLoadout();
+            renderTowerLoadout();
+            console.log(`❌ 已解除 ${towerId} 的裝備`);
         }
 
         // ===== 🆕 載入戰機名稱 =====
