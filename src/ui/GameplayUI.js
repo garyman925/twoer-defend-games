@@ -2,6 +2,10 @@
  * 遊戲 UI 管理器
  * 使用 DOM 元素建立遊戲界面
  */
+
+// 🆕 導入 GameConfig
+import GameConfig from '../core/GameConfig.js';
+
 export class GameplayUI {
   constructor(scene) {
     this.scene = scene;
@@ -350,7 +354,8 @@ export class GameplayUI {
     // 防止 NaN：確保 elapsedSeconds 是有效數字
     const elapsed = typeof elapsedSeconds === 'number' && !isNaN(elapsedSeconds) ? elapsedSeconds : 0;
     
-    const timeLimit = 180; // 3分鐘
+    // 🆕 從 GameConfig 讀取時間限制
+    const timeLimit = GameConfig.GAME.TIME_LIMIT || 180;
     const remainingSeconds = Math.max(0, timeLimit - elapsed);
     const minutes = Math.floor(remainingSeconds / 60);
     const secs = remainingSeconds % 60;

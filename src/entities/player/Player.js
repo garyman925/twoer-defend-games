@@ -11,9 +11,12 @@ export class Player extends Phaser.GameObjects.Container {
     
     console.log('🎮 創建玩家，位置:', x, y);
     
-    // 基本屬性
-    this.health = GameConfig.PLAYER.HEALTH.MAX;
-    this.maxHealth = GameConfig.PLAYER.HEALTH.MAX;
+    // 🆕 讀取升級數據
+    this.upgrades = this.loadUpgrades();
+    
+    // 基本屬性（應用升級）
+    this.maxHealth = this.upgrades.health?.currentValue || GameConfig.PLAYER.HEALTH.MAX;
+    this.health = this.maxHealth;
     this.isAlive = true;
     // this.lives = 3; // ❌ 已移除：不再使用 lives 系統，改用 10 格血量系統
     this.money = GameConfig.RESOURCES.STARTING_MONEY; // 初始金錢
@@ -23,8 +26,8 @@ export class Player extends Phaser.GameObjects.Container {
     this.isImmune = false;
     this.immunityDuration = 1000; // 受傷後1秒無敵時間
     
-    // 移動相關
-    this.moveSpeed = 300; // 移動速度
+    // 移動相關（應用升級）
+    this.moveSpeed = this.upgrades.moveSpeed?.currentValue || GameConfig.PLAYER.MOVEMENT.SPEED || 300;
     this.velocity = { x: 0, y: 0 };
     this.keys = {
       up: false,
@@ -32,6 +35,10 @@ export class Player extends Phaser.GameObjects.Container {
       left: false,
       right: false
     };
+    
+    console.log('✅ 玩家屬性已應用升級:');
+    console.log('   生命值:', this.maxHealth);
+    console.log('   移動速度:', this.moveSpeed);
     
     // 視覺組件
     this.playerSprite = null;
@@ -50,6 +57,19 @@ export class Player extends Phaser.GameObjects.Container {
     console.log('🎮 玩家容器可見性:', this.visible);
     console.log('🎮 玩家容器縮放:', this.scaleX, this.scaleY);
     
+  }
+
+  /**
+   * 🆕 讀取升級數據
+   */
+  loadUpgrades() {
+    try {
+      const config = JSON.parse(localStorage.getItem('playerShipConfig') || '{}');
+      return config.upgrades || {};
+    } catch (error) {
+      console.warn('⚠️ 讀取升級數據失敗:', error);
+      return {};
+    }
   }
 
   /**

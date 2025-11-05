@@ -181,6 +181,11 @@ export class BaseWeapon {
       duration: 150,
       ease: 'Quad.easeOut',
       onComplete: () => {
+        // 🆕 檢查對象是否還存在（場景可能已清理）
+        if (!this.muzzleFlash || !this.muzzleFlash.scene) {
+          return; // 場景已銷毀，不執行
+        }
+        
         this.muzzleFlash.setVisible(false);
         this.muzzleFlash.setScale(1);
       }
@@ -232,6 +237,11 @@ export class BaseWeapon {
    * 銷毀武器
    */
   destroy() {
+    // 🆕 停止所有與 muzzleFlash 相關的 Tweens
+    if (this.muzzleFlash && this.scene && this.scene.tweens) {
+      this.scene.tweens.killTweensOf(this.muzzleFlash);
+    }
+    
     // 清理投射物
     this.projectilePool.forEach(projectile => {
       if (projectile) {

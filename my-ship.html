@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的戰機 - 升級系統</title>
+    <title>我的戰機 - 裝備系統</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Squada+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Squada+One&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,206 +15,440 @@
         }
 
         body {
-            font-family: 'Arial', 'Microsoft JhengHei', sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            font-family: 'Noto Sans HK', 'Arial', 'Microsoft JhengHei', sans-serif;
+            background: #01332f;
             color: #ffffff;
             min-height: 100vh;
+            overflow: auto;
             padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* 頂部導航 */
-        .header {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #00ffff;
+        }
+
+        /* 主容器 - 12列網格系統 */
+        .main-container {
+            width: 100%;
+            max-width: 1200px;
+            height: auto;
+            min-height: 900px;
+            display: grid;
+            grid-template-rows: auto 1fr 1fr;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 0;
+            margin: 0 auto;
             border-radius: 12px;
-            margin-bottom: 30px;
+            overflow: hidden;
+            box-sizing: border-box;
         }
 
-        .header h1 {
-            color: #00ffff;
-            font-size: 2rem;
-            font-family: 'Squada One', cursive;
+        /* 頂部標題區 - 跨越所有列 */
+        .header-bar {
+            grid-column: 1 / -1;
+            background: transparent;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
-        .back-btn {
-            padding: 12px 24px;
-            background: linear-gradient(0deg, #000000c4 0%, #009fb991 100%);
+            .header-bar .header-title .header-stoke-left{
+                position: absolute;
+                left: 0;
+                width: 50%;
+                height: 1px;
+                background: aquamarine;
+                transform: translate(-80%, 19px);
+            }
+
+            .header-bar .header-title .header-stoke-right{
+                position: absolute;
+                right: 0;
+                width: 50%;
+                height: 1px;
+                background: aquamarine;
+                transform: translate(82%, -19px);
+            }
+
+        .header-title {
+            position: relative;
+            background-image: url(assets/export/heading-frame.png);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             border: none;
-            border-radius: 8px;
-            box-shadow: 0 0 0 4px #ffffff36;
-            color: white;
-            font-size: 1rem;
+            border-radius: 0;
+            padding: 15px 12%;
+            max-width: 95%;
+            font-family: 'Noto Sans HK', 'Squada One', cursive;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #b0fffa;
+            letter-spacing: 7px;
+            box-sizing: border-box;
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: 2px solid #00ffff;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 1.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
-        }
-
-        .back-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-        }
-
-        /* 玩家狀態面板 */
-        .player-stats {
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid #009fb9;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 30px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .stat-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            background: rgba(0, 159, 185, 0.1);
-            border-radius: 8px;
+            justify-content: center;
         }
 
-        .stat-label {
-            color: #00ffff;
-            font-weight: bold;
+        .close-btn:hover {
+            background: rgba(255, 0, 0, 0.3);
+            border-color: #ff0000;
+            transform: translateY(-50%) scale(1.1);
         }
 
-        .stat-value {
-            color: #ffff00;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        /* 升級區域 */
-        .upgrade-section {
-            margin-bottom: 40px;
+        /* 左上區 - MY AIR PLANE */
+        .plane-info {
+            grid-column: span 5;
+            grid-row: 2;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .section-title-large {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .change-name-btn {
+            width: fit-content;
+            padding: 8px 20px;
+            background: #ffac10;
+            border: 2px solid #ffffff;
+            border-radius: 4px;
+            color: #040404;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .change-name-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #00ffff;
             color: #00ffff;
-            font-size: 1.5rem;
+        }
+        
+
+
+        .my-ship-name { 
+            font-family: 'Orbitron', monospace;
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            padding: 18px;
+            background: linear-gradient(0deg, #053d43, #00000000);
+            border: 2px solid #49fff575;
+            border-radius: 10px;
             margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #009fb9;
+            max-width: 100%;
+            box-sizing: border-box;
+            word-break: break-word;
+        }
+
+        .my-ship-name:hover {
+            color: #ffd93d;
+            cursor: pointer;
+        }
+
+        /* 屬性進度條 */
+        .attribute-row {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
         }
 
-        .section-icon {
-            font-size: 1.8rem;
+        .attribute-icon {
+            font-size: 40px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.6));
         }
 
-        .upgrade-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+        .attribute-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        /* 裝備槽位區域 */
-        .loadout-section {
-            margin-bottom: 40px;
+        .attribute-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .loadout-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
+        .progress-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
-        /* 裝備槽位卡片 */
-        .loadout-slot {
-            background: rgba(0, 159, 185, 0.1);
-            border: 2px solid #009fb9;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
+        .progress-blocks {
+            display: flex;
+            gap: 4px;
+            max-width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .progress-block {
+            width: 30px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
             transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
         }
 
-        .loadout-slot:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 255, 255, 0.3);
-            border-color: #00ffff;
+        .progress-block.active.health {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+            border-color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
         }
 
-        .slot-number {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            background: rgba(0, 0, 0, 0.8);
-            color: #ffd93d;
-            font-size: 14px;
+        .progress-block.active.speed {
+            background: linear-gradient(135deg, #ff6600 0%, #ff4400 100%);
+            border-color: #ff6600;
+            box-shadow: 0 0 10px rgba(255, 102, 0, 0.6);
+        }
+
+        .upgrade-plus-btn {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #00ffff 0%, #009fb9 100%);
+            border: none;
+            border-radius: 4px;
+            color: #000000;
+            font-size: 1.5rem;
             font-weight: bold;
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid #ffd93d;
-            font-family: 'Squada One', cursive;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
         }
 
+        .upgrade-plus-btn:hover:not(:disabled) {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
+        }
+
+        .upgrade-plus-btn:disabled {
+            background: rgba(100, 100, 100, 0.3);
+            color: #555555;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* 右上區 - 戰機圖片 */
+        .plane-visual {
+            grid-column: span 7;
+            grid-row: 2;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .plane-image-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .plane-image {
+            max-width: 100%;
+            max-height: 450px;
+            width: auto;
+            height: auto;
+            filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.4));
+            transition: all 0.3s ease;
+        }
+
+        .plane-image:hover {
+            filter: drop-shadow(0 0 50px rgba(0, 255, 255, 0.8));
+            transform: scale(1.05);
+        }
+
+        .plane-stats {
+            display: flex;
+            gap: 30px;
+            padding: 20px;
+            width: 100%;
+            max-width: 100%;
+            justify-content: space-evenly;
+            box-sizing: border-box;
+        }
+
+        .plane-stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .plane-stat-label {
+            font-size: 0.85rem;
+            color: #00ffff;
+            font-family: 'Noto Sans HK', sans-serif;
+        }
+
+        .plane-stat-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ffd93d;
+            font-family: 'Orbitron', monospace;
+        }
+
+        /* 左下區 - MY DEFEND TOWER */
+        .tower-section {
+            grid-column: span 6;
+            grid-row: 3;
+            padding: 30px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* 右下區 - MY WEAPONS */
+        .weapons-section {
+            grid-column: span 6;
+            grid-row: 3;
+            padding: 30px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* 槽位網格 - 2行x4列 */
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 35px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .slot {
+            aspect-ratio: 1;
+            background: rgba(0, 159, 185, 0.05);
+            border: 2px solid #009fb9;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 15px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .slot:hover {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .slot.empty {
+            cursor: default;
+        }
+
+        .slot.empty:hover {
+            border-color: #009fb9;
+            background: rgba(0, 159, 185, 0.05);
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 空槽位蜂窩圖標 */
+        .slot-empty-icon {
+            font-size: 50px;
+            color: rgba(0, 255, 255, 0.2);
+        }
+
+        /* 已裝備槽位 */
         .slot-icon {
-            font-size: 48px;
-            margin: 10px 0;
+            font-size: 50px;
+            margin-bottom: 10px;
             filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
         }
 
         .slot-name {
-            font-size: 1.1rem;
-            font-weight: bold;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
             color: #ffffff;
-            margin-bottom: 8px;
             text-transform: uppercase;
-            font-family: 'Squada One', cursive;
+            letter-spacing: 1px;
         }
 
-        .slot-stats {
-            font-size: 0.9rem;
-            color: #a0a0a0;
-            margin-bottom: 12px;
-            line-height: 1.6;
-        }
-
-        .slot-stat-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
-        }
-
-        .change-btn {
-            width: 100%;
-            padding: 8px 16px;
-            background: linear-gradient(0deg, #000000c4 0%, #009fb991 100%);
-            border: none;
-            border-radius: 6px;
-            box-shadow: 0 0 0 2px #ffffff36;
-            color: white;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .change-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
-        }
-
-        /* 選擇對話框 */
+        /* 對話框樣式 */
         .dialog-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -235,7 +469,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.7);
         }
 
         .dialog-header {
@@ -250,7 +484,9 @@
         .dialog-title {
             font-size: 1.5rem;
             color: #00ffff;
-            font-family: 'Squada One', cursive;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            text-transform: uppercase;
         }
 
         .dialog-close {
@@ -323,13 +559,14 @@
             font-weight: bold;
             color: #ffffff;
             margin-bottom: 4px;
-            font-family: 'Squada One', cursive;
+            font-family: 'Orbitron', monospace;
         }
 
         .option-desc {
             font-size: 0.9rem;
             color: #a0a0a0;
             margin-bottom: 8px;
+            font-family: 'Noto Sans HK', sans-serif;
         }
 
         .option-stats {
@@ -338,6 +575,7 @@
             flex-wrap: wrap;
             font-size: 0.85rem;
             color: #00ffff;
+            font-family: 'Noto Sans HK', sans-serif;
         }
 
         .option-badge {
@@ -348,6 +586,7 @@
             font-size: 0.85rem;
             font-weight: bold;
             border: 1px solid #ffd93d;
+            font-family: 'Noto Sans HK', sans-serif;
         }
 
         .option-badge.locked {
@@ -372,435 +611,285 @@
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-family: 'Squada One', cursive;
+            font-family: 'Noto Sans HK', 'Orbitron', monospace;
+            font-weight: 700;
+            text-transform: uppercase;
         }
 
         .dialog-btn-primary {
-            background: linear-gradient(0deg, #000000c4 0%, #009fb991 100%);
-            box-shadow: 0 0 0 2px #ffffff36;
-            color: white;
+            background: linear-gradient(135deg, #00ffff 0%, #009fb9 100%);
+            color: #000000;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
         }
 
         .dialog-btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
+            box-shadow: 0 4px 25px rgba(0, 255, 255, 0.6);
         }
 
         .dialog-btn-secondary {
             background: rgba(100, 100, 100, 0.5);
             color: white;
+            border: 2px solid #666666;
         }
 
         .dialog-btn-secondary:hover {
             background: rgba(150, 150, 150, 0.5);
-        }
-
-        .upgrade-card {
-            background: rgba(0, 159, 185, 0.1);
-            border: 2px solid #009fb9;
-            border-radius: 12px;
-            padding: 20px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .upgrade-card::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.3), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: -1;
-        }
-
-        .upgrade-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 255, 255, 0.2);
-        }
-
-        .upgrade-card:hover::before {
-            opacity: 1;
-        }
-
-        .upgrade-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .upgrade-name {
-            font-size: 1.3rem;
-            color: #ffffff;
-            font-weight: bold;
-        }
-
-        .upgrade-level {
-            background: #009fb9;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            color: white;
-        }
-
-        .upgrade-stats {
-            margin: 16px 0;
-        }
-
-        .upgrade-stat {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(0, 159, 185, 0.3);
-        }
-
-        .upgrade-stat:last-child {
-            border-bottom: none;
-        }
-
-        .current-value {
-            color: #ffffff;
-        }
-
-        .next-value {
-            color: #00ff00;
-            font-weight: bold;
-        }
-
-        .upgrade-progress {
-            margin: 16px 0;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00ffff, #009fb9);
-            transition: width 0.3s ease;
-        }
-
-        .upgrade-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(0deg, #000000c4 0%, #009fb991 100%);
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 0 0 2px #ffffff36;
-            color: white;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 12px;
-        }
-
-        .upgrade-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3);
-        }
-
-        .upgrade-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .upgrade-cost {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            font-weight: bold;
-        }
-
-        .cost-icon {
-            color: #ffff00;
-        }
-
-        /* 戰機預覽區 */
-        .ship-preview {
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid #009fb9;
-            border-radius: 12px;
-            padding: 40px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .ship-image {
-            max-width: 300px;
-            margin: 0 auto;
-            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.5));
-        }
-
-        .ship-name {
-            font-size: 2rem;
-            color: #00ffff;
-            margin-top: 20px;
-            font-family: 'Squada One', cursive;
+            border-color: #999999;
         }
 
         /* 響應式設計 */
-        @media (max-width: 768px) {
-            .header h1 {
+        
+        /* 平板尺寸（1025-1400px）*/
+        @media (min-width: 1025px) and (max-width: 1400px) {
+            .main-container {
+                max-width: 1200px;
+                min-height: 850px;
+            }
+            
+            .plane-info,
+            .plane-visual,
+            .tower-section,
+            .weapons-section {
+                padding: 25px;
+            }
+            
+            .section-title-large {
+                font-size: 2.2rem;
+            }
+            
+            .slots-grid {
+                gap: 12px;
+            }
+        }
+
+        /* 小螢幕（平板直式，641-1024px）*/
+        @media (max-width: 1024px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+            }
+
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto auto;
+                min-height: auto;
+            }
+
+            .header-bar {
+                grid-column: 1 / -1;
+            }
+
+            .plane-info,
+            .plane-visual,
+            .tower-section,
+            .weapons-section {
+                grid-column: 1 / -1;
+                border-right: none;
+                border-bottom: 2px solid #00ffff;
+                padding: 30px 20px;
+            }
+            
+            .weapons-section {
+                border-bottom: none;
+            }
+            
+            .section-title-large {
+                font-size: 2rem;
+            }
+            
+            .slots-grid {
+                gap: 12px;
+            }
+        }
+
+        /* 超小螢幕（手機，< 640px）*/
+        @media (max-width: 640px) {
+            body {
+                padding: 5px;
+            }
+            
+            .main-container {
+                border-radius: 8px;
+                border-width: 2px;
+            }
+            
+            .header-title {
                 font-size: 1.5rem;
+                padding: 10px 30px;
+                letter-spacing: 2px;
             }
-
-            .upgrade-grid {
-                grid-template-columns: 1fr;
+            
+            .close-btn {
+                width: 35px;
+                height: 35px;
+                right: 10px;
             }
+            
+            .plane-info,
+            .plane-visual,
+            .tower-section,
+            .weapons-section {
+                padding: 20px 15px;
+            }
+            
+            .section-title-large {
+                font-size: 1.5rem;
+                letter-spacing: 2px;
+                margin-bottom: 15px;
+            }
+            
+            .slots-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(4, 1fr);
+                gap: 10px;
+            }
+            
+            .slot {
+                padding: 10px;
+            }
+            
+            .slot-icon {
+                font-size: 35px;
+            }
+            
+            .slot-name {
+                font-size: 0.7rem;
+            }
+            
+            .slot-empty-icon {
+                font-size: 35px;
+            }
+            
+            .plane-image {
+                max-width: 250px;
+            }
+            
+            .plane-stats {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .progress-block {
+                width: 20px;
+                height: 15px;
+            }
+            
+            .attribute-icon {
+                font-size: 30px;
+                width: 40px;
+                height: 40px;
+            }
+            
+            .attribute-label {
+                font-size: 0.85rem;
+            }
+            
+            .upgrade-plus-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 1.2rem;
+            }
+        }
 
-            .player-stats {
-                grid-template-columns: 1fr;
+        /* 超大螢幕（> 1600px）*/
+        @media (min-width: 1601px) {
+            body {
+                padding: 40px;
+            }
+            
+            .main-container {
+                max-width: 1200px;
+                min-height: 1000px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- 頂部導航 -->
-        <div class="header">
-            <h1>🚀 我的戰機</h1>
-            <button class="back-btn" onclick="window.close()">← 返回遊戲</button>
+    <div class="main-container">
+        <!-- 頂部標題區 -->
+        <div class="header-bar">
+          
+            <div class="header-title">
+                <div class="header-stoke-left"></div>
+                我的戰機
+                <div class="header-stoke-right"></div>
+            </div>
+          
+            <button class="close-btn" onclick="window.close()">✕</button>
         </div>
 
-        <!-- 戰機預覽 -->
-        <div class="ship-preview">
-            <img src="assets/sprites/player/blue/blue-ship.png" alt="我的戰機" class="ship-image" style="width: 200px;" onerror="this.style.display='none'">
-            <div class="ship-name">藍色閃電戰機</div>
-        </div>
+        <!-- 左上區 - MY AIR PLANE -->
+        <div class="plane-info">
+            <div>
+                <h1 class="my-ship-name" id="ship-name">MY AIR PLANE</h1>
+                <button class="change-name-btn" onclick="changeName()">CHANGE NAME</button>
+            </div>
 
-        <!-- 玩家狀態 -->
-        <div class="player-stats">
-            <div class="stat-item">
-                <span class="stat-label">💰 金幣</span>
-                <span class="stat-value" id="player-money">5000</span>
+            <!-- Health Points -->
+            <div class="attribute-row">
+                <div class="attribute-icon">❤️</div>
+                <div class="attribute-content">
+                    <div class="attribute-label">Health Points</div>
+                    <div class="progress-container">
+                        <div class="progress-blocks" id="health-progress">
+                            <!-- 10 個方格將由 JS 生成 -->
+                        </div>
+                        <button class="upgrade-plus-btn" id="health-upgrade-btn" onclick="upgradeAttribute('health')">+</button>
+                    </div>
+                </div>
             </div>
-            <div class="stat-item">
-                <span class="stat-label">⭐ 總等級</span>
-                <span class="stat-value" id="total-level">12</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">🏆 勝場</span>
-                <span class="stat-value" id="wins">25</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">💀 擊殺數</span>
-                <span class="stat-value" id="kills">1547</span>
-            </div>
-        </div>
 
-        <!-- 武器裝備區 -->
-        <div class="loadout-section">
-            <h2 class="section-title">
-                <span class="section-icon">🔫</span>
-                武器裝備槽 <span style="font-size: 0.9rem; color: #a0a0a0;">(戰鬥中可按 1/2/3 切換)</span>
-            </h2>
-            <div class="loadout-grid" id="weapon-loadout">
-                <!-- 武器槽位將由 JavaScript 動態生成 -->
-            </div>
-        </div>
-
-        <!-- 炮塔裝備區 -->
-        <div class="loadout-section">
-            <h2 class="section-title">
-                <span class="section-icon">🏗️</span>
-                炮塔裝備槽 <span style="font-size: 0.9rem; color: #a0a0a0;">(準備階段放置)</span>
-            </h2>
-            <div class="loadout-grid" id="tower-loadout">
-                <!-- 炮塔槽位將由 JavaScript 動態生成 -->
+            <!-- Speed Points -->
+            <div class="attribute-row">
+                <div class="attribute-icon">👊</div>
+                <div class="attribute-content">
+                    <div class="attribute-label">Speed Points</div>
+                    <div class="progress-container">
+                        <div class="progress-blocks" id="speed-progress">
+                            <!-- 10 個方格將由 JS 生成 -->
+                        </div>
+                        <button class="upgrade-plus-btn" id="speed-upgrade-btn" onclick="upgradeAttribute('moveSpeed')">+</button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 升級區域 -->
-        <div class="upgrade-section">
-            <h2 class="section-title">
-                <span class="section-icon">⚡</span>
-                戰機屬性升級
-            </h2>
-            <div class="upgrade-grid">
-                <!-- 生命值升級卡 -->
-                <div class="upgrade-card">
-                    <div class="upgrade-header">
-                        <span class="upgrade-name">❤️ 生命值</span>
-                        <span class="upgrade-level">Lv.3</span>
-                    </div>
-                    <div class="upgrade-stats">
-                        <div class="upgrade-stat">
-                            <span>當前值</span>
-                            <span class="current-value">150 HP</span>
-                        </div>
-                        <div class="upgrade-stat">
-                            <span>升級後</span>
-                            <span class="next-value">+30 → 180 HP</span>
-                        </div>
-                    </div>
-                    <div class="upgrade-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 60%;"></div>
-                        </div>
-                    </div>
-                    <button class="upgrade-btn">
-                        <span class="upgrade-cost">
-                            <span class="cost-icon">💰</span>
-                            <span>300 金幣</span>
-                        </span>
-                    </button>
+        <!-- 右上區 - 戰機圖片 -->
+        <div class="plane-visual">
+            <div class="plane-image-container">
+                <img src="assets/sprites/ships/blue/Ship_LVL_1.png" alt="我的戰機" class="plane-image" onerror="this.style.display='none'">
+            </div>
+            <div class="plane-stats">
+                <div class="plane-stat-item">
+                    <div class="plane-stat-label">💰 金幣</div>
+                    <div class="plane-stat-value" id="player-money">5000</div>
                 </div>
+                <div class="plane-stat-item">
+                    <div class="plane-stat-label">🏆 勝場</div>
+                    <div class="plane-stat-value" id="wins">0</div>
+                </div>
+                <div class="plane-stat-item">
+                    <div class="plane-stat-label">💀 擊殺</div>
+                    <div class="plane-stat-value" id="kills">0</div>
+                </div>
+            </div>
+        </div>
 
-                <!-- 攻擊力升級卡 -->
-                <div class="upgrade-card">
-                    <div class="upgrade-header">
-                        <span class="upgrade-name">⚔️ 攻擊力</span>
-                        <span class="upgrade-level">Lv.4</span>
-                    </div>
-                    <div class="upgrade-stats">
-                        <div class="upgrade-stat">
-                            <span>當前值</span>
-                            <span class="current-value">25 DMG</span>
-                        </div>
-                        <div class="upgrade-stat">
-                            <span>升級後</span>
-                            <span class="next-value">+8 → 33 DMG</span>
-                        </div>
-                    </div>
-                    <div class="upgrade-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 80%;"></div>
-                        </div>
-                    </div>
-                    <button class="upgrade-btn">
-                        <span class="upgrade-cost">
-                            <span class="cost-icon">💰</span>
-                            <span>450 金幣</span>
-                        </span>
-                    </button>
-                </div>
+        <!-- 左下區 - MY DEFEND TOWER -->
+        <div class="tower-section">
+            <h1 class="section-title">MY DEFEND TOWER</h1>
+            <div class="slots-grid" id="tower-loadout">
+                <!-- 8 個槽位將由 JS 生成 -->
+            </div>
+        </div>
 
-                <!-- 射速升級卡 -->
-                <div class="upgrade-card">
-                    <div class="upgrade-header">
-                        <span class="upgrade-name">🔫 射速</span>
-                        <span class="upgrade-level">Lv.2</span>
-                    </div>
-                    <div class="upgrade-stats">
-                        <div class="upgrade-stat">
-                            <span>當前值</span>
-                            <span class="current-value">5 發/秒</span>
-                        </div>
-                        <div class="upgrade-stat">
-                            <span>升級後</span>
-                            <span class="next-value">+1 → 6 發/秒</span>
-                        </div>
-                    </div>
-                    <div class="upgrade-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 40%;"></div>
-                        </div>
-                    </div>
-                    <button class="upgrade-btn">
-                        <span class="upgrade-cost">
-                            <span class="cost-icon">💰</span>
-                            <span>400 金幣</span>
-                        </span>
-                    </button>
-                </div>
-
-                <!-- 移動速度升級卡 -->
-                <div class="upgrade-card">
-                    <div class="upgrade-header">
-                        <span class="upgrade-name">🚀 移動速度</span>
-                        <span class="upgrade-level">Lv.3</span>
-                    </div>
-                    <div class="upgrade-stats">
-                        <div class="upgrade-stat">
-                            <span>當前值</span>
-                            <span class="current-value">300 像素/秒</span>
-                        </div>
-                        <div class="upgrade-stat">
-                            <span>升級後</span>
-                            <span class="next-value">+50 → 350 像素/秒</span>
-                        </div>
-                    </div>
-                    <div class="upgrade-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 60%;"></div>
-                        </div>
-                    </div>
-                    <button class="upgrade-btn">
-                        <span class="upgrade-cost">
-                            <span class="cost-icon">💰</span>
-                            <span>350 金幣</span>
-                        </span>
-                    </button>
-                </div>
-
-                <!-- 護盾升級卡 -->
-                <div class="upgrade-card">
-                    <div class="upgrade-header">
-                        <span class="upgrade-name">🛡️ 護盾</span>
-                        <span class="upgrade-level">Lv.1</span>
-                    </div>
-                    <div class="upgrade-stats">
-                        <div class="upgrade-stat">
-                            <span>當前值</span>
-                            <span class="current-value">50 HP</span>
-                        </div>
-                        <div class="upgrade-stat">
-                            <span>升級後</span>
-                            <span class="next-value">+25 → 75 HP</span>
-                        </div>
-                    </div>
-                    <div class="upgrade-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 20%;"></div>
-                        </div>
-                    </div>
-                    <button class="upgrade-btn">
-                        <span class="upgrade-cost">
-                            <span class="cost-icon">💰</span>
-                            <span>500 金幣</span>
-                        </span>
-                    </button>
-                </div>
-
-                <!-- 暴擊率升級卡 -->
-                <div class="upgrade-card">
-                    <div class="upgrade-header">
-                        <span class="upgrade-name">💥 暴擊率</span>
-                        <span class="upgrade-level">Lv.2</span>
-                    </div>
-                    <div class="upgrade-stats">
-                        <div class="upgrade-stat">
-                            <span>當前值</span>
-                            <span class="current-value">10%</span>
-                        </div>
-                        <div class="upgrade-stat">
-                            <span>升級後</span>
-                            <span class="next-value">+5% → 15%</span>
-                        </div>
-                    </div>
-                    <div class="upgrade-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 40%;"></div>
-                        </div>
-                    </div>
-                    <button class="upgrade-btn" disabled>
-                        <span class="upgrade-cost">
-                            <span class="cost-icon">💰</span>
-                            <span>8000 金幣（金幣不足）</span>
-                        </span>
-                    </button>
-                </div>
+        <!-- 右下區 - MY WEAPONS -->
+        <div class="weapons-section">
+            <h1 class="section-title">MY WEAPONS</h1>
+            <div class="slots-grid" id="weapon-loadout">
+                <!-- 8 個槽位將由 JS 生成 -->
             </div>
         </div>
     </div>
@@ -930,16 +1019,216 @@
         // ===== 初始化 =====
         function init() {
             loadSavedLoadout();
+            initializeUpgrades();
+            renderProgressBars();
+            loadShipName();  // 🆕 載入戰機名稱
             renderWeaponLoadout();
             renderTowerLoadout();
             loadPlayerData();
+        }
+
+        // ===== 🆕 初始化升級數據 =====
+        function initializeUpgrades() {
+            const config = JSON.parse(localStorage.getItem('playerShipConfig') || '{}');
             
-            // 保留原有的升級按鈕功能
-            document.querySelectorAll('.upgrade-btn:not(:disabled)').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    alert('升級功能開發中！\n\n未來將與遊戲資料連動，實現真正的升級功能。');
-                });
-            });
+            if (!config.upgrades) {
+                config.upgrades = {
+                    health: {
+                        level: 0,
+                        baseValue: 5,
+                        currentValue: 5,
+                        costPerLevel: 300,
+                        incrementPerLevel: 1,
+                        unit: 'HP',
+                        maxLevel: 10
+                    },
+                    moveSpeed: {
+                        level: 0,
+                        baseValue: 300,
+                        currentValue: 300,
+                        costPerLevel: 350,
+                        incrementPerLevel: 50,
+                        unit: '像素/秒',
+                        maxLevel: 10
+                    }
+                };
+            }
+            
+            if (!config.playerMoney) {
+                config.playerMoney = 5000;
+            }
+            
+            // 🆕 初始化戰機名稱
+            if (!config.shipName) {
+                config.shipName = 'MY AIR PLANE';  // 預設名稱
+            }
+            
+            localStorage.setItem('playerShipConfig', JSON.stringify(config));
+            console.log('✅ 升級系統初始化完成');
+        }
+
+        // ===== 🆕 渲染進度條 =====
+        function renderProgressBars() {
+            const config = JSON.parse(localStorage.getItem('playerShipConfig') || '{}');
+            
+            // 渲染 Health 進度條
+            const healthProgress = document.getElementById('health-progress');
+            healthProgress.innerHTML = '';
+            const healthLevel = config.upgrades?.health?.level || 0;
+            for (let i = 0; i < 10; i++) {
+                const block = document.createElement('div');
+                block.className = 'progress-block' + (i < healthLevel ? ' active health' : '');
+                healthProgress.appendChild(block);
+            }
+            
+            // 渲染 Speed 進度條
+            const speedProgress = document.getElementById('speed-progress');
+            speedProgress.innerHTML = '';
+            const speedLevel = config.upgrades?.moveSpeed?.level || 0;
+            for (let i = 0; i < 10; i++) {
+                const block = document.createElement('div');
+                block.className = 'progress-block' + (i < speedLevel ? ' active speed' : '');
+                speedProgress.appendChild(block);
+            }
+            
+            // 更新升級按鈕狀態
+            updateUpgradeButtons();
+        }
+
+        // ===== 🆕 更新升級按鈕狀態 =====
+        function updateUpgradeButtons() {
+            const config = JSON.parse(localStorage.getItem('playerShipConfig') || '{}');
+            
+            // Health 升級按鈕
+            const healthBtn = document.getElementById('health-upgrade-btn');
+            const healthUpgrade = config.upgrades?.health;
+            if (healthUpgrade) {
+                const cost = Math.floor(healthUpgrade.costPerLevel * Math.pow(1.2, healthUpgrade.level));
+                const canAfford = config.playerMoney >= cost;
+                const isMaxLevel = healthUpgrade.level >= (healthUpgrade.maxLevel || 10);
+                healthBtn.disabled = !canAfford || isMaxLevel;
+                healthBtn.title = isMaxLevel ? '已達最高等級' : `升級需要 ${cost} 金幣`;
+            }
+            
+            // Speed 升級按鈕
+            const speedBtn = document.getElementById('speed-upgrade-btn');
+            const speedUpgrade = config.upgrades?.moveSpeed;
+            if (speedUpgrade) {
+                const cost = Math.floor(speedUpgrade.costPerLevel * Math.pow(1.2, speedUpgrade.level));
+                const canAfford = config.playerMoney >= cost;
+                const isMaxLevel = speedUpgrade.level >= (speedUpgrade.maxLevel || 10);
+                speedBtn.disabled = !canAfford || isMaxLevel;
+                speedBtn.title = isMaxLevel ? '已達最高等級' : `升級需要 ${cost} 金幣`;
+            }
+        }
+
+        // ===== 🆕 升級屬性 =====
+        function upgradeAttribute(attributeName) {
+            const config = JSON.parse(localStorage.getItem('playerShipConfig'));
+            const upgrade = config.upgrades[attributeName];
+            
+            if (!upgrade) {
+                console.error('升級不存在:', attributeName);
+                return;
+            }
+            
+            // 檢查是否已達最高等級
+            if (upgrade.level >= (upgrade.maxLevel || 10)) {
+                alert('已達最高等級！');
+                return;
+            }
+            
+            // 計算當前等級的升級成本
+            const currentCost = Math.floor(upgrade.costPerLevel * Math.pow(1.2, upgrade.level));
+            
+            // 檢查金幣是否足夠
+            if (config.playerMoney < currentCost) {
+                alert(`金幣不足！\n\n需要: ${currentCost} 金幣\n當前: ${config.playerMoney} 金幣`);
+                return;
+            }
+            
+            // 扣除金幣
+            config.playerMoney -= currentCost;
+            
+            // 升級
+            upgrade.level++;
+            upgrade.currentValue = upgrade.baseValue + (upgrade.incrementPerLevel * upgrade.level);
+            
+            // 保存
+            localStorage.setItem('playerShipConfig', JSON.stringify(config));
+            
+            // 重新渲染
+            updatePlayerMoneyDisplay();
+            renderProgressBars();
+            
+            const attributeNames = {
+                health: '生命值',
+                moveSpeed: '移動速度'
+            };
+            
+            console.log(`✅ ${attributeNames[attributeName]} 升級到 Lv.${upgrade.level}，新數值: ${upgrade.currentValue} ${upgrade.unit}`);
+        }
+
+        // ===== 渲染武器裝備槽（8個） =====
+        function renderWeaponLoadout() {
+            const container = document.getElementById('weapon-loadout');
+            container.innerHTML = '';
+            
+            // 生成 8 個槽位
+            for (let i = 0; i < 8; i++) {
+                const weaponId = currentLoadout.weapons[i];
+                const weapon = WEAPON_DATA[weaponId];
+                
+                if (weapon) {
+                    // 已裝備的槽位
+                    const slotHTML = `
+                        <div class="slot" onclick="openWeaponDialog(${i})">
+                            <div class="slot-icon">${weapon.icon}</div>
+                            <div class="slot-name">${weapon.name}</div>
+                        </div>
+                    `;
+                    container.innerHTML += slotHTML;
+                } else {
+                    // 空槽位
+                    const emptySlotHTML = `
+                        <div class="slot empty" onclick="openWeaponDialog(${i})">
+                            <div class="slot-empty-icon">⬡</div>
+                        </div>
+                    `;
+                    container.innerHTML += emptySlotHTML;
+                }
+            }
+        }
+
+        // ===== 渲染炮塔裝備槽（8個） =====
+        function renderTowerLoadout() {
+            const container = document.getElementById('tower-loadout');
+            container.innerHTML = '';
+            
+            // 生成 8 個槽位
+            for (let i = 0; i < 8; i++) {
+                const towerId = currentLoadout.towers[i];
+                const tower = TOWER_DATA[towerId];
+                
+                if (tower) {
+                    // 已裝備的槽位
+                    const slotHTML = `
+                        <div class="slot" onclick="openTowerDialog(${i})">
+                            <div class="slot-icon">${tower.icon}</div>
+                            <div class="slot-name">${tower.name}</div>
+                        </div>
+                    `;
+                    container.innerHTML += slotHTML;
+                } else {
+                    // 空槽位
+                    const emptySlotHTML = `
+                        <div class="slot empty" onclick="openTowerDialog(${i})">
+                            <div class="slot-empty-icon">⬡</div>
+                        </div>
+                    `;
+                    container.innerHTML += emptySlotHTML;
+                }
+            }
         }
 
         // ===== 讀取保存的配置 =====
@@ -962,95 +1251,25 @@
 
         // ===== 保存配置 =====
         function saveLoadout() {
-            const config = {
-                weaponSlots: currentLoadout.weapons.map((weaponId, index) => ({
+            const config = JSON.parse(localStorage.getItem('playerShipConfig') || '{}');
+            
+            config.weaponSlots = currentLoadout.weapons
+                .filter(w => w) // 過濾空槽位
+                .map((weaponId, index) => ({
                     slotId: index,
                     weaponId: weaponId
-                })),
-                towerSlots: currentLoadout.towers.map((towerId, index) => ({
+                }));
+            
+            config.towerSlots = currentLoadout.towers
+                .filter(t => t) // 過濾空槽位
+                .map((towerId, index) => ({
                     slotId: index,
                     towerId: towerId,
                     count: 5
-                }))
-            };
+                }));
+            
             localStorage.setItem('playerShipConfig', JSON.stringify(config));
             console.log('✅ 配置已保存:', config);
-        }
-
-        // ===== 渲染武器裝備槽 =====
-        function renderWeaponLoadout() {
-            const container = document.getElementById('weapon-loadout');
-            container.innerHTML = '';
-            
-            currentLoadout.weapons.forEach((weaponId, index) => {
-                const weapon = WEAPON_DATA[weaponId];
-                if (!weapon) return;
-                
-                const slotHTML = `
-                    <div class="loadout-slot" onclick="openWeaponDialog(${index})">
-                        <div class="slot-number">${index + 1}</div>
-                        <div class="slot-icon">${weapon.icon}</div>
-                        <div class="slot-name">${weapon.name}</div>
-                        <div class="slot-stats">
-                            <div class="slot-stat-item">
-                                <span>傷害</span>
-                                <span style="color: #ff6b6b;">${weapon.damage}</span>
-                            </div>
-                            <div class="slot-stat-item">
-                                <span>彈藥</span>
-                                <span style="color: #ffd93d;">${weapon.ammo}</span>
-                            </div>
-                            ${weapon.cooldown ? `
-                            <div class="slot-stat-item">
-                                <span>冷卻</span>
-                                <span style="color: #51cf66;">${weapon.cooldown}秒</span>
-                            </div>
-                            ` : ''}
-                        </div>
-                        <button class="change-btn" onclick="openWeaponDialog(${index}); event.stopPropagation();">
-                            更換武器 ▼
-                        </button>
-                    </div>
-                `;
-                container.innerHTML += slotHTML;
-            });
-        }
-
-        // ===== 渲染炮塔裝備槽 =====
-        function renderTowerLoadout() {
-            const container = document.getElementById('tower-loadout');
-            container.innerHTML = '';
-            
-            currentLoadout.towers.forEach((towerId, index) => {
-                const tower = TOWER_DATA[towerId];
-                if (!tower) return;
-                
-                const slotHTML = `
-                    <div class="loadout-slot" onclick="openTowerDialog(${index})">
-                        <div class="slot-number">${index + 1}</div>
-                        <div class="slot-icon">${tower.icon}</div>
-                        <div class="slot-name">${tower.name}</div>
-                        <div class="slot-stats">
-                            <div class="slot-stat-item">
-                                <span>傷害</span>
-                                <span style="color: #ff6b6b;">${tower.damage}</span>
-                            </div>
-                            <div class="slot-stat-item">
-                                <span>使用次數</span>
-                                <span style="color: #ffd93d;">×${tower.uses}</span>
-                            </div>
-                            <div class="slot-stat-item">
-                                <span>射程</span>
-                                <span style="color: #51cf66;">${tower.range}</span>
-                            </div>
-                        </div>
-                        <button class="change-btn" onclick="openTowerDialog(${index}); event.stopPropagation();">
-                            更換炮塔 ▼
-                        </button>
-                    </div>
-                `;
-                container.innerHTML += slotHTML;
-            });
         }
 
         // ===== 打開武器選擇對話框 =====
@@ -1183,19 +1402,68 @@
             tempSelection = null;
         }
 
+        // ===== 🆕 載入戰機名稱 =====
+        function loadShipName() {
+            const config = JSON.parse(localStorage.getItem('playerShipConfig') || '{}');
+            const shipName = config.shipName || 'MY AIR PLANE';
+            const shipNameEl = document.getElementById('ship-name');
+            if (shipNameEl) {
+                shipNameEl.textContent = shipName;
+            }
+        }
+
+        // ===== 🆕 更新金幣顯示 =====
+        function updatePlayerMoneyDisplay() {
+            const config = JSON.parse(localStorage.getItem('playerShipConfig') || '{}');
+            document.getElementById('player-money').textContent = config.playerMoney || 5000;
+        }
+
         // ===== 讀取玩家數據 =====
         function loadPlayerData() {
+            updatePlayerMoneyDisplay();
+            
             const savedData = localStorage.getItem('playerData');
             if (savedData) {
                 try {
                     const data = JSON.parse(savedData);
-                    document.getElementById('player-money').textContent = data.money || 5000;
-                    document.getElementById('total-level').textContent = data.level || 12;
-                    document.getElementById('wins').textContent = data.wins || 25;
-                    document.getElementById('kills').textContent = data.kills || 1547;
+                    document.getElementById('wins').textContent = data.wins || 0;
+                    document.getElementById('kills').textContent = data.kills || 0;
                 } catch (e) {
                     console.error('載入玩家數據失敗:', e);
                 }
+            }
+        }
+
+        // ===== 🆕 改名功能 =====
+        function changeName() {
+            const config = JSON.parse(localStorage.getItem('playerShipConfig') || '{}');
+            const currentName = config.shipName || 'MY AIR PLANE';
+            
+            const newName = prompt('請輸入新的戰機名稱（最多 20 個字）：', currentName);
+            
+            if (newName && newName.trim()) {
+                const trimmedName = newName.trim();
+                
+                // 驗證長度
+                if (trimmedName.length > 20) {
+                    alert('名稱太長！請輸入 20 個字以內的名稱。');
+                    return;
+                }
+                
+                // 驗證不能為空
+                if (trimmedName.length === 0) {
+                    alert('名稱不能為空！');
+                    return;
+                }
+                
+                // 保存到 localStorage（轉大寫保持風格一致）
+                config.shipName = trimmedName.toUpperCase();
+                localStorage.setItem('playerShipConfig', JSON.stringify(config));
+                
+                // 更新顯示
+                document.getElementById('ship-name').textContent = config.shipName;
+                
+                console.log('✅ 戰機名稱已更改為:', config.shipName);
             }
         }
 
@@ -1212,7 +1480,3 @@
     </script>
 </body>
 </html>
-
-
-
-

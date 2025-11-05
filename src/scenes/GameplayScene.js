@@ -1321,6 +1321,13 @@ export class GameplayScene extends BaseScene {
     
     console.log('⏰ 時間到！遊戲結束');
     
+    // 🆕 獎勵金幣
+    this.rewardMoney(
+      this.gameManager.playerData.score,
+      this.gameManager.playerData.stats.enemiesKilled,
+      this.elapsedTime
+    );
+    
     // 切換到遊戲結束場景（勝利）
     this.switchToScene('GameOverScene', {
       score: this.gameManager.playerData.score,
@@ -1344,6 +1351,13 @@ export class GameplayScene extends BaseScene {
     
     console.log('玩家死亡，遊戲結束');
     
+    // 🆕 獎勵金幣
+    this.rewardMoney(
+      this.gameManager.playerData.score,
+      this.gameManager.playerData.stats.enemiesKilled,
+      this.elapsedTime
+    );
+    
     // 切換到遊戲結束場景（失敗）
     this.switchToScene('GameOverScene', {
       score: this.gameManager.playerData.score,
@@ -1353,6 +1367,36 @@ export class GameplayScene extends BaseScene {
       isVictory: false,
       reason: 'playerDied'
     });
+  }
+
+  /**
+   * 🆕 獎勵金幣
+   * @param {number} score - 遊戲分數
+   * @param {number} enemiesKilled - 擊殺數
+   * @param {number} timePlayed - 遊戲時長（毫秒）
+   */
+  rewardMoney(score, enemiesKilled, timePlayed) {
+    // 計算獎勵金幣
+    const scoreBonus = Math.floor(score / 10);  // 每10分 = 1金幣
+    const killBonus = enemiesKilled * 2;  // 每擊殺 = 2金幣
+    const timeBonus = Math.floor(timePlayed / 10000);  // 每10秒 = 1金幣
+    const totalReward = scoreBonus + killBonus + timeBonus;
+    
+    try {
+      const config = JSON.parse(localStorage.getItem('playerShipConfig') || '{}');
+      const oldMoney = config.playerMoney || 5000;
+      config.playerMoney = oldMoney + totalReward;
+      localStorage.setItem('playerShipConfig', JSON.stringify(config));
+      
+      console.log('💰 遊戲結束獎勵：');
+      console.log('   分數獎勵:', scoreBonus, '金幣');
+      console.log('   擊殺獎勵:', killBonus, '金幣');
+      console.log('   時間獎勵:', timeBonus, '金幣');
+      console.log('   總獎勵:', totalReward, '金幣');
+      console.log('   原金幣:', oldMoney, '→ 新金幣:', config.playerMoney);
+    } catch (error) {
+      console.error('❌ 保存金幣獎勵失敗:', error);
+    }
   }
 
   /**
@@ -1366,6 +1410,11 @@ export class GameplayScene extends BaseScene {
    * 場景更新
    */
   updateSceneLogic(time, delta) {
+    // 🆕 如果遊戲已結束，停止所有邏輯更新
+    if (this.isGameOver) {
+      return;
+    }
+    
     // 更新遊戲時間（僅在遊戲進行中且未暫停時）
     if (this.gameState === 'playing' && !this.isPaused) {
       // 累計遊戲時間（使用 delta 累加，避免暫停時計時）
@@ -1537,8 +1586,8 @@ export class GameplayScene extends BaseScene {
     this.events.off('wave:complete');
     this.events.off('enemyKilled');
     
-    // 🆕 重置遊戲結束標記
-    this.isGameOver = false;
+    // ❌ 不要在這裡重置 isGameOver，會導致場景切換時的競態條件
+    // isGameOver 會在 init() 中重置
     
     console.log('遊戲場景清理完成');
   }
