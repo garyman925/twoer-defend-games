@@ -61,7 +61,7 @@
                 width: 50%;
                 height: 1px;
                 background: aquamarine;
-                transform: translate(-80%, 19px);
+                transform: translate(-100%, 19px);
             }
 
             .header-bar .header-title .header-stoke-right{
@@ -70,7 +70,7 @@
                 width: 50%;
                 height: 1px;
                 background: aquamarine;
-                transform: translate(82%, -19px);
+                transform: translate(100%, -19px);
             }
 
         .header-title {
@@ -850,7 +850,7 @@
             }
         }
 
-        /* 小螢幕（平板直式，641-1024px）*/
+        /* 小筆電/平板橫向（769px - 1024px）*/
         @media (max-width: 1024px) {
             body {
                 padding: 10px;
@@ -865,20 +865,39 @@
 
             .header-bar {
                 grid-column: 1 / -1;
+                grid-row: 1;
             }
 
-            .plane-info,
-            .plane-visual,
-            .tower-section,
-            .weapons-section {
+            .plane-info {
                 grid-column: 1 / -1;
+                grid-row: 2;
                 border-right: none;
                 border-bottom: 2px solid #00ffff;
-                padding: 30px 20px;
+                padding: 25px 20px;
+            }
+
+            .plane-visual {
+                grid-column: 1 / -1;
+                grid-row: 3;
+                border-right: none;
+                border-bottom: 2px solid #00ffff;
+                padding: 25px 20px;
+            }
+
+            .tower-section {
+                grid-column: 1 / -1;
+                grid-row: 4;
+                border-right: none;
+                border-bottom: 2px solid #00ffff;
+                padding: 25px 20px;
             }
             
             .weapons-section {
+                grid-column: 1 / -1;
+                grid-row: 5;
+                border-right: none;
                 border-bottom: none;
+                padding: 25px 20px;
             }
             
             .section-title-large {
@@ -886,24 +905,82 @@
             }
             
             .slots-grid {
-                gap: 12px;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
             }
         }
 
-        /* 超小螢幕（手機，< 640px）*/
-        @media (max-width: 640px) {
+        /* 平板直向/大手機（481px - 768px）*/
+        @media (max-width: 768px) {
+            .slots-grid {
+                /* 改用 Flexbox 避免重疊 */
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            .slot {
+                /* 每行最多2個槽位 */
+                flex: 0 0 calc(50% - 5px);
+                max-width: calc(50% - 5px);
+                min-width: 140px;
+                aspect-ratio: 1;
+                padding: 10px;
+            }
+            
+            .plane-info,
+            .plane-visual,
+            .tower-section,
+            .weapons-section {
+                padding: 20px 15px;
+            }
+            
+            .section-title-large {
+                font-size: 1.7rem;
+                letter-spacing: 3px;
+            }
+            
+            .slot-icon {
+                font-size: 35px;
+            }
+            
+            .slot-name {
+                font-size: 0.75rem;
+            }
+            
+            .slot-empty-icon {
+                font-size: 35px;
+            }
+            
+            .plane-image {
+                max-width: 280px;
+            }
+            
+            .plane-stats {
+                gap: 20px;
+                padding: 18px;
+            }
+            
+            .progress-block {
+                width: 22px;
+                height: 16px;
+            }
+        }
+
+        /* 普通手機（< 480px）*/
+        @media (max-width: 480px) {
             body {
                 padding: 5px;
             }
             
             .main-container {
                 border-radius: 8px;
-                border-width: 2px;
             }
             
             .header-title {
-                font-size: 1.5rem;
-                padding: 10px 30px;
+                font-size: 1.4rem;
+                padding: 10px 25px;
                 letter-spacing: 2px;
             }
             
@@ -917,66 +994,73 @@
             .plane-visual,
             .tower-section,
             .weapons-section {
-                padding: 20px 15px;
+                padding: 18px 12px;
             }
             
             .section-title-large {
-                font-size: 1.5rem;
-                letter-spacing: 2px;
+                font-size: 1.4rem;
+                letter-spacing: 1px;
                 margin-bottom: 15px;
             }
             
             .slots-grid {
-                grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: repeat(4, 1fr);
-                gap: 10px;
+                /* 改用 Flexbox 避免重疊 */
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
             }
             
             .slot {
-                padding: 10px;
+                /* 每行最多2個槽位 */
+                flex: 0 0 calc(50% - 4px);
+                max-width: calc(50% - 4px);
+                min-width: 120px;
+                aspect-ratio: 1;
+                padding: 8px;
             }
             
             .slot-icon {
-                font-size: 35px;
+                font-size: 30px;
             }
             
             .slot-name {
-                font-size: 0.7rem;
+                font-size: 0.65rem;
             }
             
             .slot-empty-icon {
-                font-size: 35px;
+                font-size: 30px;
             }
             
             .plane-image {
-                max-width: 250px;
+                max-width: 220px;
             }
             
             .plane-stats {
                 flex-direction: column;
-                gap: 15px;
-                padding: 15px;
+                gap: 10px;
+                padding: 12px;
             }
             
             .progress-block {
-                width: 20px;
-                height: 15px;
+                width: 18px;
+                height: 14px;
             }
             
             .attribute-icon {
-                font-size: 30px;
-                width: 40px;
-                height: 40px;
+                font-size: 28px;
+                width: 38px;
+                height: 38px;
             }
             
             .attribute-label {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
             }
             
             .upgrade-plus-btn {
-                width: 30px;
-                height: 30px;
-                font-size: 1.2rem;
+                width: 28px;
+                height: 28px;
+                font-size: 1.1rem;
             }
         }
 
@@ -1002,8 +1086,8 @@
                 <div class="header-stoke-left"></div>
                 我的戰機
                 <div class="header-stoke-right"></div>
-            </div>
-          
+        </div>
+
             <button class="close-btn" onclick="window.close()">✕</button>
         </div>
 
@@ -1028,11 +1112,11 @@
                         <div class="progress-container">
                             <div class="progress-blocks" id="health-progress">
                                 <!-- 10 個方格將由 JS 生成 -->
-                            </div>
+            </div>
                             <button class="upgrade-plus-btn" id="health-upgrade-btn" onclick="upgradeAttribute('health')">+</button>
-                        </div>
-                    </div>
-                </div>
+            </div>
+            </div>
+        </div>
 
                 <!-- Speed Points -->
                 <div class="attribute-row">
@@ -1042,34 +1126,34 @@
                         <div class="progress-container">
                             <div class="progress-blocks" id="speed-progress">
                                 <!-- 10 個方格將由 JS 生成 -->
-                            </div>
+                    </div>
                             <button class="upgrade-plus-btn" id="speed-upgrade-btn" onclick="upgradeAttribute('moveSpeed')">+</button>
                         </div>
+                        </div>
                     </div>
+                        </div>
                 </div>
-            </div>
-        </div>
 
         <!-- 右上區 - 戰機圖片 -->
         <div class="plane-visual">
             <div class="plane-image-container">
                 <img src="assets/sprites/ships/blue/Ship_LVL_1.png" alt="我的戰機" class="plane-image" onerror="this.style.display='none'">
-            </div>
+                    </div>
             <div class="plane-stats">
                 <div class="plane-stat-item">
                     <div class="plane-stat-label">💰 金幣</div>
                     <div class="plane-stat-value" id="player-money">5000</div>
-                </div>
+                        </div>
                 <div class="plane-stat-item">
                     <div class="plane-stat-label">🏆 勝場</div>
                     <div class="plane-stat-value" id="wins">0</div>
-                </div>
+                        </div>
                 <div class="plane-stat-item">
                     <div class="plane-stat-label">💀 擊殺</div>
                     <div class="plane-stat-value" id="kills">0</div>
-                </div>
-            </div>
-        </div>
+                    </div>
+                        </div>
+                    </div>
 
         <!-- 左下區 - MY DEFEND TOWER -->
         <div class="tower-section">
@@ -1077,16 +1161,16 @@
             <div class="slots-grid" id="tower-loadout">
                 <!-- 8 個槽位將由 JS 生成 -->
             </div>
-        </div>
+                </div>
 
         <!-- 右下區 - MY WEAPONS -->
         <div class="weapons-section">
             <h1 class="section-title">MY WEAPONS</h1>
             <div class="slots-grid" id="weapon-loadout">
                 <!-- 8 個槽位將由 JS 生成 -->
-            </div>
-        </div>
-    </div>
+                    </div>
+                        </div>
+                        </div>
 
     <!-- 武器選擇對話框 -->
     <div id="weapon-dialog" class="dialog-overlay">
@@ -1097,13 +1181,13 @@
             </div> -->
             <div class="dialog-content" id="weapon-options">
                 <!-- 武器選項將由 JavaScript 動態生成 -->
-            </div>
+                    </div>
             <div class="dialog-footer">
                 <button class="dialog-btn dialog-btn-secondary" onclick="closeWeaponDialog()">取消</button>
                 <button class="dialog-btn dialog-btn-primary" onclick="confirmWeaponSelection()">確認</button>
-            </div>
-        </div>
-    </div>
+                        </div>
+                    </div>
+                </div>
 
     <!-- 炮塔選擇對話框 -->
     <div id="tower-dialog" class="dialog-overlay">
@@ -1114,13 +1198,13 @@
             </div> -->
             <div class="dialog-content" id="tower-options">
                 <!-- 炮塔選項將由 JavaScript 動態生成 -->
-            </div>
+                    </div>
             <div class="dialog-footer">
                 <button class="dialog-btn dialog-btn-secondary" onclick="closeTowerDialog()">取消</button>
                 <button class="dialog-btn dialog-btn-primary" onclick="confirmTowerSelection()">確認</button>
-            </div>
-        </div>
-    </div>
+                        </div>
+                        </div>
+                    </div>
 
     <script>
         // ===== 配置數據 =====
@@ -1411,7 +1495,7 @@
                     const emptySlotHTML = `
                         <div class="slot empty">
                             <div class="slot-empty-icon">⬡</div>
-                        </div>
+                    </div>
                     `;
                     container.innerHTML += emptySlotHTML;
                 }
@@ -1454,7 +1538,7 @@
                             ${isEquipped ? '<div class="slot-tick">✓</div>' : ''}
                             <div class="slot-icon">${tower.icon}</div>
                             <div class="slot-name">${tower.name}</div>
-                        </div>
+                </div>
                     `;
                     container.innerHTML += slotHTML;
                 } else {
@@ -1534,12 +1618,12 @@
                                 <span>傷害: ${weapon.damage}</span>
                                 <span>彈藥: ${weapon.ammo}</span>
                                 ${weapon.fireRate ? `<span>射速: ${weapon.fireRate}ms</span>` : ''}
-                            </div>
+                    </div>
                         </div>
                         ${isEquipped ? '<span class="option-badge">已裝備</span>' : ''}
                         ${isSelected ? '<span class="option-badge">✓</span>' : ''}
                         ${!weapon.unlocked ? '<span class="option-badge locked">🔒 未解鎖</span>' : ''}
-                    </div>
+                        </div>
                 `;
                 container.innerHTML += optionHTML;
             });
@@ -1606,14 +1690,14 @@
                             <div class="detail-stat" style="flex: 1;">
                                 <span>傷害</span>
                                 <span class="stat-value">${weapon.damage}</span>
-                            </div>
+                        </div>
                             <div class="detail-stat" style="flex: 1;">
                                 <span>冷卻</span>
                                 <span class="stat-value">${weapon.cooldown || 0} 秒</span>
-                            </div>
-                        </div>
                     </div>
                 </div>
+                    </div>
+                        </div>
             `;
             
             // 修改對話框底部按鈕
@@ -1681,12 +1765,12 @@
                                 <span>傷害: ${tower.damage}</span>
                                 <span>使用: ×${tower.uses}</span>
                                 <span>射程: ${tower.range}</span>
-                            </div>
                         </div>
+                    </div>
                         ${isEquipped ? '<span class="option-badge">已裝備</span>' : ''}
                         ${isSelected ? '<span class="option-badge">✓</span>' : ''}
                         ${!tower.unlocked ? '<span class="option-badge locked">🔒 未解鎖</span>' : ''}
-                    </div>
+                        </div>
                 `;
                 container.innerHTML += optionHTML;
             });
@@ -1753,13 +1837,13 @@
                             <div class="detail-stat" style="flex: 1;">
                                 <span>傷害</span>
                                 <span class="stat-value">${tower.damage}</span>
-                            </div>
+                </div>
                             <div class="detail-stat" style="flex: 1;">
                                 <span>射程</span>
                                 <span class="stat-value">${tower.range}</span>
-                            </div>
-                        </div>
-                    </div>
+            </div>
+        </div>
+    </div>
                 </div>
             `;
             
@@ -1827,7 +1911,7 @@
             const savedData = localStorage.getItem('playerData');
             if (savedData) {
                 try {
-                    const data = JSON.parse(savedData);
+                const data = JSON.parse(savedData);
                     document.getElementById('wins').textContent = data.wins || 0;
                     document.getElementById('kills').textContent = data.kills || 0;
                 } catch (e) {
