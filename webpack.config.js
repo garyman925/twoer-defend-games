@@ -10,10 +10,16 @@ module.exports = {
   },
   mode: 'development',
   devServer: {
-    static: {
-      directory: path.join(__dirname, 'assets'),
-      publicPath: '/assets'
-    },
+    static: [
+      {
+        directory: path.join(__dirname, 'assets'),
+        publicPath: '/assets'
+      },
+      {
+        directory: path.join(__dirname),
+        publicPath: '/'
+      }
+    ],
     hot: true,
     port: 3000,
     open: true

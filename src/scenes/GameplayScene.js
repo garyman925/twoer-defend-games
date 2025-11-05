@@ -584,6 +584,9 @@ export class GameplayScene extends BaseScene {
     this.weaponBarUI = new WeaponBarUI(this, this.weaponManager);
     this.weaponBarUI.create();
     
+    // 🆕 設置武器投射物碰撞（在武器創建後）
+    this.setupWeaponCollisions();
+    
     console.log('✅ 武器系統創建完成');
   }
 
@@ -776,6 +779,66 @@ export class GameplayScene extends BaseScene {
     this.physics.add.overlap(this.enemies, this.player, this.onEnemyHitPlayer, null, this);
     
     console.log('✅ 碰撞檢測設置完成（包含敵人碰撞玩家）');
+  }
+
+  /**
+   * 🆕 設置武器投射物碰撞（在武器創建後調用）
+   */
+  setupWeaponCollisions() {
+    if (!this.weaponManager || !this.weaponManager.weaponInstances) return;
+    
+    // 為每個武器的投射物設置碰撞
+    this.weaponManager.weaponInstances.forEach((weaponInstance, weaponId) => {
+      if (weaponInstance.projectilePool) {
+        weaponInstance.projectilePool.forEach(projectile => {
+          if (projectile && projectile.body) {
+            // 設置投射物與敵人的碰撞
+            this.physics.add.overlap(projectile, this.enemies, this.onWeaponProjectileHitEnemy, null, this);
+          }
+        });
+      }
+    });
+    
+    console.log('✅ 武器投射物碰撞檢測設置完成');
+  }
+
+  /**
+   * 🆕 武器投射物擊中敵人
+   */
+  onWeaponProjectileHitEnemy(projectile, enemy) {
+    if (!projectile.active || !enemy.isAlive) return;
+    
+    const damage = projectile.damage || 20;
+    const weaponType = projectile.weaponType || 'unknown';
+    
+    // 造成傷害
+    enemy.takeDamage(damage, 'projectile', this.player);
+    
+    console.log(`💥 ${weaponType} 擊中 ${enemy.enemyType}敵人，造成 ${damage} 點傷害`);
+    
+    // 根據武器類型處理
+    if (weaponType === 'missile') {
+      // 導彈：觸發爆炸
+      const weaponInstance = this.weaponManager.weaponInstances.get('missile');
+      if (weaponInstance && weaponInstance.explodeMissile) {
+        weaponInstance.explodeMissile(projectile);
+      }
+    } else if (weaponType === 'bomb') {
+      // 炸彈：觸發大爆炸
+      const weaponInstance = this.weaponManager.weaponInstances.get('bomb');
+      if (weaponInstance && weaponInstance.explodeBomb) {
+        weaponInstance.explodeBomb(projectile);
+      }
+    } else {
+      // Vulcan 等：穿透檢查
+      if (!projectile.piercing) {
+        // 如果不穿透，銷毀投射物
+        const weaponInstance = this.weaponManager.weaponInstances.get(weaponType);
+        if (weaponInstance && weaponInstance.returnProjectileToPool) {
+          weaponInstance.returnProjectileToPool(projectile);
+        }
+      }
+    }
   }
 
   /**

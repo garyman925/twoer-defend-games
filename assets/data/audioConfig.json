@@ -48,6 +48,41 @@
   },
   "soundEffects": {
     "weapons": {
+      "vulcan_fire": {
+        "file": "machine_gun.wav",
+        "volume": 0.4,
+        "variations": 4,
+        "pitchVariation": 0.15,
+        "3d": true,
+        "rateLimit": 50
+      },
+      "missile_launch": {
+        "file": "missile_launch.wav",
+        "volume": 0.9,
+        "variations": 1,
+        "3d": true
+      },
+      "missile_explosion": {
+        "file": "cannon_fire.wav",
+        "volume": 0.8,
+        "variations": 2,
+        "pitchVariation": 0.1,
+        "3d": true
+      },
+      "bomb_launch": {
+        "file": "cannon_fire.wav",
+        "volume": 0.7,
+        "variations": 1,
+        "pitchVariation": -0.2,
+        "3d": true
+      },
+      "bomb_explosion": {
+        "file": "cannon_fire.wav",
+        "volume": 1.0,
+        "variations": 1,
+        "pitchVariation": -0.3,
+        "3d": true
+      },
       "laser_shot": {
         "file": "laser_shot.wav",
         "volume": 0.6,
@@ -74,12 +109,6 @@
         "volume": 0.7,
         "variations": 2,
         "pitchVariation": 0.08,
-        "3d": true
-      },
-      "missile_launch": {
-        "file": "missile_launch.wav",
-        "volume": 0.9,
-        "variations": 1,
         "3d": true
       }
     },

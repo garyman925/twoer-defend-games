@@ -105,12 +105,294 @@
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 2px solid #009fb9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-icon {
+            font-size: 1.8rem;
         }
 
         .upgrade-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
+        }
+
+        /* 裝備槽位區域 */
+        .loadout-section {
+            margin-bottom: 40px;
+        }
+
+        .loadout-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        /* 裝備槽位卡片 */
+        .loadout-slot {
+            background: rgba(0, 159, 185, 0.1);
+            border: 2px solid #009fb9;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .loadout-slot:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 255, 255, 0.3);
+            border-color: #00ffff;
+        }
+
+        .slot-number {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #ffd93d;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid #ffd93d;
+            font-family: 'Squada One', cursive;
+        }
+
+        .slot-icon {
+            font-size: 48px;
+            margin: 10px 0;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+        }
+
+        .slot-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-family: 'Squada One', cursive;
+        }
+
+        .slot-stats {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .slot-stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+        }
+
+        .change-btn {
+            width: 100%;
+            padding: 8px 16px;
+            background: linear-gradient(0deg, #000000c4 0%, #009fb991 100%);
+            border: none;
+            border-radius: 6px;
+            box-shadow: 0 0 0 2px #ffffff36;
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .change-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
+        }
+
+        /* 選擇對話框 */
+        .dialog-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .dialog-overlay.active {
+            display: flex;
+        }
+
+        .dialog-box {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            border: 3px solid #00ffff;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+        }
+
+        .dialog-header {
+            padding: 20px;
+            background: rgba(0, 159, 185, 0.2);
+            border-bottom: 2px solid #009fb9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dialog-title {
+            font-size: 1.5rem;
+            color: #00ffff;
+            font-family: 'Squada One', cursive;
+        }
+
+        .dialog-close {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .dialog-close:hover {
+            background: rgba(255, 0, 0, 0.3);
+            transform: scale(1.1);
+        }
+
+        .dialog-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .option-item {
+            background: rgba(0, 159, 185, 0.1);
+            border: 2px solid #009fb9;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option-item:hover {
+            transform: translateX(5px);
+            border-color: #00ffff;
+            box-shadow: 0 4px 16px rgba(0, 255, 255, 0.3);
+        }
+
+        .option-item.selected {
+            border-color: #ffd93d;
+            background: rgba(255, 217, 61, 0.15);
+            box-shadow: 0 0 20px rgba(255, 217, 61, 0.4);
+        }
+
+        .option-item.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .option-icon {
+            font-size: 40px;
+            flex-shrink: 0;
+        }
+
+        .option-details {
+            flex: 1;
+        }
+
+        .option-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 4px;
+            font-family: 'Squada One', cursive;
+        }
+
+        .option-desc {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            margin-bottom: 8px;
+        }
+
+        .option-stats {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            color: #00ffff;
+        }
+
+        .option-badge {
+            background: rgba(255, 217, 61, 0.2);
+            color: #ffd93d;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border: 1px solid #ffd93d;
+        }
+
+        .option-badge.locked {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff5555;
+            border-color: #ff5555;
+        }
+
+        .dialog-footer {
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-top: 2px solid #009fb9;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .dialog-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Squada One', cursive;
+        }
+
+        .dialog-btn-primary {
+            background: linear-gradient(0deg, #000000c4 0%, #009fb991 100%);
+            box-shadow: 0 0 0 2px #ffffff36;
+            color: white;
+        }
+
+        .dialog-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
+        }
+
+        .dialog-btn-secondary {
+            background: rgba(100, 100, 100, 0.5);
+            color: white;
+        }
+
+        .dialog-btn-secondary:hover {
+            background: rgba(150, 150, 150, 0.5);
         }
 
         .upgrade-card {
@@ -317,9 +599,34 @@
             </div>
         </div>
 
+        <!-- 武器裝備區 -->
+        <div class="loadout-section">
+            <h2 class="section-title">
+                <span class="section-icon">🔫</span>
+                武器裝備槽 <span style="font-size: 0.9rem; color: #a0a0a0;">(戰鬥中可按 1/2/3 切換)</span>
+            </h2>
+            <div class="loadout-grid" id="weapon-loadout">
+                <!-- 武器槽位將由 JavaScript 動態生成 -->
+            </div>
+        </div>
+
+        <!-- 炮塔裝備區 -->
+        <div class="loadout-section">
+            <h2 class="section-title">
+                <span class="section-icon">🏗️</span>
+                炮塔裝備槽 <span style="font-size: 0.9rem; color: #a0a0a0;">(準備階段放置)</span>
+            </h2>
+            <div class="loadout-grid" id="tower-loadout">
+                <!-- 炮塔槽位將由 JavaScript 動態生成 -->
+            </div>
+        </div>
+
         <!-- 升級區域 -->
         <div class="upgrade-section">
-            <h2 class="section-title">⚡ 戰機屬性升級</h2>
+            <h2 class="section-title">
+                <span class="section-icon">⚡</span>
+                戰機屬性升級
+            </h2>
             <div class="upgrade-grid">
                 <!-- 生命值升級卡 -->
                 <div class="upgrade-card">
@@ -498,29 +805,410 @@
         </div>
     </div>
 
-    <script>
-        // 簡單的互動效果
-        document.querySelectorAll('.upgrade-btn:not(:disabled)').forEach(btn => {
-            btn.addEventListener('click', function() {
-                alert('升級功能開發中！\n\n未來將與遊戲資料連動，實現真正的升級功能。');
-            });
-        });
+    <!-- 武器選擇對話框 -->
+    <div id="weapon-dialog" class="dialog-overlay">
+        <div class="dialog-box">
+            <div class="dialog-header">
+                <h3 class="dialog-title">🔫 選擇武器</h3>
+                <button class="dialog-close" onclick="closeWeaponDialog()">✕</button>
+            </div>
+            <div class="dialog-content" id="weapon-options">
+                <!-- 武器選項將由 JavaScript 動態生成 -->
+            </div>
+            <div class="dialog-footer">
+                <button class="dialog-btn dialog-btn-secondary" onclick="closeWeaponDialog()">取消</button>
+                <button class="dialog-btn dialog-btn-primary" onclick="confirmWeaponSelection()">確認</button>
+            </div>
+        </div>
+    </div>
 
-        // 模擬從遊戲讀取數據（未來實現）
-        function loadPlayerData() {
-            // 這裡未來可以從 localStorage 或後端 API 讀取玩家數據
-            const savedData = localStorage.getItem('playerData');
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                document.getElementById('player-money').textContent = data.money || 5000;
-                document.getElementById('total-level').textContent = data.level || 12;
-                document.getElementById('wins').textContent = data.wins || 25;
-                document.getElementById('kills').textContent = data.kills || 1547;
+    <!-- 炮塔選擇對話框 -->
+    <div id="tower-dialog" class="dialog-overlay">
+        <div class="dialog-box">
+            <div class="dialog-header">
+                <h3 class="dialog-title">🏗️ 選擇炮塔</h3>
+                <button class="dialog-close" onclick="closeTowerDialog()">✕</button>
+            </div>
+            <div class="dialog-content" id="tower-options">
+                <!-- 炮塔選項將由 JavaScript 動態生成 -->
+            </div>
+            <div class="dialog-footer">
+                <button class="dialog-btn dialog-btn-secondary" onclick="closeTowerDialog()">取消</button>
+                <button class="dialog-btn dialog-btn-primary" onclick="confirmTowerSelection()">確認</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== 配置數據 =====
+        const WEAPON_DATA = {
+            vulcan: {
+                id: 'vulcan',
+                name: 'Vulcan',
+                icon: '🔫',
+                description: '快速連發機槍',
+                damage: 20,
+                ammo: '∞',
+                fireRate: 150,
+                unlocked: true
+            },
+            missile: {
+                id: 'missile',
+                name: 'Missile',
+                icon: '🚀',
+                description: '追蹤敵人的導彈',
+                damage: 100,
+                ammo: 3,
+                cooldown: 5,
+                unlocked: true
+            },
+            bomb: {
+                id: 'bomb',
+                name: 'Bomb',
+                icon: '💣',
+                description: '大範圍爆炸炸彈',
+                damage: 200,
+                ammo: 1,
+                cooldown: 10,
+                unlocked: true
+            }
+        };
+
+        const TOWER_DATA = {
+            basic: {
+                id: 'basic',
+                name: 'Gatling',
+                icon: '🎯',
+                description: '快速射擊炮塔',
+                damage: 25,
+                uses: 5,
+                range: 120,
+                unlocked: true
+            },
+            cannon: {
+                id: 'cannon',
+                name: 'Striker',
+                icon: '💥',
+                description: '範圍爆炸傷害',
+                damage: 80,
+                uses: 5,
+                range: 100,
+                unlocked: true
+            },
+            laser: {
+                id: 'laser',
+                name: 'Railgun',
+                icon: '⚡',
+                description: '高精準能量武器',
+                damage: 40,
+                uses: 5,
+                range: 150,
+                unlocked: true
+            },
+            ice: {
+                id: 'ice',
+                name: 'Frost',
+                icon: '❄️',
+                description: '減緩敵人速度',
+                damage: 20,
+                uses: 5,
+                range: 130,
+                unlocked: true
+            }
+        };
+
+        // ===== 全局狀態 =====
+        let currentLoadout = {
+            weapons: ['vulcan', 'missile', 'bomb'],
+            towers: ['basic', 'cannon', 'laser']
+        };
+
+        let currentEditingSlot = null;
+        let currentEditingType = null;
+        let tempSelection = null;
+
+        // ===== 初始化 =====
+        function init() {
+            loadSavedLoadout();
+            renderWeaponLoadout();
+            renderTowerLoadout();
+            loadPlayerData();
+            
+            // 保留原有的升級按鈕功能
+            document.querySelectorAll('.upgrade-btn:not(:disabled)').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    alert('升級功能開發中！\n\n未來將與遊戲資料連動，實現真正的升級功能。');
+                });
+            });
+        }
+
+        // ===== 讀取保存的配置 =====
+        function loadSavedLoadout() {
+            const saved = localStorage.getItem('playerShipConfig');
+            if (saved) {
+                try {
+                    const config = JSON.parse(saved);
+                    if (config.weaponSlots) {
+                        currentLoadout.weapons = config.weaponSlots.map(slot => slot.weaponId);
+                    }
+                    if (config.towerSlots) {
+                        currentLoadout.towers = config.towerSlots.map(slot => slot.towerId);
+                    }
+                } catch (e) {
+                    console.error('載入配置失敗:', e);
+                }
             }
         }
 
-        // 頁面載入時讀取數據
-        window.addEventListener('load', loadPlayerData);
+        // ===== 保存配置 =====
+        function saveLoadout() {
+            const config = {
+                weaponSlots: currentLoadout.weapons.map((weaponId, index) => ({
+                    slotId: index,
+                    weaponId: weaponId
+                })),
+                towerSlots: currentLoadout.towers.map((towerId, index) => ({
+                    slotId: index,
+                    towerId: towerId,
+                    count: 5
+                }))
+            };
+            localStorage.setItem('playerShipConfig', JSON.stringify(config));
+            console.log('✅ 配置已保存:', config);
+        }
+
+        // ===== 渲染武器裝備槽 =====
+        function renderWeaponLoadout() {
+            const container = document.getElementById('weapon-loadout');
+            container.innerHTML = '';
+            
+            currentLoadout.weapons.forEach((weaponId, index) => {
+                const weapon = WEAPON_DATA[weaponId];
+                if (!weapon) return;
+                
+                const slotHTML = `
+                    <div class="loadout-slot" onclick="openWeaponDialog(${index})">
+                        <div class="slot-number">${index + 1}</div>
+                        <div class="slot-icon">${weapon.icon}</div>
+                        <div class="slot-name">${weapon.name}</div>
+                        <div class="slot-stats">
+                            <div class="slot-stat-item">
+                                <span>傷害</span>
+                                <span style="color: #ff6b6b;">${weapon.damage}</span>
+                            </div>
+                            <div class="slot-stat-item">
+                                <span>彈藥</span>
+                                <span style="color: #ffd93d;">${weapon.ammo}</span>
+                            </div>
+                            ${weapon.cooldown ? `
+                            <div class="slot-stat-item">
+                                <span>冷卻</span>
+                                <span style="color: #51cf66;">${weapon.cooldown}秒</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                        <button class="change-btn" onclick="openWeaponDialog(${index}); event.stopPropagation();">
+                            更換武器 ▼
+                        </button>
+                    </div>
+                `;
+                container.innerHTML += slotHTML;
+            });
+        }
+
+        // ===== 渲染炮塔裝備槽 =====
+        function renderTowerLoadout() {
+            const container = document.getElementById('tower-loadout');
+            container.innerHTML = '';
+            
+            currentLoadout.towers.forEach((towerId, index) => {
+                const tower = TOWER_DATA[towerId];
+                if (!tower) return;
+                
+                const slotHTML = `
+                    <div class="loadout-slot" onclick="openTowerDialog(${index})">
+                        <div class="slot-number">${index + 1}</div>
+                        <div class="slot-icon">${tower.icon}</div>
+                        <div class="slot-name">${tower.name}</div>
+                        <div class="slot-stats">
+                            <div class="slot-stat-item">
+                                <span>傷害</span>
+                                <span style="color: #ff6b6b;">${tower.damage}</span>
+                            </div>
+                            <div class="slot-stat-item">
+                                <span>使用次數</span>
+                                <span style="color: #ffd93d;">×${tower.uses}</span>
+                            </div>
+                            <div class="slot-stat-item">
+                                <span>射程</span>
+                                <span style="color: #51cf66;">${tower.range}</span>
+                            </div>
+                        </div>
+                        <button class="change-btn" onclick="openTowerDialog(${index}); event.stopPropagation();">
+                            更換炮塔 ▼
+                        </button>
+                    </div>
+                `;
+                container.innerHTML += slotHTML;
+            });
+        }
+
+        // ===== 打開武器選擇對話框 =====
+        function openWeaponDialog(slotIndex) {
+            currentEditingSlot = slotIndex;
+            currentEditingType = 'weapon';
+            tempSelection = currentLoadout.weapons[slotIndex];
+            
+            const container = document.getElementById('weapon-options');
+            container.innerHTML = '';
+            
+            Object.values(WEAPON_DATA).forEach(weapon => {
+                const isSelected = weapon.id === tempSelection;
+                const isEquipped = currentLoadout.weapons.includes(weapon.id);
+                
+                const optionHTML = `
+                    <div class="option-item ${isSelected ? 'selected' : ''} ${!weapon.unlocked ? 'locked' : ''}" 
+                         onclick="${weapon.unlocked ? `selectWeapon('${weapon.id}')` : ''}">
+                        <div class="option-icon">${weapon.icon}</div>
+                        <div class="option-details">
+                            <div class="option-name">${weapon.name}</div>
+                            <div class="option-desc">${weapon.description}</div>
+                            <div class="option-stats">
+                                <span>傷害: ${weapon.damage}</span>
+                                <span>彈藥: ${weapon.ammo}</span>
+                                ${weapon.fireRate ? `<span>射速: ${weapon.fireRate}ms</span>` : ''}
+                            </div>
+                        </div>
+                        ${isEquipped ? '<span class="option-badge">已裝備</span>' : ''}
+                        ${isSelected ? '<span class="option-badge">✓</span>' : ''}
+                        ${!weapon.unlocked ? '<span class="option-badge locked">🔒 未解鎖</span>' : ''}
+                    </div>
+                `;
+                container.innerHTML += optionHTML;
+            });
+            
+            document.getElementById('weapon-dialog').classList.add('active');
+        }
+
+        // ===== 選擇武器 =====
+        function selectWeapon(weaponId) {
+            tempSelection = weaponId;
+            
+            // 更新 UI 選中狀態
+            document.querySelectorAll('#weapon-options .option-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+
+        // ===== 確認武器選擇 =====
+        function confirmWeaponSelection() {
+            if (tempSelection && currentEditingSlot !== null) {
+                currentLoadout.weapons[currentEditingSlot] = tempSelection;
+                saveLoadout();
+                renderWeaponLoadout();
+                closeWeaponDialog();
+            }
+        }
+
+        // ===== 關閉武器對話框 =====
+        function closeWeaponDialog() {
+            document.getElementById('weapon-dialog').classList.remove('active');
+            currentEditingSlot = null;
+            tempSelection = null;
+        }
+
+        // ===== 打開炮塔選擇對話框 =====
+        function openTowerDialog(slotIndex) {
+            currentEditingSlot = slotIndex;
+            currentEditingType = 'tower';
+            tempSelection = currentLoadout.towers[slotIndex];
+            
+            const container = document.getElementById('tower-options');
+            container.innerHTML = '';
+            
+            Object.values(TOWER_DATA).forEach(tower => {
+                const isSelected = tower.id === tempSelection;
+                const isEquipped = currentLoadout.towers.includes(tower.id);
+                
+                const optionHTML = `
+                    <div class="option-item ${isSelected ? 'selected' : ''} ${!tower.unlocked ? 'locked' : ''}" 
+                         onclick="${tower.unlocked ? `selectTower('${tower.id}')` : ''}">
+                        <div class="option-icon">${tower.icon}</div>
+                        <div class="option-details">
+                            <div class="option-name">${tower.name}</div>
+                            <div class="option-desc">${tower.description}</div>
+                            <div class="option-stats">
+                                <span>傷害: ${tower.damage}</span>
+                                <span>使用: ×${tower.uses}</span>
+                                <span>射程: ${tower.range}</span>
+                            </div>
+                        </div>
+                        ${isEquipped ? '<span class="option-badge">已裝備</span>' : ''}
+                        ${isSelected ? '<span class="option-badge">✓</span>' : ''}
+                        ${!tower.unlocked ? '<span class="option-badge locked">🔒 未解鎖</span>' : ''}
+                    </div>
+                `;
+                container.innerHTML += optionHTML;
+            });
+            
+            document.getElementById('tower-dialog').classList.add('active');
+        }
+
+        // ===== 選擇炮塔 =====
+        function selectTower(towerId) {
+            tempSelection = towerId;
+            
+            // 更新 UI 選中狀態
+            document.querySelectorAll('#tower-options .option-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+
+        // ===== 確認炮塔選擇 =====
+        function confirmTowerSelection() {
+            if (tempSelection && currentEditingSlot !== null) {
+                currentLoadout.towers[currentEditingSlot] = tempSelection;
+                saveLoadout();
+                renderTowerLoadout();
+                closeTowerDialog();
+            }
+        }
+
+        // ===== 關閉炮塔對話框 =====
+        function closeTowerDialog() {
+            document.getElementById('tower-dialog').classList.remove('active');
+            currentEditingSlot = null;
+            tempSelection = null;
+        }
+
+        // ===== 讀取玩家數據 =====
+        function loadPlayerData() {
+            const savedData = localStorage.getItem('playerData');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    document.getElementById('player-money').textContent = data.money || 5000;
+                    document.getElementById('total-level').textContent = data.level || 12;
+                    document.getElementById('wins').textContent = data.wins || 25;
+                    document.getElementById('kills').textContent = data.kills || 1547;
+                } catch (e) {
+                    console.error('載入玩家數據失敗:', e);
+                }
+            }
+        }
+
+        // ===== 頁面載入時初始化 =====
+        window.addEventListener('load', init);
+
+        // ===== 關閉對話框（點擊背景） =====
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('dialog-overlay')) {
+                closeWeaponDialog();
+                closeTowerDialog();
+            }
+        });
     </script>
 </body>
 </html>

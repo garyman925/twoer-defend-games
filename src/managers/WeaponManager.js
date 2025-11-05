@@ -3,6 +3,10 @@
  * 管理玩家的武器配置、切換、彈藥和冷卻
  */
 
+import { VulcanWeapon } from '../entities/player/weapons/VulcanWeapon.js';
+import { MissileWeapon } from '../entities/player/weapons/MissileWeapon.js';
+import { BombWeapon } from '../entities/player/weapons/BombWeapon.js';
+
 export class WeaponManager {
   constructor(scene, player) {
     this.scene = scene;
@@ -13,6 +17,9 @@ export class WeaponManager {
     this.equippedWeapons = []; // 已裝備的武器ID（最多3個）
     this.currentWeapon = null;
     this.currentWeaponIndex = 0;
+    
+    // 🆕 武器實例
+    this.weaponInstances = new Map(); // 儲存每個武器的實例
     
     // 武器狀態
     this.weaponStates = new Map(); // 儲存每個武器的彈藥/冷卻狀態
@@ -85,6 +92,7 @@ export class WeaponManager {
     this.equippedWeapons.forEach(weaponId => {
       const weaponConfig = this.weaponData.WEAPONS[weaponId];
       if (weaponConfig) {
+        // 初始化武器狀態
         this.weaponStates.set(weaponId, {
           currentAmmo: weaponConfig.ammo.maxAmmo === -1 ? -1 : weaponConfig.ammo.maxAmmo,
           maxAmmo: weaponConfig.ammo.maxAmmo,
@@ -92,10 +100,41 @@ export class WeaponManager {
           isReloading: false,
           lastFireTime: 0
         });
+        
+        // 🆕 創建武器實例
+        const weaponInstance = this.createWeaponInstance(weaponId, weaponConfig);
+        if (weaponInstance) {
+          this.weaponInstances.set(weaponId, weaponInstance);
+        }
       }
     });
     
-    console.log('✅ 武器狀態初始化完成');
+    console.log('✅ 武器狀態和實例初始化完成');
+  }
+
+  /**
+   * 🆕 創建武器實例
+   */
+  createWeaponInstance(weaponId, config) {
+    let weaponInstance = null;
+    
+    switch (weaponId) {
+      case 'vulcan':
+        weaponInstance = new VulcanWeapon(this.scene, this.player, config);
+        break;
+      case 'missile':
+        weaponInstance = new MissileWeapon(this.scene, this.player, config);
+        break;
+      case 'bomb':
+        weaponInstance = new BombWeapon(this.scene, this.player, config);
+        break;
+      default:
+        console.warn(`⚠️ 未知的武器類型: ${weaponId}`);
+        return null;
+    }
+    
+    console.log(`✅ ${config.displayName} 武器實例創建完成`);
+    return weaponInstance;
   }
 
   /**
@@ -137,10 +176,23 @@ export class WeaponManager {
     
     const weaponId = this.currentWeapon.id;
     const state = this.weaponStates.get(weaponId);
+    const weaponInstance = this.weaponInstances.get(weaponId);
+    
+    // 檢查武器實例
+    if (!weaponInstance) {
+      console.error(`❌ 武器實例不存在: ${weaponId}`);
+      return false;
+    }
     
     // 檢查是否可以射擊
     if (!this.canFire(weaponId)) {
-      console.log(`⚠️ ${this.currentWeapon.displayName} 無法射擊`);
+      return false;
+    }
+    
+    // 🆕 實際發射武器
+    const projectile = weaponInstance.fire(targetX, targetY);
+    
+    if (!projectile) {
       return false;
     }
     
@@ -163,7 +215,8 @@ export class WeaponManager {
       weapon: this.currentWeapon,
       targetX: targetX,
       targetY: targetY,
-      ammoRemaining: state.currentAmmo
+      ammoRemaining: state.currentAmmo,
+      projectile: projectile
     });
     
     return true;
@@ -241,6 +294,13 @@ export class WeaponManager {
             weaponId: weaponId
           });
         }
+      }
+    });
+    
+    // 🆕 更新所有武器實例（投射物更新等）
+    this.weaponInstances.forEach((weaponInstance, weaponId) => {
+      if (weaponInstance && weaponInstance.update) {
+        weaponInstance.update(time, delta);
       }
     });
   }
@@ -379,6 +439,14 @@ export class WeaponManager {
    * 銷毀
    */
   destroy() {
+    // 🆕 銷毀所有武器實例
+    this.weaponInstances.forEach((weaponInstance) => {
+      if (weaponInstance && weaponInstance.destroy) {
+        weaponInstance.destroy();
+      }
+    });
+    this.weaponInstances.clear();
+    
     this.eventEmitter.removeAllListeners();
     this.weaponStates.clear();
     this.weaponData = null;

@@ -211,8 +211,21 @@ export class Player extends Phaser.GameObjects.Container {
     // 更新滑鼠跟隨轉向
     this.updateMouseRotation(time, delta);
     
-    // 更新武器
-    if (this.weapon) {
+    // 🆕 更新新武器系統（持續射擊）
+    if (this.scene.weaponManager) {
+      const currentWeapon = this.scene.weaponManager.getCurrentWeaponState();
+      if (currentWeapon && currentWeapon.weapon) {
+        const weaponInstance = this.scene.weaponManager.weaponInstances.get(currentWeapon.weapon.id);
+        
+        // 如果正在射擊，持續發射
+        if (weaponInstance && weaponInstance.isFiring) {
+          const pointer = this.scene.input.activePointer;
+          const worldPoint = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
+          this.scene.weaponManager.fire(worldPoint.x, worldPoint.y);
+        }
+      }
+    } else if (this.weapon) {
+      // 備用：舊武器系統
       this.weapon.update(time, delta);
     }
     
@@ -329,14 +342,23 @@ export class Player extends Phaser.GameObjects.Container {
   handleMouseDown(pointer) {
     if (!this.isAlive) return;
     
-    console.log('🎯 滑鼠按下，武器狀態:', this.weapon ? '存在' : '不存在');
-    
-    // 開始射擊
-    if (this.weapon) {
-      console.log('🎯 開始射擊');
+    // 🆕 使用 WeaponManager 進行射擊
+    if (this.scene.weaponManager) {
+      const worldPoint = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
+      
+      // 獲取當前武器實例
+      const currentWeapon = this.scene.weaponManager.getCurrentWeaponState();
+      if (currentWeapon && currentWeapon.weapon) {
+        const weaponInstance = this.scene.weaponManager.weaponInstances.get(currentWeapon.weapon.id);
+        if (weaponInstance) {
+          weaponInstance.startFiring();
+          console.log(`🎯 開始使用 ${currentWeapon.weapon.displayName}`);
+        }
+      }
+    } else if (this.weapon) {
+      // 備用：使用舊的武器系統
+      console.log('🎯 開始射擊（舊系統）');
       this.weapon.startFiring();
-    } else {
-      console.log('❌ 武器不存在');
     }
   }
 
@@ -346,8 +368,17 @@ export class Player extends Phaser.GameObjects.Container {
   handleMouseUp(pointer) {
     if (!this.isAlive) return;
     
-    // 停止射擊
-    if (this.weapon) {
+    // 🆕 停止射擊
+    if (this.scene.weaponManager) {
+      const currentWeapon = this.scene.weaponManager.getCurrentWeaponState();
+      if (currentWeapon && currentWeapon.weapon) {
+        const weaponInstance = this.scene.weaponManager.weaponInstances.get(currentWeapon.weapon.id);
+        if (weaponInstance) {
+          weaponInstance.stopFiring();
+        }
+      }
+    } else if (this.weapon) {
+      // 備用：使用舊的武器系統
       this.weapon.stopFiring();
     }
   }
