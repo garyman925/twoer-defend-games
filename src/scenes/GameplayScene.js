@@ -936,33 +936,25 @@ export class GameplayScene extends BaseScene {
     
     console.log('💥 敵人碰撞玩家！開始處理...');
     
-    // 1. 敵人立即死亡（爆炸） - 總是執行，無論玩家是否無敵
-    console.log('   → 準備調用 enemy.die()...');
-    console.log('   → enemy.isAlive:', enemy.isAlive);
-    
-    try {
-      console.log('   → 執行 enemy.die()...');
-      enemy.die();
-      console.log('   ✓ enemy.die() 執行完成，無錯誤');
-    } catch (error) {
-      console.error('   ❌ enemy.die() 執行失敗:', error);
-      console.error('   錯誤堆疊:', error.stack);
+    // ✅ 如果玩家已經無敵，忽略此次碰撞
+    if (actualPlayer.isImmune) {
+      console.log('   ⚠️ 玩家無敵中，忽略碰撞');
+      return;
     }
     
-    console.log('   ✓ 敵人死亡處理完成');
+    // 🆕 玩家智能傳送並扣血（敵人不死亡）
+    console.log('   → 玩家傳送到安全位置並扣血');
+    console.log('   → 扣血前血量:', actualPlayer.health);
     
-    // 2. 玩家扣血 - 只在非無敵時執行
-    if (!actualPlayer.isImmune) {
-      console.log('   → 玩家不是無敵，開始扣血（10點）');
-      console.log('   → 扣血前血量:', actualPlayer.health);
-      actualPlayer.takeDamage(10);
-      console.log('   ✓ 扣血後血量:', actualPlayer.health);
-      console.log('   ✓ 玩家進入無敵狀態');
-    } else {
-      console.log('   ⚠️ 玩家無敵中，不扣血（但敵人已爆炸）');
-    }
+    // 先傳送到安全位置（此時敵人還活著，可以正確計算安全區域）
+    actualPlayer.teleportToSafePosition();
     
-    console.log('   ✅ 碰撞處理完成');
+    // 再扣血（會自動設置無敵）
+    actualPlayer.takeDamage(1);
+    
+    console.log('   ✓ 扣血後血量:', actualPlayer.health);
+    console.log('   ✓ 玩家進入無敵狀態');
+    console.log('   ✅ 碰撞處理完成（敵人繼續存活）');
   }
 
 

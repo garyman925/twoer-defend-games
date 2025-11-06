@@ -25,7 +25,7 @@ export const GameConfig = {
       VICTORY: 'VICTORY',
       SHOP: 'SHOP'
     },
-    TIME_LIMIT: 10 // 🐛 DEBUG: 改為 10 秒方便測試（正常應為 180 秒）
+    TIME_LIMIT: 180 // ⏱️ 3 分鐘遊戲時間
   },
   
   // 響應式設計設置

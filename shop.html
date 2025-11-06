@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商店 - 購買武器與防禦塔</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans HK', 'Arial', sans-serif;
+            background: #01332f;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow: auto;
+            padding: 20px;
+        }
+
+        /* 主容器 */
+        .shop-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 頂部導航 */
+        .shop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            padding: 10px 24px;
+            background: rgba(100, 100, 100, 0.3);
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            color: #00ffff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: translateX(-3px);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .shop-title {
+            position: relative;
+            background-image: url(assets/export/heading-frame.png);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border: none;
+            border-radius: 0;
+            padding: 15px 12%;
+            max-width: 95%;
+            font-family: 'Noto Sans HK', 'Squada One', cursive;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #b0fffa;
+            letter-spacing: 7px;
+            box-sizing: border-box;
+        }
+
+        .shop-title .title-stoke-left {
+            position: absolute;
+            left: 0;
+            width: 50%;
+            height: 1px;
+            background: aquamarine;
+            transform: translate(-100%, 19px);
+        }
+
+        .shop-title .title-stoke-right {
+            position: absolute;
+            right: 0;
+            width: 50%;
+            height: 1px;
+            background: aquamarine;
+            transform: translate(100%, -19px);
+        }
+
+        .player-money {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffd93d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Tab 切換 */
+        .shop-tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .tab {
+            padding: 12px 40px;
+            background: rgba(0, 159, 185, 0.1);
+            border: 2px solid #009fb9;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .tab:hover {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #00ffff 0%, #009fb9 100%);
+            color: #000000;
+            border-color: #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+        }
+
+        /* Item 網格 */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        /* Item 卡片 */
+        .item-card {
+            background: rgba(0, 159, 185, 0.05);
+            border: 2px solid #009fb9;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .item-card:hover {
+            border-color: #00ffff;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.3);
+        }
+
+        .item-card.owned {
+            opacity: 0.6;
+            filter: grayscale(1);
+        }
+
+        .item-card.owned:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 只禁用購入按鈕的交互 */
+        .item-card.owned .buy-btn {
+            pointer-events: none;
+        }
+
+        /* 讓介紹按鈕保持彩色和清晰 */
+        .item-card.owned .info-btn {
+            filter: grayscale(0);
+            opacity: 1;
+        }
+
+        .item-icon {
+            font-size: 60px;
+            filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.5));
+            margin: 10px 0;
+        }
+
+        .item-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .item-price {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffd93d;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .item-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Noto Sans HK', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .buy-btn {
+            background: linear-gradient(135deg, #ffd93d 0%, #ffac10 100%);
+            color: #000000;
+            box-shadow: 0 0 15px rgba(255, 217, 61, 0.3);
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(255, 217, 61, 0.6);
+        }
+
+        .buy-btn:disabled {
+            background: rgba(100, 100, 100, 0.3);
+            color: #666666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .info-btn {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            border: 1px solid #00ffff;
+        }
+
+        .info-btn:hover {
+            background: rgba(0, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* 對話框樣式（復用 my-ship.html） */
+        .dialog-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .dialog-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        .dialog-overlay.closing {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        /* Fade-in 動畫 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Fade-out 動畫 */
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        .dialog-box {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            border: 3px solid #00ffff;
+            border-radius: 16px;
+            max-width: 450px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.7);
+            position: relative;
+            animation: scaleIn 0.3s ease;
+        }
+
+        /* Dialog-box 縮放動畫 */
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .dialog-overlay.closing .dialog-box {
+            animation: scaleOut 0.3s ease;
+        }
+
+        @keyframes scaleOut {
+            from {
+                transform: scale(1);
+                opacity: 1;
+            }
+            to {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+        }
+
+        .dialog-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .dialog-close:hover {
+            background: rgba(255, 0, 0, 0.3);
+            transform: scale(1.1);
+        }
+
+        .dialog-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .detail-view {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .detail-icon {
+            font-size: 80px;
+            text-align: center;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.6));
+        }
+
+        .detail-name-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0;
+        }
+
+        .detail-status {
+            text-align: center;
+            padding: 8px 16px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #00ff88;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .detail-status.unowned {
+            background: rgba(255, 217, 61, 0.1);
+            border-color: #ffd93d;
+            color: #ffd93d;
+        }
+
+        .detail-desc {
+            font-family: 'Noto Sans HK', sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #e0e0e0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .detail-section {
+            background: rgba(0, 159, 185, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .detail-stats {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            gap: 20px;
+        }
+
+        .detail-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            font-family: 'Noto Sans HK', sans-serif;
+            flex: 1;
+        }
+
+        .detail-stat .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffd93d;
+            margin-top: 5px;
+        }
+
+        .dialog-footer {
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-top: 2px solid #009fb9;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .dialog-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans HK', 'Orbitron', monospace;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .dialog-btn-primary {
+            background: linear-gradient(135deg, #ffd93d 0%, #ffac10 100%);
+            color: #000000;
+            box-shadow: 0 0 20px rgba(255, 217, 61, 0.4);
+        }
+
+        .dialog-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 25px rgba(255, 217, 61, 0.6);
+        }
+
+        .dialog-btn-primary:disabled {
+            background: rgba(100, 100, 100, 0.3);
+            color: #666666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .dialog-btn-secondary {
+            background: rgba(100, 100, 100, 0.5);
+            color: white;
+            border: 2px solid #666666;
+        }
+
+        .dialog-btn-secondary:hover {
+            background: rgba(150, 150, 150, 0.5);
+            border-color: #999999;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 1024px) {
+            .items-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .items-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .shop-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .shop-title {
+                font-size: 1.4rem;
+                padding: 12px 10%;
+                letter-spacing: 5px;
+            }
+
+            .player-money {
+                font-size: 1.2rem;
+            }
+
+            .tab {
+                padding: 10px 30px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .items-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .shop-header {
+                padding: 15px;
+            }
+
+            .back-btn {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+
+            .shop-title {
+                font-size: 1.2rem;
+                padding: 10px 8%;
+                letter-spacing: 3px;
+            }
+
+            .item-card {
+                padding: 15px;
+            }
+
+            .item-icon {
+                font-size: 50px;
+            }
+
+            .item-name {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shop-container">
+        <!-- 頂部 -->
+        <div class="shop-header">
+            <button class="back-btn" onclick="goBackToShip()">← 返回裝備</button>
+            <h1 class="shop-title">
+                <div class="title-stoke-left"></div>
+                🛒 商店
+                <div class="title-stoke-right"></div>
+            </h1>
+            <div class="player-money">💰 <span id="player-money">0</span></div>
+        </div>
+
+        <!-- Tab 切換 -->
+        <div class="shop-tabs">
+            <button class="tab active" data-tab="towers" onclick="switchTab('towers')">TOWER</button>
+            <button class="tab" data-tab="weapons" onclick="switchTab('weapons')">WEAPONS</button>
+        </div>
+
+        <!-- Items 網格 -->
+        <div id="items-container" class="items-grid">
+            <!-- 動態生成 -->
+        </div>
+    </div>
+
+    <!-- 詳情 Dialog -->
+    <div id="item-dialog" class="dialog-overlay">
+        <div class="dialog-box">
+            <button class="dialog-close" onclick="closeDialog()">✕</button>
+            <div class="dialog-content" id="item-details">
+                <!-- 動態生成 -->
+            </div>
+            <div class="dialog-footer" id="dialog-footer">
+                <!-- 動態生成 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 商店數據
+        const SHOP_TOWERS = {
+            basic: {
+                id: 'basic',
+                name: 'Gatling',
+                icon: '🎯',
+                description: '快速射擊炮塔，適合清除大量弱小敵人',
+                damage: 25,
+                range: 120,
+                price: 500
+            },
+            cannon: {
+                id: 'cannon',
+                name: 'Striker',
+                icon: '💥',
+                description: '範圍爆炸傷害，對群體敵人有效',
+                damage: 80,
+                range: 100,
+                price: 800
+            },
+            laser: {
+                id: 'laser',
+                name: 'Railgun',
+                icon: '⚡',
+                description: '高精準能量武器，單體傷害高',
+                damage: 40,
+                range: 150,
+                price: 1200
+            },
+            ice: {
+                id: 'ice',
+                name: 'Frost',
+                icon: '❄️',
+                description: '減緩敵人速度，提供戰術優勢',
+                damage: 20,
+                range: 130,
+                price: 600
+            }
+        };
+
+        const SHOP_WEAPONS = {
+            vulcan: {
+                id: 'vulcan',
+                name: 'Vulcan',
+                icon: '🔫',
+                description: '快速連發機槍，無限彈藥的基礎武器',
+                damage: 20,
+                cooldown: 0,
+                price: 300
+            },
+            missile: {
+                id: 'missile',
+                name: 'Missile',
+                icon: '🚀',
+                description: '追蹤敵人的智能導彈，命中率高',
+                damage: 100,
+                cooldown: 5,
+                price: 600
+            },
+            bomb: {
+                id: 'bomb',
+                name: 'Bomb',
+                icon: '💣',
+                description: '大範圍爆炸炸彈，對密集敵群致命',
+                damage: 200,
+                cooldown: 10,
+                price: 900
+            }
+        };
+
+        let currentTab = 'towers';
+
+        // 初始化
+        function init() {
+            loadPlayerMoney();
+            
+            // 檢查是否有指定分類
+            const category = localStorage.getItem('shopCategory');
+            if (category) {
+                switchTab(category);
+                localStorage.removeItem('shopCategory');
+            } else {
+                switchTab('towers');
+            }
+        }
+
+        // 切換 Tab
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // 更新 tab 樣式
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === tab);
+            });
+            
+            // 渲染對應的 items
+            renderItems();
+        }
+
+        // 渲染 items
+        function renderItems() {
+            const container = document.getElementById('items-container');
+            const items = currentTab === 'towers' ? SHOP_TOWERS : SHOP_WEAPONS;
+            
+            // 讀取已擁有的物品
+            const config = JSON.parse(localStorage.getItem('playerShipConfig') || '{}');
+            const ownedItems = currentTab === 'towers' 
+                ? (config.unlockedTowers || Object.keys(SHOP_TOWERS))
+                : (config.unlockedWeapons || Object.keys(SHOP_WEAPONS));
+            
+            container.innerHTML = '';
+            
+            Object.values(items).forEach(item => {
+                const isOwned = ownedItems.includes(item.id);
+                const itemHTML = `
+                    <div class="item-card ${isOwned ? 'owned' : ''}">
+                        <div class="item-icon">${item.icon}</div>
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-price">${item.price} 💰</div>
+                        <div class="item-actions">
+                            <button class="item-btn buy-btn" 
+                                    onclick="buyItem('${item.id}')" 
+                                    ${isOwned ? 'disabled' : ''}>
+                                ${isOwned ? '已擁有' : '購入'}
+                            </button>
+                            <button class="item-btn info-btn" 
+                                    onclick="showItemDetails('${item.id}')">
+                                介紹
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += itemHTML;
+            });
+        }
+
+        // 購買物品
+        function buyItem(itemId) {
+            const items = currentTab === 'towers' ? SHOP_TOWERS : SHOP_WEAPONS;
+            const item = items[itemId];
+            
+            if (!item) return;
+            
+            const config = JSON.parse(localStorage.getItem('playerShipConfig') || '{}');
+            const playerMoney = config.playerMoney || 0;
+            
+            if (playerMoney < item.price) {
+                alert(`金幣不足！\n\n需要: ${item.price} 💰\n當前: ${playerMoney} 💰`);
+                return;
+            }
+            
+            // 扣除金幣
+            config.playerMoney = playerMoney - item.price;
+            
+            // 添加到已解鎖列表
+            if (currentTab === 'towers') {
+                config.unlockedTowers = config.unlockedTowers || Object.keys(SHOP_TOWERS);
+                if (!config.unlockedTowers.includes(itemId)) {
+                    config.unlockedTowers.push(itemId);
+                }
+            } else {
+                config.unlockedWeapons = config.unlockedWeapons || Object.keys(SHOP_WEAPONS);
+                if (!config.unlockedWeapons.includes(itemId)) {
+                    config.unlockedWeapons.push(itemId);
+                }
+            }
+            
+            // 保存
+            localStorage.setItem('playerShipConfig', JSON.stringify(config));
+            
+            // 更新顯示
+            loadPlayerMoney();
+            renderItems();
+            
+            console.log(`✅ 購買成功: ${item.name}`);
+            alert(`✅ 購買成功！\n\n已獲得: ${item.name}\n剩餘金幣: ${config.playerMoney} 💰`);
+        }
+
+        // 顯示物品詳情
+        function showItemDetails(itemId) {
+            const items = currentTab === 'towers' ? SHOP_TOWERS : SHOP_WEAPONS;
+            const item = items[itemId];
+            
+            if (!item) return;
+            
+            // 讀取已擁有狀態
+            const config = JSON.parse(localStorage.getItem('playerShipConfig') || '{}');
+            const ownedItems = currentTab === 'towers' 
+                ? (config.unlockedTowers || Object.keys(SHOP_TOWERS))
+                : (config.unlockedWeapons || Object.keys(SHOP_WEAPONS));
+            const isOwned = ownedItems.includes(item.id);
+            
+            const detailsContainer = document.getElementById('item-details');
+            
+            if (currentTab === 'towers') {
+                detailsContainer.innerHTML = `
+                    <div class="detail-view">
+                        <div class="detail-icon">${item.icon}</div>
+                        
+                        <div class="detail-name-row">
+                            <h2 class="detail-name">${item.name}</h2>
+                            <div class="detail-status ${isOwned ? '' : 'unowned'}">
+                                ${isOwned ? '✅ 已擁有' : '💰 ' + item.price}
+                            </div>
+                        </div>
+                        
+                        <p class="detail-desc">${item.description}</p>
+                        
+                        <div class="detail-section">
+                            <div class="detail-stats">
+                                <div class="detail-stat">
+                                    <span>傷害</span>
+                                    <span class="stat-value">${item.damage}</span>
+                                </div>
+                                <div class="detail-stat">
+                                    <span>射程</span>
+                                    <span class="stat-value">${item.range}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                detailsContainer.innerHTML = `
+                    <div class="detail-view">
+                        <div class="detail-icon">${item.icon}</div>
+                        
+                        <div class="detail-name-row">
+                            <h2 class="detail-name">${item.name}</h2>
+                            <div class="detail-status ${isOwned ? '' : 'unowned'}">
+                                ${isOwned ? '✅ 已擁有' : '💰 ' + item.price}
+                            </div>
+                        </div>
+                        
+                        <p class="detail-desc">${item.description}</p>
+                        
+                        <div class="detail-section">
+                            <div class="detail-stats">
+                                <div class="detail-stat">
+                                    <span>傷害</span>
+                                    <span class="stat-value">${item.damage}</span>
+                                </div>
+                                <div class="detail-stat">
+                                    <span>冷卻</span>
+                                    <span class="stat-value">${item.cooldown || 0} 秒</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 修改對話框底部按鈕
+            const footerEl = document.getElementById('dialog-footer');
+            const playerMoney = config.playerMoney || 0;
+            const canAfford = playerMoney >= item.price;
+            
+            if (isOwned) {
+                footerEl.innerHTML = `
+                    <button class="dialog-btn dialog-btn-secondary" onclick="closeDialog()">關閉</button>
+                `;
+            } else {
+                footerEl.innerHTML = `
+                    <button class="dialog-btn dialog-btn-secondary" onclick="closeDialog()">關閉</button>
+                    <button class="dialog-btn dialog-btn-primary" 
+                            onclick="buyItemFromDialog('${item.id}')"
+                            ${!canAfford ? 'disabled' : ''}>
+                        ${canAfford ? '購入 ' + item.price + ' 💰' : '金幣不足'}
+                    </button>
+                `;
+            }
+            
+            document.getElementById('item-dialog').classList.add('active');
+        }
+
+        // 從對話框購買
+        function buyItemFromDialog(itemId) {
+            buyItem(itemId);
+            closeDialog();
+        }
+
+        // 關閉 Dialog
+        function closeDialog() {
+            const dialog = document.getElementById('item-dialog');
+            dialog.classList.add('closing');
+            
+            // 等待動畫完成後再移除
+            setTimeout(() => {
+                dialog.classList.remove('active', 'closing');
+            }, 300); // 與 CSS 動畫時間一致
+        }
+
+        // 返回裝備頁面
+        function goBackToShip() {
+            const returnTo = localStorage.getItem('returnTo');
+            
+            if (returnTo === 'my-ship') {
+                window.location.href = 'my-ship.html';
+            } else {
+                // 默認返回主菜單
+                window.location.href = 'index.html';
+            }
+            
+            // 清理標記
+            localStorage.removeItem('returnTo');
+        }
+
+        // 加載玩家金幣
+        function loadPlayerMoney() {
+            const config = JSON.parse(localStorage.getItem('playerShipConfig') || '{}');
+            document.getElementById('player-money').textContent = config.playerMoney || 0;
+        }
+
+        // 點擊背景關閉對話框
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('dialog-overlay')) {
+                closeDialog();
+            }
+        });
+
+        // 初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
+

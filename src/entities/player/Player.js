@@ -319,7 +319,8 @@ export class Player extends Phaser.GameObjects.Container {
    * 檢查邊界
    */
   checkBoundaries() {
-    const { width, height } = this.scene.scale.gameSize;
+    const width = this.scene.scale.width;
+    const height = this.scene.scale.height;
     
     // 限制在屏幕範圍內
     this.x = Phaser.Math.Clamp(this.x, 50, width - 50);
@@ -481,7 +482,8 @@ export class Player extends Phaser.GameObjects.Container {
     this.isImmune = false;
     
     // 重置位置到中心
-    const { width, height } = this.scene.scale.gameSize;
+    const width = this.scene.scale.width;
+    const height = this.scene.scale.height;
     this.x = width / 2;
     this.y = height / 2;
     
@@ -546,17 +548,21 @@ export class Player extends Phaser.GameObjects.Container {
   }
 
   /**
-   * 設置無敵時間
+   * 智能傳送到安全位置（獨立方法）
    */
+  teleportToSafePosition() {
+    const safePosition = this.findSafePosition();
+    this.x = safePosition.x;
+    this.y = safePosition.y;
+    console.log('📍 玩家傳送到安全位置:', Math.round(this.x), Math.round(this.y));
+  }
+
   setImmunity() {
     console.log('🛡️ 設置無敵狀態！');
-    console.log('   this.scene:', this.scene ? '存在' : 'undefined');
-    console.log('   this.scene.time:', this.scene && this.scene.time ? '存在' : 'undefined');
-    console.log('   this.scene.time.now:', this.scene && this.scene.time ? this.scene.time.now : 'undefined');
     
     this.isImmune = true;
     
-    // ✅ 安全設置無敵開始時間
+    // ✅ 設置無敵開始時間
     if (this.scene && this.scene.time && typeof this.scene.time.now === 'number') {
       this.immunityStartTime = this.scene.time.now;
       console.log('   ✓ 無敵開始時間:', this.immunityStartTime);
@@ -566,12 +572,8 @@ export class Player extends Phaser.GameObjects.Container {
       console.warn('   ⚠️ scene.time.now 不可用，使用 Date.now() 作為備用:', this.immunityStartTime);
     }
     
-    // ✅ 將玩家重新定位到畫面中間（避免被敵人包圍）
-    const { width, height } = this.scene.scale.gameSize;
-    this.x = width / 2;
-    this.y = height / 2;
-    
-    console.log('   ✓ 玩家重新定位到中心:', this.x, this.y);
+    // ❌ 移除位置重置（現在由外部調用 teleportToSafePosition）
+    console.log('   ✓ 無敵狀態已設置（不重置位置）');
     
     // ✅ 添加閃爍效果表示無敵狀態
     if (this.scene && this.scene.tweens) {
@@ -589,15 +591,95 @@ export class Player extends Phaser.GameObjects.Container {
   }
 
   /**
+   * 尋找安全的重置位置
+   * 在當前位置附近尋找敵人較少的區域
+   */
+  findSafePosition() {
+    const width = this.scene.scale.width;
+    const height = this.scene.scale.height;
+    const currentX = this.x;
+    const currentY = this.y;
+    
+    // 獲取所有活著的敵人
+    const enemies = this.scene.enemySpawner?.enemies?.filter(e => e.isAlive) || [];
+    
+    console.log('🔍 尋找安全位置...');
+    console.log('   當前位置:', Math.round(currentX), Math.round(currentY));
+    console.log('   活躍敵人數:', enemies.length);
+    
+    // 如果沒有敵人，保持當前位置
+    if (enemies.length === 0) {
+        console.log('   ✓ 無敵人，保持當前位置');
+        return { x: currentX, y: currentY };
+    }
+    
+    // 生成候選位置（在當前位置附近的圓形區域）
+    const candidates = [];
+    const minRadius = 150;  // 最小距離（不要太近）
+    const maxRadius = 350;  // 最大距離（不要太遠）
+    const numCandidates = 12;  // 生成 12 個候選點
+    
+    for (let i = 0; i < numCandidates; i++) {
+        const angle = (i / numCandidates) * Math.PI * 2;
+        const radius = minRadius + Math.random() * (maxRadius - minRadius);
+        
+        let x = currentX + Math.cos(angle) * radius;
+        let y = currentY + Math.sin(angle) * radius;
+        
+        // 確保不超出遊戲邊界（留 50px 邊距）
+        x = Phaser.Math.Clamp(x, 50, width - 50);
+        y = Phaser.Math.Clamp(y, 50, height - 50);
+        
+        candidates.push({ x, y });
+    }
+    
+    // 評估每個候選位置的安全性（計算周圍敵人數量）
+    let bestPosition = { x: width / 2, y: height / 2 };  // 默認中央
+    let minEnemyCount = Infinity;
+    const safeRadius = 200;  // 安全半徑：200px 內的敵人數量
+    
+    candidates.forEach((pos, index) => {
+        // 計算這個位置周圍的敵人數量
+        let nearbyEnemies = 0;
+        enemies.forEach(enemy => {
+            const distance = Phaser.Math.Distance.Between(pos.x, pos.y, enemy.x, enemy.y);
+            if (distance < safeRadius) {
+                nearbyEnemies++;
+            }
+        });
+        
+        console.log(`   候選點 ${index}: (${Math.round(pos.x)}, ${Math.round(pos.y)}) - 附近敵人: ${nearbyEnemies}`);
+        
+        // 選擇敵人最少的位置
+        if (nearbyEnemies < minEnemyCount) {
+            minEnemyCount = nearbyEnemies;
+            bestPosition = pos;
+        }
+    });
+    
+    console.log('   ✅ 最佳位置:', Math.round(bestPosition.x), Math.round(bestPosition.y));
+    console.log('   ✅ 安全半徑內敵人數:', minEnemyCount);
+    
+    // 如果最佳位置仍有很多敵人（> 3），則退回屏幕中央
+    if (minEnemyCount > 3) {
+        console.log('   ⚠️ 所有候選位置都不安全，退回屏幕中央');
+        return { x: width / 2, y: height / 2 };
+    }
+    
+    return bestPosition;
+  }
+
+  /**
    * 更新無敵時間
    */
   updateImmunity(time) {
     if (this.isImmune) {
-      // ✅ 添加安全檢查
-      if (!time || typeof time.now !== 'number' || typeof this.immunityStartTime !== 'number') {
+      // ✅ 使用 this.scene.time.now 而不是依賴參數
+      const currentTime = this.scene.time?.now;
+      
+      if (!currentTime || typeof currentTime !== 'number' || typeof this.immunityStartTime !== 'number') {
         console.warn('⚠️ 無敵時間數據無效:', {
-          'time': time ? '存在' : 'undefined',
-          'time.now': time ? time.now : 'undefined',
+          'currentTime': currentTime,
           'immunityStartTime': this.immunityStartTime
         });
         // 如果數據無效，直接結束無敵狀態
@@ -606,7 +688,7 @@ export class Player extends Phaser.GameObjects.Container {
         return;
       }
       
-      const elapsed = time.now - this.immunityStartTime;
+      const elapsed = currentTime - this.immunityStartTime;
       console.log('⏱️ 無敵時間檢查:', {
         isImmune: this.isImmune,
         elapsed: elapsed.toFixed(0),
