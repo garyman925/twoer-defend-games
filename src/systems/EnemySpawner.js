@@ -534,6 +534,29 @@ export class EnemySpawner {
   }
 
   /**
+   * 🆕 暫停生成（Boss模式用）
+   */
+  pauseSpawning() {
+    this.isSpawning = false;
+    
+    // 清除現有計時器
+    if (this.spawnTimer) {
+      this.spawnTimer.remove();
+      this.spawnTimer = null;
+    }
+    
+    console.log('⏸️ 敵人生成已暫停（Boss 模式）');
+  }
+
+  /**
+   * 🆕 恢復生成（Boss擊敗後）
+   */
+  resumeSpawning() {
+    this.isSpawning = true;
+    console.log('▶️ 敵人生成已恢復');
+  }
+
+  /**
    * 獲取當前狀態
    */
   getStatus() {

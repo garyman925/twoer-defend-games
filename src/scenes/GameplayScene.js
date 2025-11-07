@@ -53,6 +53,13 @@ export class GameplayScene extends BaseScene {
     
     // 🆕 遊戲結束標記（防止重複調用）
     this.isGameOver = false;
+    
+    // 🆕 Boss 系統
+    this.isBossWave = false;        // 是否為 Boss 波次
+    this.bossDefeated = false;      // Boss 是否已擊敗
+    this.currentBoss = null;        // 當前 Boss 實例
+    this.bossSpawnInterval = 5;     // 🆕 每5波出現一次 Boss (Wave 5完成後)
+    this.debugBossType = null;      // 🐛 DEBUG: 強制指定 Boss 類型（'berserker', 'summoner', 'tank'）
   }
 
   /**
@@ -231,6 +238,9 @@ export class GameplayScene extends BaseScene {
     
     // 創建暫停系統
     this.createPauseSystem();
+    
+    // 🚧 設置調試控制（臨時功能，正式發佈前刪除）
+    this.setupDebugControls();
     
     // 設置碰撞檢測
     this.setupCollisions();
@@ -556,9 +566,10 @@ export class GameplayScene extends BaseScene {
         this.gameplayUI.showGameStatus(`全滅！`, 2000, 'victory');
       }
       
-      // 延遲2秒後直接開始準備階段（不經過 endWave）
+      // 🔑 延遲2秒後調用 endWave()（會檢查 Boss 條件並調用準備階段）
+      // endWave() 內部會再延遲3秒後調用 startPreparationPhase()
       this.time.delayedCall(2000, () => {
-        this.startPreparationPhase();
+        this.endWave();  // ✅ 改為調用 endWave()，確保 Boss 檢測邏輯執行
       });
     });
   }
@@ -601,6 +612,121 @@ export class GameplayScene extends BaseScene {
     });
   }
   */
+
+  /**
+   * 🚧 設置調試控制（臨時功能）
+   * TODO: 正式發佈前刪除此功能
+   */
+  setupDebugControls() {
+    console.log('🐛 DEBUG: 調試控制已啟用');
+    
+    // 🆕 先移除舊的監聽器（防止累積）
+    this.input.keyboard.off('keydown-B');
+    this.input.keyboard.off('keydown-N');
+    this.input.keyboard.off('keydown-K');
+    
+    console.log('   [B] 鍵 - 跳轉到下一個 Boss 波次（Wave 5, 10, 15...）');
+    console.log('   [N] 鍵 - 跳過當前波次');
+    console.log('   [K] 鍵 - 清除所有敵人');
+    console.log('   [F1] 鍵 - 強制生成 Berserker Boss（狂戰士）');
+    console.log('   [F2] 鍵 - 強制生成 Summoner Boss（召喚師）');
+    console.log('   [F3] 鍵 - 強制生成 Tank Boss（坦克）');
+    console.log('   [F4] 鍵 - 取消強制 Boss 類型（使用正常輪換）');
+    
+    // 按 B 鍵跳轉到下一個 Boss 波次
+    this.input.keyboard.on('keydown-B', () => {
+      console.log('🐛 DEBUG: 跳轉到 Boss 波次');
+      
+      // 計算下一個 Boss 波次（每5波一次：5, 10, 15...）
+      const nextBossWave = Math.ceil((this.currentWave + 1) / this.bossSpawnInterval) * this.bossSpawnInterval;
+      
+      // 直接設置為 Boss 波次的前一波
+      this.currentWave = nextBossWave - 1;
+      
+      // 🆕 重置 Boss 状态
+      this.bossDefeated = false;
+      this.currentBoss = null;
+      
+      // 結束當前波次，開始準備階段
+      if (this.gameState === 'playing') {
+        // 清除所有敵人
+        if (this.enemies && this.enemies.children) {
+          this.enemies.children.entries.forEach(enemy => {
+            if (enemy.isAlive && enemy.die) {
+              enemy.die();
+            }
+          });
+        }
+        this.endWave();
+      } else {
+        this.startPreparationPhase();
+      }
+      
+      console.log(`🐛 DEBUG: 已跳轉，下一波為第 ${this.currentWave + 1} 波（Boss 波次）`);
+    });
+    
+    // 按 N 鍵跳過當前波次
+    this.input.keyboard.on('keydown-N', () => {
+      console.log('🐛 DEBUG: 跳過當前波次');
+      
+      // 清除所有敵人
+      if (this.enemies && this.enemies.children) {
+        this.enemies.children.entries.forEach(enemy => {
+          if (enemy.isAlive && enemy.die) {
+            enemy.die();
+          }
+        });
+      }
+      
+      this.endWave();
+    });
+    
+    // 按 K 鍵殺死所有敵人
+    this.input.keyboard.on('keydown-K', () => {
+      console.log('🐛 DEBUG: 清除所有敵人');
+      
+      if (this.enemies && this.enemies.children) {
+        this.enemies.children.entries.forEach(enemy => {
+          if (enemy.isAlive && enemy.die) {
+            enemy.die();
+          }
+        });
+      }
+    });
+    
+    // 🐛 使用 addKey 方式處理功能鍵（F1-F4）
+    const keyF1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F1);
+    const keyF2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F2);
+    const keyF3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F3);
+    const keyF4 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F4);
+    
+    // 🐛 按 F1 鍵強制生成 Berserker Boss
+    keyF1.on('down', () => {
+      this.debugBossType = 'berserker';
+      console.log('🐛 DEBUG: 已設置強制 Boss 類型為 Berserker（狂戰士）');
+      console.log('   下次生成 Boss 時將使用此類型');
+    });
+    
+    // 🐛 按 F2 鍵強制生成 Summoner Boss
+    keyF2.on('down', () => {
+      this.debugBossType = 'summoner';
+      console.log('🐛 DEBUG: 已設置強制 Boss 類型為 Summoner（召喚師）');
+      console.log('   下次生成 Boss 時將使用此類型');
+    });
+    
+    // 🐛 按 F3 鍵強制生成 Tank Boss
+    keyF3.on('down', () => {
+      this.debugBossType = 'tank';
+      console.log('🐛 DEBUG: 已設置強制 Boss 類型為 Tank（坦克）');
+      console.log('   下次生成 Boss 時將使用此類型');
+    });
+    
+    // 🐛 按 F4 鍵取消強制 Boss 類型
+    keyF4.on('down', () => {
+      this.debugBossType = null;
+      console.log('🐛 DEBUG: 已取消強制 Boss 類型，恢復正常輪換');
+    });
+  }
 
   /**
    * 🆕 創建武器系統
@@ -813,6 +939,9 @@ export class GameplayScene extends BaseScene {
     // 敵人與玩家的碰撞
     this.physics.add.overlap(this.enemies, this.player, this.onEnemyHitPlayer, null, this);
     
+    // 🆕 Boss 小石頭與玩家的碰撞（動態設置，因為 bossStones 組在 Boss 生成時才創建）
+    // 這會在 Boss 生成小石頭時自動設置
+    
     console.log('✅ 碰撞檢測設置完成（包含敵人碰撞玩家）');
   }
 
@@ -846,29 +975,57 @@ export class GameplayScene extends BaseScene {
     const damage = projectile.damage || 20;
     const weaponType = projectile.weaponType || 'unknown';
     
+    // 🔑 防御性检查：确保 weaponManager 和 weaponInstances 存在
+    if (!this.weaponManager) {
+      console.warn('⚠️ weaponManager 不存在，跳過武器特效處理');
+      // 仍然造成基礎傷害
+      enemy.takeDamage(damage, 'projectile', this.player);
+      return;
+    }
+    
+    // 🔑 使用局部变量保存引用，并在每次访问前检查
+    const weaponInstances = this.weaponManager.weaponInstances;
+    if (!weaponInstances) {
+      console.warn('⚠️ weaponManager.weaponInstances 不存在，跳過武器特效處理');
+      // 仍然造成基礎傷害
+      enemy.takeDamage(damage, 'projectile', this.player);
+      return;
+    }
+    
     // 造成傷害
     enemy.takeDamage(damage, 'projectile', this.player);
     
     console.log(`💥 ${weaponType} 擊中 ${enemy.enemyType}敵人，造成 ${damage} 點傷害`);
     
+    // 🔑 在每次访问前再次检查（防止在异步操作中被销毁）
+    if (!this.weaponManager || !this.weaponManager.weaponInstances) {
+      console.warn('⚠️ weaponManager 在處理過程中已被銷毀，跳過武器特效');
+      return;
+    }
+    
     // 根據武器類型處理
     if (weaponType === 'missile') {
       // 導彈：觸發爆炸
-      const weaponInstance = this.weaponManager.weaponInstances.get('missile');
+      const weaponInstance = weaponInstances.get('missile');
       if (weaponInstance && weaponInstance.explodeMissile) {
         weaponInstance.explodeMissile(projectile);
       }
     } else if (weaponType === 'bomb') {
       // 炸彈：觸發大爆炸
-      const weaponInstance = this.weaponManager.weaponInstances.get('bomb');
+      const weaponInstance = weaponInstances.get('bomb');
       if (weaponInstance && weaponInstance.explodeBomb) {
         weaponInstance.explodeBomb(projectile);
       }
     } else {
       // Vulcan 等：穿透檢查
       if (!projectile.piercing) {
+        // 🔑 再次检查（防止在 else 分支中被销毁）
+        if (!this.weaponManager || !this.weaponManager.weaponInstances) {
+          console.warn('⚠️ weaponManager 在處理過程中已被銷毀，跳過投射物回收');
+          return;
+        }
         // 如果不穿透，銷毀投射物
-        const weaponInstance = this.weaponManager.weaponInstances.get(weaponType);
+        const weaponInstance = weaponInstances.get(weaponType);
         if (weaponInstance && weaponInstance.returnProjectileToPool) {
           weaponInstance.returnProjectileToPool(projectile);
         }
@@ -936,18 +1093,54 @@ export class GameplayScene extends BaseScene {
   }
 
   /**
-   * 敵人碰撞玩家
+   * 🆕 Boss 小石頭擊中玩家
    */
+  onBossStoneHitPlayer(stone, player) {
+    if (!stone.active || !player.isAlive) return;
+    
+    // 暫停玩家移動 1 秒
+    if (player.disableMovement) {
+      player.disableMovement(1000);
+    }
+    
+    // 視覺效果：小石頭爆炸
+    const hitEffect = this.add.circle(stone.x, stone.y, 15, 0x888888, 0.8);
+    this.tweens.add({
+      targets: hitEffect,
+      scaleX: 2,
+      scaleY: 2,
+      alpha: 0,
+      duration: 300,
+      onComplete: () => hitEffect.destroy()
+    });
+    
+    // 銷毀小石頭
+    stone.destroy();
+    
+    console.log('🪨 Boss 小石頭擊中玩家，移動被暫停 1 秒');
+  }
+  
   onEnemyHitPlayer(obj1, obj2) {
     // ✅ 正確識別敵人和玩家（Phaser 碰撞回調的參數順序可能不固定）
     const actualPlayer = this.player;
     let enemy = null;
     
     // 判斷哪個是敵人
-    if (obj1.constructor.name === 'Player' || obj1 === actualPlayer) {
+    // 🔑 改进：同时检查是否是玩家实例和是否在 enemies 组中
+    if (obj1 === actualPlayer || (obj1.constructor && obj1.constructor.name === 'Player')) {
       enemy = obj2;  // obj1 是玩家，obj2 是敵人
+    } else if (obj2 === actualPlayer || (obj2.constructor && obj2.constructor.name === 'Player')) {
+      enemy = obj1;  // obj2 是玩家，obj1 是敵人
     } else {
-      enemy = obj1;  // obj1 是敵人，obj2 是玩家
+      // 如果无法通过 constructor.name 判断，检查是否在 enemies 组中
+      if (this.enemies && this.enemies.contains(obj1)) {
+        enemy = obj1;
+      } else if (this.enemies && this.enemies.contains(obj2)) {
+        enemy = obj2;
+      } else {
+        console.warn('⚠️ 無法識別敵人，跳過碰撞處理');
+        return;
+      }
     }
     
     // ✅ 添加詳細調試日誌
@@ -955,6 +1148,8 @@ export class GameplayScene extends BaseScene {
     console.log('   obj1.constructor.name:', obj1.constructor ? obj1.constructor.name : 'undefined');
     console.log('   obj2.constructor.name:', obj2.constructor ? obj2.constructor.name : 'undefined');
     console.log('   enemy.constructor.name:', enemy.constructor ? enemy.constructor.name : 'undefined');
+    console.log('   enemy.enemyType:', enemy.enemyType || 'undefined');
+    console.log('   enemy.isBoss:', enemy.isBoss || false);
     console.log('   enemy.isAlive:', enemy.isAlive);
     console.log('   player.isAlive:', actualPlayer.isAlive);
     console.log('   player.isImmune:', actualPlayer.isImmune);
@@ -1181,10 +1376,40 @@ export class GameplayScene extends BaseScene {
    * 開始準備階段
    */
   startPreparationPhase() {
+    // 🔑 關鍵：先清除舊的準備計時器（防止多個計時器同時運行）
+    if (this.preparationTimer) {
+      console.log('   🔄 清除舊的準備計時器');
+      this.preparationTimer.remove();
+      this.preparationTimer = null;
+    }
+    
     this.gameState = 'preparation';
     this.currentWave++;
     
-    console.log(`🕐 開始準備階段 - 第 ${this.currentWave} 波`);
+    // 🆕 檢查**上一波**是否為5的倍數（決定這次是否為 Boss 戰）
+    const prevWave = this.currentWave - 1;
+    // 🔑 關鍵：只根據波次號判斷，不檢查 bossDefeated（由 endWave 管理）
+    const isBossWaveByNumber = (prevWave % this.bossSpawnInterval === 0 && prevWave > 0);
+    // 如果是 Boss 波次號，且 Boss 未被擊敗，則為 Boss 戰
+    this.isBossWave = isBossWaveByNumber && !this.bossDefeated;
+    
+    console.log(`   🔍 準備階段判斷:`);
+    console.log(`      prevWave: ${prevWave}, currentWave: ${this.currentWave}`);
+    console.log(`      isBossWaveByNumber: ${isBossWaveByNumber}`);
+    console.log(`      bossDefeated: ${this.bossDefeated}`);
+    console.log(`      最終 isBossWave: ${this.isBossWave}`);
+    
+    // 🆕 決定準備階段顯示的文字
+    let waveText;
+    if (this.isBossWave) {
+      waveText = 'Boss戰！';
+      console.log(`🕐 Boss 戰準備階段（Wave ${prevWave} 完成後）`);
+      console.log(`   下一個戰鬥將是 Boss，然後繼續 Wave ${this.currentWave}`);
+    } else {
+      waveText = `第${this.currentWave}波`;
+      console.log(`🕐 開始準備階段 - 第 ${this.currentWave} 波`);
+    }
+    
     console.log(`   gameState: ${this.gameState}`);
     
     // 🆕 啟用塔卡片 UI（準備階段可以放置）
@@ -1204,10 +1429,24 @@ export class GameplayScene extends BaseScene {
     let timeLeft = preparationTime / 1000;
     
     console.log(`   準備時間: ${timeLeft}秒`);
+    console.log(`   顯示文字: ${waveText}`);
     
-    // 立即顯示準備倒數（帶波次名稱和提示）
+    // 🆕 立即更新右上角波次显示
     if (this.gameplayUI) {
-      this.gameplayUI.updatePreparationTimer(timeLeft, `第${this.currentWave}波`);
+      if (this.isBossWave) {
+        // Boss 战准备阶段显示 "Boss"
+        this.gameplayUI.updateWave('Boss', 0);
+        console.log(`   📊 更新波次顯示: Boss`);
+      } else {
+        // 正常波次显示数字
+        this.gameplayUI.updateWave(this.currentWave, 0);
+        console.log(`   📊 更新波次顯示: Wave ${this.currentWave}`);
+      }
+    }
+    
+    // 立即顯示準備倒數（使用固定的 waveText）
+    if (this.gameplayUI) {
+      this.gameplayUI.updatePreparationTimer(timeLeft, waveText);
     }
     
     this.preparationTimer = this.time.addEvent({
@@ -1216,9 +1455,9 @@ export class GameplayScene extends BaseScene {
         timeLeft--;
         console.log(`   ⏱️ 準備倒數: ${timeLeft}秒`);
         
-        // 使用準備計時器專用方法顯示倒數（帶波次名稱）
+        // 使用準備計時器專用方法顯示倒數（使用闭包中固定的 waveText）
         if (this.gameplayUI) {
-          this.gameplayUI.updatePreparationTimer(timeLeft, `第${this.currentWave}波`);
+          this.gameplayUI.updatePreparationTimer(timeLeft, waveText);
         }
         
         if (timeLeft <= 0) {
@@ -1253,6 +1492,20 @@ export class GameplayScene extends BaseScene {
     console.log(`⚔️ 開始波次 ${this.currentWave}`);
     console.log(`   gameState: ${this.gameState}`);
     console.log(`   elapsedTime: ${this.elapsedTime}`);
+    console.log(`   isBossWave: ${this.isBossWave}, bossDefeated: ${this.bossDefeated}`);
+    
+    // 🆕 更新右上角的波次显示
+    if (this.gameplayUI) {
+      if (this.isBossWave && !this.bossDefeated) {
+        // Boss 战阶段显示 "Boss"
+        this.gameplayUI.updateWave('Boss', 0);
+        console.log(`   📊 更新波次顯示: Boss`);
+      } else {
+        // 正常波次显示数字
+        this.gameplayUI.updateWave(this.currentWave, 0);
+        console.log(`   📊 更新波次顯示: Wave ${this.currentWave}`);
+      }
+    }
     
     // 🆕 禁用塔卡片 UI（戰鬥中不可放置）
     if (this.towerCardUI && typeof this.towerCardUI.setEnabled === 'function') {
@@ -1300,9 +1553,306 @@ export class GameplayScene extends BaseScene {
    * 生成敵人
    */
   spawnEnemies() {
-    if (this.enemySpawner) {
+    if (!this.enemySpawner) return;
+    
+    console.log(`📢 spawnEnemies() 被調用`);
+    console.log(`   currentWave: ${this.currentWave}`);
+    console.log(`   isBossWave: ${this.isBossWave}`);
+    console.log(`   bossDefeated: ${this.bossDefeated}`);
+    
+    // 🆕 如果是 Boss 波次且 Boss 未被擊敗，先生成 Boss
+    if (this.isBossWave && !this.bossDefeated) {
+      console.log(`   → 生成 Boss`);
+      this.spawnBoss();
+    } else {
+      console.log(`   → 生成 Wave ${this.currentWave} 正常敵人`);
+      // 正常敵人生成
       this.enemySpawner.startWave(this.currentWave);
     }
+  }
+
+  /**
+   * 🆕 生成 Boss
+   */
+  spawnBoss() {
+    // 🆕 防止重复生成
+    if (this.currentBoss && this.currentBoss.isAlive) {
+      console.warn('⚠️ Boss 已存在，跳過生成');
+      return;
+    }
+    
+    console.log(`👾 生成 BOSS - 第 ${this.currentWave} 波`);
+    
+    // 暫停正常敵人生成
+    if (this.enemySpawner) {
+      this.enemySpawner.pauseSpawning();
+    }
+    
+    // 計算 Boss 等級（每5波提升一級）
+    const bossLevel = Math.floor(this.currentWave / this.bossSpawnInterval);
+    
+    // 🎯 根據波次選擇Boss類型（輪換）
+    // 🐛 DEBUG: 如果設置了 debugBossType，優先使用它
+    let bossType;
+    if (this.debugBossType) {
+      bossType = this.debugBossType;
+      console.log(`🐛 DEBUG: 使用強制指定的 Boss 類型: ${bossType}`);
+    } else {
+      const cycle = Math.floor((this.currentWave / this.bossSpawnInterval - 1) % 3);
+      
+      switch (cycle) {
+        case 0:
+          bossType = 'berserker'; // Wave 5, 20, 35...
+          break;
+        case 1:
+          bossType = 'summoner'; // Wave 10, 25, 40...
+          break;
+        case 2:
+          bossType = 'tank'; // Wave 15, 30, 45...
+          break;
+        default:
+          bossType = 'berserker';
+      }
+    }
+    
+    console.log(`👾 生成 ${bossType} Boss - 等級 ${bossLevel}`);
+    
+    // 更新 UI 顯示 Boss 警告
+    if (this.gameplayUI) {
+      const { BOSS_TYPES } = require('../entities/enemies/BossEnemy.js');
+      const bossName = BOSS_TYPES[bossType].name;
+      this.gameplayUI.showGameStatus(`⚠️ ${bossName} Boss 來襲！`, 3000);
+    }
+    
+    // 計算 Boss 生成位置（屏幕中央上方）
+    const bossX = this.scale.width / 2;
+    const bossY = -150;
+    
+    // 創建 Boss
+    const { BossEnemy } = require('../entities/enemies/BossEnemy.js');
+    this.currentBoss = new BossEnemy(this, bossX, bossY, bossLevel, bossType);
+    
+    // 添加到敵人組
+    if (this.enemies) {
+      this.enemies.add(this.currentBoss);
+    }
+    
+    // 🔑 監聽 Boss 死亡事件（雙重保險）
+    console.log('   → 設置 Boss 死亡事件監聽器...');
+    
+    // 方式1：监听 Boss 实例的事件
+    this.currentBoss.eventEmitter.once('bossDied', (data) => {
+      console.log('🔔 收到 bossDied 事件（Boss實例）！');
+      console.log('   data:', data);
+      this.onBossDefeated(data);
+    });
+    
+    // 方式2：监听场景事件（备份）
+    this.events.once('bossDefeated', (data) => {
+      console.log('🔔 收到 bossDefeated 事件（場景級）！');
+      console.log('   data:', data);
+      // 如果第一个监听器没触发，这个作为备份
+      if (!this.bossDefeated) {
+        this.onBossDefeated({ 
+          reward: data.reward || this.currentWave * 100 
+        });
+      }
+    });
+    
+    console.log('   ✓ Boss 死亡事件監聽器已設置');
+    
+    // Boss 入場動畫
+    this.tweens.add({
+      targets: this.currentBoss,
+      y: this.scale.height / 2,
+      duration: 2000,
+      ease: 'Power2.easeOut'
+    });
+    
+    // 播放Boss出現音效（如有）
+    if (this.enhancedAudio) {
+      this.enhancedAudio.playSound('boss_roar');
+    }
+    
+    // 震動效果
+    this.cameras.main.shake(800, 0.015);
+    
+    // 🆕 顯示屏幕頂部 Boss 血條
+    if (this.gameplayUI && typeof this.gameplayUI.showBossHealthBar === 'function') {
+      this.gameplayUI.showBossHealthBar(this.currentBoss);
+    }
+    
+    console.log(`👾 ${bossType} Boss 生成完成 - HP: ${this.currentBoss.health}/${this.currentBoss.maxHealth}`);
+  }
+
+  /**
+   * 🆕 Boss 被擊敗
+   */
+  onBossDefeated(data) {
+    console.log('🎯 onBossDefeated() 被調用！');
+    console.log('   data:', data);
+    console.log('   this.bossDefeated:', this.bossDefeated);
+    console.log('   this.isBossWave:', this.isBossWave);
+    console.log('   this.gameState:', this.gameState);
+    
+    // 🆕 防止重复调用
+    if (this.bossDefeated) {
+      console.warn('⚠️ Boss 擊敗事件已處理，跳過重複調用');
+      return;
+    }
+    
+    console.log(`💀 Boss 被擊敗！獎勵: ${data.reward} 金幣`);
+    
+    this.bossDefeated = true;
+    this.currentBoss = null;
+    
+    // 🆕 清除所有 Boss 小石头
+    if (this.bossStones && this.bossStones.children) {
+      let stoneCount = 0;
+      this.bossStones.children.entries.forEach(stone => {
+        if (stone && stone.active) {
+          stone.destroy();
+          stoneCount++;
+        }
+      });
+      this.bossStones.clear(true, true);
+      console.log(`🗑️ 已清除 ${stoneCount} 個 Boss 小石頭`);
+    }
+    
+    // 🎁 時間獎勵：增加30秒
+    const timeBonus = 30000; // 30秒（毫秒）
+    this.elapsedTime = Math.max(0, this.elapsedTime - timeBonus);
+    
+    console.log(`⏱️ 時間獎勵: +30秒，當前遊戲時間: ${(this.elapsedTime / 1000).toFixed(1)}秒`);
+    
+    // 🆕 隱藏 Boss 血條
+    if (this.gameplayUI && typeof this.gameplayUI.hideBossHealthBar === 'function') {
+      this.gameplayUI.hideBossHealthBar();
+    }
+    
+    // 🆕 更新右上角波次显示（確保同步）
+    if (this.gameplayUI) {
+      this.gameplayUI.updateWave(this.currentWave, 0);
+      console.log(`   📊 更新波次顯示: Wave ${this.currentWave}`);
+    }
+    
+    // 顯示獎勵提示
+    if (this.gameplayUI) {
+      this.gameplayUI.showGameStatus(`🎉 Boss 擊敗！獲得 +30 秒時間獎勵！`, 3000);
+    }
+    
+    // 播放勝利音效（如有）
+    if (this.enhancedAudio) {
+      this.enhancedAudio.playSound('boss_defeated');
+    }
+    
+    // 給予額外金錢獎勵
+    const moneyReward = data.reward || (this.currentWave * 100);
+    if (this.gameManager && this.gameManager.addMoney) {
+      this.gameManager.addMoney(moneyReward);
+      console.log(`💰 金錢獎勵: ${moneyReward}`);
+    }
+    
+    // 🆕 Boss 擊敗後，回到準備階段（不增加波次）
+    console.log(`   → 3秒後回到準備階段，準備第 ${this.currentWave} 波正常敵人...`);
+    
+    this.time.addEvent({
+      delay: 3000,  // 给玩家3秒看奖励提示
+      callback: () => {
+        console.log(`⏰ 延遲結束，開始第 ${this.currentWave} 波的準備階段...`);
+        
+        // 🆕 回到准备阶段（不增加波次）
+        this.startPreparationTimerAfterBoss();
+      },
+      callbackScope: this,
+      loop: false
+    });
+  }
+
+  /**
+   * 🆕 Boss 擊敗後開始準備計時器（不增加波次）
+   */
+  startPreparationTimerAfterBoss() {
+    // 🔑 關鍵：先清除舊的準備計時器
+    if (this.preparationTimer) {
+      console.log('   🔄 清除舊的準備計時器');
+      this.preparationTimer.remove();
+      this.preparationTimer = null;
+    }
+    
+    this.gameState = 'preparation';
+    
+    // 🆕 Boss 击败后，currentWave 保持不变（因为 Boss 战不占用波次号）
+    // currentWave 已经在 startPreparationPhase() 时 +1 了
+    // 例如：Wave 5 完成 → currentWave = 6 → Boss 战 → Boss 击败 → Wave 6
+    
+    console.log(`🕐 Boss 擊敗後的準備階段 - 準備 Wave ${this.currentWave}`);
+    console.log(`   gameState: ${this.gameState}`);
+    console.log(`   currentWave: ${this.currentWave} (Boss 擊敗後繼續此波次)`);
+    
+    // 🆕 更新右上角波次显示（顯示即將戰鬥的波次號）
+    if (this.gameplayUI) {
+      this.gameplayUI.updateWave(this.currentWave, 0);
+      console.log(`   📊 更新波次顯示: Wave ${this.currentWave}`);
+    }
+    
+    // 啟用塔卡片 UI
+    if (this.towerCardUI && typeof this.towerCardUI.setEnabled === 'function') {
+      this.towerCardUI.setEnabled(true);
+      console.log('   🃏 塔卡片已啟用');
+    }
+    
+    // 顯示放置格網
+    if (this.towerPlacementSystem && this.towerPlacementSystem.gridOverlay) {
+      this.towerPlacementSystem.gridOverlay.setVisible(true);
+      console.log('   📐 格網已顯示');
+    }
+    
+    // 開始準備計時器
+    const preparationTime = GameConfig.WAVE ? GameConfig.WAVE.PREPARATION_TIME : 10000;
+    let timeLeft = preparationTime / 1000;
+    
+    console.log(`   準備時間: ${timeLeft}秒`);
+    
+    // 🔑 固定 waveText（在闭包中不会变化）
+    const waveText = `第${this.currentWave}波`;
+    console.log(`   顯示文字: ${waveText}`);
+    
+    if (this.gameplayUI) {
+      this.gameplayUI.updatePreparationTimer(timeLeft, waveText);
+    }
+    
+    this.preparationTimer = this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        timeLeft--;
+        console.log(`   ⏱️ 準備倒數: ${timeLeft}秒`);
+        
+        // ✅ 使用闭包中固定的 waveText
+        if (this.gameplayUI) {
+          this.gameplayUI.updatePreparationTimer(timeLeft, waveText);
+        }
+        
+        if (timeLeft <= 0) {
+          console.log(`   ✅ 準備結束，開始第 ${this.currentWave} 波正常敵人`);
+          
+          // 隱藏格網
+          if (this.towerPlacementSystem && this.towerPlacementSystem.gridOverlay) {
+            this.towerPlacementSystem.gridOverlay.setVisible(false);
+            console.log('   📐 格網已隱藏');
+          }
+          
+          // 隱藏準備計時器
+          if (this.gameplayUI) {
+            this.gameplayUI.hidePreparationTimer();
+          }
+          
+          // 開始波次（此時 bossDefeated 為 true，所以會生成正常敵人）
+          this.startWavePhase();
+        }
+      },
+      repeat: Math.floor(preparationTime / 1000)
+    });
   }
 
   /**
@@ -1316,6 +1866,25 @@ export class GameplayScene extends BaseScene {
     
     // 給予獎勵
     this.giveWaveReward();
+    
+    // 🆕 檢查**當前波次**是否為5的倍數
+    // 如果是，下一個準備階段就是 Boss 戰
+    console.log(`   🔍 檢查 Boss 條件:`);
+    console.log(`      currentWave: ${this.currentWave}`);
+    console.log(`      bossSpawnInterval: ${this.bossSpawnInterval}`);
+    console.log(`      ${this.currentWave} % ${this.bossSpawnInterval} = ${this.currentWave % this.bossSpawnInterval}`);
+    
+    const shouldSpawnBossNext = (this.currentWave % this.bossSpawnInterval === 0 && this.currentWave > 0);
+    console.log(`      shouldSpawnBossNext: ${shouldSpawnBossNext}`);
+    console.log(`      當前 bossDefeated 狀態: ${this.bossDefeated}`);
+    
+    if (shouldSpawnBossNext) {
+      this.bossDefeated = false;  // 重置 Boss 狀態
+      console.log(`   ✅ Wave ${this.currentWave} 完成，下一個準備階段為 Boss 戰！`);
+      console.log(`   🔄 重置 bossDefeated = false`);
+    } else {
+      console.log(`   ➡️ 不是 Boss 波次，繼續正常流程`);
+    }
     
     // 短暫延遲後開始下一波
     this.time.delayedCall(3000, () => {
@@ -1476,6 +2045,13 @@ export class GameplayScene extends BaseScene {
         enemy.update(time, delta);
       }
     });
+    
+    // 🆕 更新 Boss 血條（如果 Boss 存在）
+    if (this.currentBoss && this.currentBoss.isAlive && this.gameplayUI) {
+      if (typeof this.gameplayUI.updateBossHealthBar === 'function') {
+        this.gameplayUI.updateBossHealthBar(this.currentBoss);
+      }
+    }
     
     // 更新敵人生成器
     if (this.enemySpawner) {

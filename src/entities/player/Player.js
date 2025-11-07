@@ -36,6 +36,10 @@ export class Player extends Phaser.GameObjects.Container {
       right: false
     };
     
+    // 🆕 移動暫停機制（用於 Boss 小石頭效果）
+    this.isMovementDisabled = false;
+    this.movementDisabledTimer = null;
+    
     console.log('✅ 玩家屬性已應用升級:');
     console.log('   生命值:', this.maxHealth);
     console.log('   移動速度:', this.moveSpeed);
@@ -257,6 +261,14 @@ export class Player extends Phaser.GameObjects.Container {
    * 處理移動
    */
   handleMovement(time, delta) {
+    // 🆕 檢查移動是否被禁用
+    if (this.isMovementDisabled) {
+      // 移動被暫停，重置速度
+      this.velocity.x = 0;
+      this.velocity.y = 0;
+      return;
+    }
+    
     // ✅ 添加調試：檢查是否能接收輸入
     const hasInput = this.keys.up || this.keys.down || this.keys.left || this.keys.right;
     
@@ -749,5 +761,28 @@ export class Player extends Phaser.GameObjects.Container {
     }
     
     super.destroy();
+  }
+  
+  /**
+   * 🆕 暫停移動（用於 Boss 小石頭效果）
+   * @param {number} duration - 暫停時間（毫秒），默認 1000ms
+   */
+  disableMovement(duration = 1000) {
+    if (this.isMovementDisabled) {
+      // 如果已經被暫停，延長暫停時間
+      if (this.movementDisabledTimer) {
+        this.movementDisabledTimer.remove();
+      }
+    }
+    
+    this.isMovementDisabled = true;
+    console.log(`🛑 玩家移動被暫停 ${duration}ms`);
+    
+    // 設置恢復計時器
+    this.movementDisabledTimer = this.scene.time.delayedCall(duration, () => {
+      this.isMovementDisabled = false;
+      this.movementDisabledTimer = null;
+      console.log('✅ 玩家移動已恢復');
+    });
   }
 }

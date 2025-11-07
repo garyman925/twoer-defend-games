@@ -190,6 +190,12 @@ export class AssetLoader {
       'assets/sprites/enemies/meteor.webp', 
       'assets/sprites/enemies/meteor.json');
     
+    // 🆕 載入 Boss 圖片
+    this.scene.load.image('boss_berserker', 'assets/sprites/enemies/boss/boss1/boss_1.png');
+    this.scene.load.image('boss_summoner', 'assets/sprites/enemies/boss/boss2/boss_2.png');
+    this.scene.load.image('boss_tank', 'assets/sprites/enemies/boss/boss3/boss_3.png');
+    console.log('📦 載入 Boss 圖片資源...');
+    
     // 載入UI圖集
     this.scene.load.atlas('ui_buttons', 
       'assets/ui/ui.webp', 

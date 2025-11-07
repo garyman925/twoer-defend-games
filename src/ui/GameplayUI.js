@@ -52,6 +52,12 @@ export class GameplayUI {
       document.body.appendChild(this.container);
     }
     
+    // 🆕 初始化血量显示
+    if (this.scene.player) {
+      this.updateHealth(this.scene.player.health);
+      console.log(`❤️ 初始化血量顯示: ${this.scene.player.health}/${this.scene.player.maxHealth}`);
+    }
+    
     console.log('✅ GameplayUI 創建完成');
   }
 
@@ -77,18 +83,23 @@ export class GameplayUI {
     `;
     
     // 生命值顯示 - 分段式設計（改為5格）
+    // 🔑 根据玩家的 maxHealth 动态创建片段（5-10个）
+    const maxHealth = this.scene.player ? this.scene.player.maxHealth : 5;
+    
     this.healthDisplay = document.createElement('div');
     this.healthDisplay.className = 'health-display';
     this.healthDisplay.innerHTML = `
       <div class="health-info">
         <div class="health-title">Healthy Power</div>
-        <div class="health-segments" data-health="5">
-          ${Array.from({length: 5}, (_, i) => 
+        <div class="health-segments" data-health="${maxHealth}">
+          ${Array.from({length: maxHealth}, (_, i) => 
             `<div class="health-segment" data-segment="${i}"></div>`
           ).join('')}
         </div>
       </div>
     `;
+    
+    console.log(`❤️ 創建 ${maxHealth} 個血量片段`);
     
     // 波次顯示
     this.waveDisplay = document.createElement('div');
@@ -198,9 +209,10 @@ export class GameplayUI {
     const segmentsContainer = this.healthDisplay.querySelector('.health-segments');
     const segments = this.healthDisplay.querySelectorAll('.health-segment');
     
-    if (segmentsContainer && segments.length === 10) {
-      // 計算滿血片段數量 (每10點血量 = 1片段)
-      const filledSegments = Math.ceil(health / 10);
+    if (segmentsContainer && segments.length > 0) {
+      // 🔑 新逻辑：每 1 点血量 = 1 个片段
+      const maxHealth = segments.length; // 总片段数（5-10）
+      const filledSegments = Math.max(0, Math.min(health, maxHealth)); // 已填充片段数
       
       segments.forEach((segment, index) => {
         if (index < filledSegments) {
@@ -212,14 +224,17 @@ export class GameplayUI {
       
       segmentsContainer.setAttribute('data-health', health);
       
-      // 低血量警告
-      if (health < 30) {
+      // 低血量警告（当血量 <= 30% 时）
+      const healthPercent = health / maxHealth;
+      if (healthPercent <= 0.3) {
         this.healthDisplay.classList.add('low-health');
       } else {
         this.healthDisplay.classList.remove('low-health');
       }
       
-      console.log(`❤️ 血量更新: ${health}/100 (${filledSegments}/10 片段)`);
+      console.log(`❤️ 血量更新: ${health}/${maxHealth} (${filledSegments}/${maxHealth} 片段)`);
+    } else {
+      console.warn('⚠️ 血量片段未找到或数量为0');
     }
   }
 
@@ -230,8 +245,14 @@ export class GameplayUI {
   updateWave(wave, enemies) {
     const valueEl = this.waveDisplay.querySelector('.value');
     if (valueEl) {
-      valueEl.textContent = `wave ${wave}`;
-      valueEl.setAttribute('data-wave', wave);
+      // 🆕 支持显示 "Boss" 文字
+      if (wave === 'Boss') {
+        valueEl.textContent = 'Boss';
+        valueEl.setAttribute('data-wave', 'boss');
+      } else {
+        valueEl.textContent = `wave ${wave}`;
+        valueEl.setAttribute('data-wave', wave);
+      }
       
       // 添加動畫效果
       valueEl.classList.add('value-change');
@@ -451,6 +472,77 @@ export class GameplayUI {
   }
 
   /**
+   * 🆕 顯示 Boss 血條（屏幕頂部中央）
+   */
+  showBossHealthBar(boss) {
+    // 如果已存在，先移除
+    this.hideBossHealthBar();
+    
+    // 創建 Boss 血條容器
+    this.bossHealthBar = document.createElement('div');
+    this.bossHealthBar.className = 'boss-health-bar';
+    this.bossHealthBar.innerHTML = `
+      <div class="boss-title">
+        <span class="boss-emoji">${boss.bossConfig.emoji}</span>
+        <span class="boss-name">${boss.bossConfig.name} Lv.${boss.bossLevel}</span>
+      </div>
+      <div class="boss-hp-container">
+        <div class="boss-hp-bar">
+          <div class="boss-hp-fill" style="width: 100%;"></div>
+        </div>
+        <div class="boss-hp-text">${boss.health} / ${boss.maxHealth}</div>
+      </div>
+    `;
+    
+    // 添加到頁面
+    document.body.appendChild(this.bossHealthBar);
+    
+    // 儲存 Boss 引用以便更新
+    this.currentBoss = boss;
+    
+    console.log('✅ Boss 血條已顯示');
+  }
+  
+  /**
+   * 🆕 更新 Boss 血條
+   */
+  updateBossHealthBar(boss) {
+    if (!this.bossHealthBar || !boss) return;
+    
+    const healthPercent = (boss.health / boss.maxHealth) * 100;
+    const hpFill = this.bossHealthBar.querySelector('.boss-hp-fill');
+    const hpText = this.bossHealthBar.querySelector('.boss-hp-text');
+    
+    if (hpFill) {
+      hpFill.style.width = `${Math.max(0, healthPercent)}%`;
+      
+      // 根據血量改變顏色
+      if (healthPercent > 50) {
+        hpFill.style.background = 'linear-gradient(90deg, #ff0000, #ff6600)';
+      } else if (healthPercent > 25) {
+        hpFill.style.background = 'linear-gradient(90deg, #ff6600, #ff9900)';
+      } else {
+        hpFill.style.background = 'linear-gradient(90deg, #ff00ff, #ff0066)';
+      }
+    }
+    
+    if (hpText) {
+      hpText.textContent = `${Math.ceil(boss.health)} / ${boss.maxHealth}`;
+    }
+  }
+  
+  /**
+   * 🆕 隱藏 Boss 血條
+   */
+  hideBossHealthBar() {
+    if (this.bossHealthBar && this.bossHealthBar.parentNode) {
+      this.bossHealthBar.parentNode.removeChild(this.bossHealthBar);
+      this.bossHealthBar = null;
+      this.currentBoss = null;
+    }
+  }
+
+  /**
    * 清理 UI
    */
   destroy() {
@@ -459,6 +551,9 @@ export class GameplayUI {
       cancelAnimationFrame(this.scoreAnimationFrame);
       this.scoreAnimationFrame = null;
     }
+    
+    // 🆕 清理 Boss 血條
+    this.hideBossHealthBar();
     
     // 移除遊戲場景背景類
     document.body.classList.remove('gameplay-scene');
