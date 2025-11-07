@@ -6,6 +6,7 @@ export class MenuUI {
   constructor(scene) {
     this.scene = scene;
     this.container = null;
+    this.planeImageContainer = null;
     this.background = null;
     this.menuButtons = [];
     this.dialogs = new Map();
@@ -17,6 +18,20 @@ export class MenuUI {
   create() {
     // 建立背景
     this.createBackground();
+    
+    // 🆕 加入戰機圖片（獨立於 menu-overlay 外）
+    const planeImageContainer = document.createElement('div');
+    planeImageContainer.className = 'menu-plane-image';
+    const planeImage = document.createElement('img');
+    planeImage.src = 'assets/sprites/bugbug-plane.webp';
+    planeImage.alt = 'Bugbug Plane';
+    planeImage.onerror = () => {
+      console.warn('無法載入戰機圖片');
+      planeImageContainer.style.display = 'none';
+    };
+    planeImageContainer.appendChild(planeImage);
+    this.planeImageContainer = planeImageContainer;
+    document.getElementById('game-container').appendChild(planeImageContainer);
     
     // 建立主選單容器
     this.container = document.createElement('div');
@@ -46,12 +61,12 @@ export class MenuUI {
       { 
         text: '排行榜',
         action: () => this.scene.openLeaderboard(),
-        class: ''
+        class: 'secondary'
       },
       { 
         text: '說明',
         action: () => this.showInstructions(),
-        class: ''
+        class: 'wide'
       }
     ];
     
@@ -137,6 +152,12 @@ export class MenuUI {
     // 移除所有對話框
     this.dialogs.forEach(dialog => dialog.remove());
     this.dialogs.clear();
+    
+    // 移除戰機圖片
+    if (this.planeImageContainer) {
+      this.planeImageContainer.remove();
+      this.planeImageContainer = null;
+    }
     
     // 移除背景
     if (this.background) {

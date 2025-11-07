@@ -1,0 +1,388 @@
+/* 教學系統樣式 - 參考 quiz.html 的 popup 設計 */
+
+/* 教學遮罩層 */
+.tutorial-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tutorial-overlay.active {
+  display: flex;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.tutorial-overlay.closing {
+  animation: fadeOut 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* 教學主體 */
+.tutorial-box {
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  border: 3px solid #00ffff;
+  border-radius: 20px;
+  max-width: 700px;
+  width: 90%;
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 60px rgba(0, 255, 255, 0.8);
+  animation: scaleIn 0.3s ease;
+  position: relative;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.tutorial-overlay.closing .tutorial-box {
+  animation: scaleOut 0.3s ease;
+}
+
+@keyframes scaleOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}
+
+/* Skip 按鈕 - 固定在右上角 */
+.tutorial-skip-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, rgba(255, 85, 85, 0.3) 0%, rgba(255, 85, 85, 0.2) 100%);
+  border: 2px solid #ff5555;
+  border-radius: 8px;
+  color: #ffffff;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 100;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tutorial-skip-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 85, 85, 0.5) 0%, rgba(255, 85, 85, 0.3) 100%);
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 85, 85, 0.6);
+}
+
+/* 教學標題區 */
+.tutorial-header {
+  background: linear-gradient(135deg, rgba(0, 159, 185, 0.3) 0%, rgba(0, 159, 185, 0.1) 100%);
+  border-bottom: 2px solid #00ffff;
+  padding: 30px 25px;
+  text-align: center;
+  position: relative;
+}
+
+.tutorial-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #00ffff;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+  margin-bottom: 10px;
+}
+
+.tutorial-step-indicator {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.9rem;
+  color: #ffd93d;
+  letter-spacing: 1px;
+}
+
+/* 教學內容區 */
+.tutorial-content {
+  padding: 40px 35px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 300px;
+}
+
+/* 教學步驟內容 */
+.tutorial-step {
+  display: none;
+  animation: slideIn 0.4s ease-out;
+}
+
+.tutorial-step.active {
+  display: block;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 教學圖標 */
+.tutorial-icon {
+  font-size: 4rem;
+  text-align: center;
+  margin-bottom: 25px;
+  filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.6));
+}
+
+/* 教學描述文字 */
+.tutorial-description {
+  font-family: 'Noto Sans HK', sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #ffffff;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* 教學要點列表 */
+.tutorial-points {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.tutorial-points li {
+  font-family: 'Noto Sans HK', sans-serif;
+  font-size: 1rem;
+  color: #e0e0e0;
+  padding: 12px 0 12px 40px;
+  position: relative;
+  line-height: 1.6;
+}
+
+.tutorial-points li::before {
+  content: '▸';
+  position: absolute;
+  left: 10px;
+  color: #00ffff;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+/* 重點文字高亮 */
+.tutorial-highlight {
+  color: #ffd93d;
+  font-weight: bold;
+}
+
+/* 教學底部按鈕區 */
+.tutorial-footer {
+  padding: 20px 30px;
+  background: rgba(0, 0, 0, 0.4);
+  border-top: 2px solid #009fb9;
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 上一步按鈕 */
+.tutorial-btn-prev {
+  padding: 12px 25px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 2px solid #666666;
+  border-radius: 8px;
+  color: #ffffff;
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tutorial-btn-prev:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
+  border-color: #00ffff;
+  transform: translateY(-2px);
+}
+
+.tutorial-btn-prev:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* 下一步 / 開始遊戲按鈕 */
+.tutorial-btn-next {
+  flex: 1;
+  max-width: 300px;
+  padding: 15px 35px;
+  background: linear-gradient(135deg, #00ffff 0%, #009fb9 100%);
+  border: none;
+  border-radius: 10px;
+  color: #000000;
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+}
+
+.tutorial-btn-next:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 30px rgba(0, 255, 255, 0.8);
+  background: linear-gradient(135deg, #33ffff 0%, #00b8d4 100%);
+}
+
+/* 開始遊戲按鈕變體（最後一步） */
+.tutorial-btn-next.start-game {
+  background: linear-gradient(135deg, #ffd93d 0%, #ffac10 100%);
+  box-shadow: 0 0 30px rgba(255, 217, 61, 0.6);
+}
+
+.tutorial-btn-next.start-game:hover {
+  background: linear-gradient(135deg, #ffed4e 0%, #ffc221 100%);
+  box-shadow: 0 5px 40px rgba(255, 217, 61, 1);
+}
+
+/* 進度指示器 */
+.tutorial-progress {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.tutorial-progress-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.tutorial-progress-dot.active {
+  background: #00ffff;
+  border-color: #00ffff;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+  transform: scale(1.3);
+}
+
+.tutorial-progress-dot.completed {
+  background: #00ff88;
+  border-color: #00ff88;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .tutorial-box {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .tutorial-skip-btn {
+    top: 15px;
+    right: 15px;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+
+  .tutorial-header {
+    padding: 25px 20px;
+  }
+
+  .tutorial-title {
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+  }
+
+  .tutorial-content {
+    padding: 30px 25px;
+    min-height: 250px;
+  }
+
+  .tutorial-icon {
+    font-size: 3rem;
+  }
+
+  .tutorial-description {
+    font-size: 1rem;
+  }
+
+  .tutorial-points li {
+    font-size: 0.95rem;
+    padding-left: 35px;
+  }
+
+  .tutorial-footer {
+    padding: 15px 20px;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tutorial-btn-prev,
+  .tutorial-btn-next {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .tutorial-skip-btn {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+
+  .tutorial-title {
+    font-size: 1.2rem;
+  }
+
+  .tutorial-content {
+    padding: 25px 20px;
+  }
+
+  .tutorial-icon {
+    font-size: 2.5rem;
+  }
+
+  .tutorial-description {
+    font-size: 0.95rem;
+  }
+}
+

@@ -1,12 +1,9 @@
-/* 主選單背景 */
+/* 主選單背景 - 改用 space-bg.png */
 .menu-background {
   position: absolute;
   inset: 0;
   z-index: var(--z-base);
-  background-image: url('../bg/game-start-screen.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: #01332f url('../maps/space-bg.png') center center / cover no-repeat fixed;
 }
 
 /* 輕微暗色遮罩 */
@@ -22,45 +19,93 @@
   position: absolute;
   inset: 0;
   display: flex;
-  flex-direction: column;
-  justify-content: center;  /* 改為 center，垂直置中 */
-  align-items: center;       /* 改為 center，水平置中 */
-  padding: var(--spacing-lg);
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   pointer-events: none;
   z-index: var(--z-ui);
 }
 
-/* 按鈕容器 */
+/* 🆕 戰機圖片容器 */
+.menu-plane-image {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  pointer-events: none;
+  animation: float 3s ease-in-out infinite;
+}
+
+.menu-plane-image img {
+  max-width: 450px;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.6));
+}
+
+/* 🆕 漂浮動畫 */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+
+/* 按鈕容器 - 垂直排列並置中 */
 .menu-button-container {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
-  pointer-events: auto;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  width: auto;
+  pointer-events: auto;  /* 🔑 重要：讓按鈕可以被點擊 */
 }
 
-/* 選單按鈕 */
+/* 選單按鈕 - 基礎樣式 */
 .menu-button {
-  width: 200px;
-  padding: var(--spacing-md);
+  min-width: 250px;
+  padding: 15px 40px;
   border: none;
-  border-radius: 8px;
-  background: linear-gradient(0deg, #000000c4 0%, #009fb991 100%);
-  box-shadow: 0 0 0 4px #ffffff36;
-  color: var(--light);
+  border-radius: 10px;
+  font-family: 'Orbitron', 'Noto Sans HK', monospace;
   font-size: 1.2rem;
-  font-weight: bold;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
   cursor: pointer;
-  transition: all var(--transition-normal) ease;
+  transition: all 0.3s ease;
 }
 
-.menu-button:hover {
-  transform: translateY(-10px);
-  background: rgba(0, 255, 255, 0.2);
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+/* 主按鈕樣式（開始遊戲）- 參考 popup-btn-start */
+.menu-button.primary {
+  background: linear-gradient(135deg, #00ffff 0%, #009fb9 100%);
+  color: #000000;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
 }
 
-.menu-button:active {
-  transform: translateY(-5px);
+.menu-button.primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 30px rgba(0, 255, 255, 0.8);
+  background: linear-gradient(135deg, #33ffff 0%, #00b8d4 100%);
+}
+
+/* 次要按鈕樣式（其他按鈕）- 參考 popup-btn-back */
+.menu-button.secondary,
+.menu-button.wide {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+  color: #ffffff;
+  border: 2px solid #666666;
+}
+
+.menu-button.secondary:hover,
+.menu-button.wide:hover {
+  background: linear-gradient(135deg, rgba(255, 85, 85, 0.3) 0%, rgba(255, 85, 85, 0.2) 100%);
+  border-color: #ff5555;
+  transform: translateY(-3px);
 }
 
 /* 版本資訊 */
@@ -71,4 +116,51 @@
   color: rgba(255, 255, 255, 0.3);
   font-size: 0.8rem;
   pointer-events: none;
+}
+
+/* 響應式設計 */
+@media (max-width: 1024px) {
+  #menu-overlay {
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--spacing-lg);
+    gap: 40px;
+  }
+  
+  .menu-plane-image {
+    flex: none;
+  }
+  
+  .menu-button-container {
+    flex: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-plane-image img {
+    max-width: 280px;
+  }
+  
+  .menu-button-container {
+    gap: 12px;
+  }
+  
+  .menu-button {
+    min-width: 220px;
+    font-size: 1rem;
+    padding: 12px 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-plane-image img {
+    max-width: 220px;
+  }
+  
+  .menu-button {
+    min-width: 180px;
+    font-size: 0.9rem;
+    padding: 10px 25px;
+    letter-spacing: 1px;
+  }
 }

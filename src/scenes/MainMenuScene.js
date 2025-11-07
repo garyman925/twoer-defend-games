@@ -5,11 +5,13 @@
 
 import { BaseScene } from '../core/BaseScene.js';
 import { MenuUI } from '../ui/MenuUI.js';
+import { TutorialUI } from '../ui/TutorialUI.js';
 
 export class MainMenuScene extends BaseScene {
   constructor() {
     super('MainMenuScene');
     this.menuUI = null;
+    this.tutorialUI = null;
   }
 
   /**
@@ -48,7 +50,34 @@ export class MainMenuScene extends BaseScene {
    * 開始遊戲
    */
   startGame() {
-    console.log('開始遊戲');
+    console.log('準備開始遊戲 - 顯示教學');
+    
+    // 每次都顯示教學系統
+    this.showTutorial();
+  }
+
+  /**
+   * 顯示教學系統
+   */
+  showTutorial() {
+    this.tutorialUI = new TutorialUI(this);
+    this.tutorialUI.create(() => {
+      // 教學完成後的回調
+      console.log('教學完成，開始遊戲');
+      
+      // 不記錄完成狀態，每次都顯示教學
+      // localStorage.setItem('hasCompletedTutorial', 'true');
+      
+      // 啟動遊戲
+      this.launchGame();
+    });
+  }
+
+  /**
+   * 啟動遊戲場景
+   */
+  launchGame() {
+    console.log('啟動遊戲場景');
     
     // 切換到遊戲場景
     this.switchToScene('GameplayScene', {
@@ -91,6 +120,12 @@ export class MainMenuScene extends BaseScene {
    * 清理場景
    */
   cleanupScene() {
+    // 清理教學 UI
+    if (this.tutorialUI) {
+      this.tutorialUI.destroy();
+      this.tutorialUI = null;
+    }
+    
     // 清理 DOM UI
     if (this.menuUI) {
       this.menuUI.destroy();
