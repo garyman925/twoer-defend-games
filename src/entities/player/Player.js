@@ -363,6 +363,12 @@ export class Player extends Phaser.GameObjects.Container {
   handleMouseDown(pointer) {
     if (!this.isAlive) return;
     
+    // 🆕 檢查是否正在建造炮塔，如果是則不射擊
+    if (this.scene.towerPlacementSystem && this.scene.towerPlacementSystem.isBuilding) {
+      console.log('🚫 建造模式中，禁止射擊');
+      return;
+    }
+    
     // 🆕 使用 WeaponManager 進行射擊
     if (this.scene.weaponManager) {
       const worldPoint = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y);

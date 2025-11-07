@@ -1,6 +1,24 @@
 /**
  * 基礎塔類
  * 所有防禦塔的基類，提供共通功能
+ * 
+ * 🚧 開發狀態：
+ * ✅ 已完成功能：
+ *   - 塔的基本攻擊、瞄準、射擊
+ *   - HP系統和血條顯示
+ *   - 懸停信息面板
+ *   - 選中/取消選中
+ *   - 投射物系統
+ * 
+ * 🔒 已實現但未啟用的功能：
+ *   - 等級升級系統（upgrade方法 - 第820行）
+ *   - 左上角等級指示器（已隱藏 - 第355行）
+ *   - 等級視覺效果（updateVisualForLevel方法 - 第860行）
+ *   
+ * ⏳ 待開發功能：
+ *   - 升級UI界面
+ *   - 出售功能UI
+ *   - 瞄準模式切換UI
  */
 
 import GameConfig from '../../core/GameConfig.js';
@@ -105,7 +123,7 @@ export class BaseTower extends Phaser.GameObjects.Container {
     if (!this.healthBar) return;
     
     const healthPercent = this.health / this.maxHealth;
-    const maxWidth = 40;
+    const maxWidth = 50; // 🆕 配合新的血條寬度
     const currentWidth = Math.max(0, maxWidth * healthPercent);
     
     // 更新寬度
@@ -119,16 +137,52 @@ export class BaseTower extends Phaser.GameObjects.Container {
     } else {
       this.healthBar.setFillStyle(0xff0000); // 紅色
     }
+    
+    // 🆕 更新HP文本
+    if (this.healthText) {
+      this.healthText.setText(`${Math.ceil(this.health)}/${this.maxHealth}`);
+    }
+    
+    // 🆕 炮塔變色效果：血量低於1/3時變紅色
+    if (this.towerSprite) {
+      if (healthPercent <= 0.33) {
+        // 血量 ≤ 33%：炮塔變紅色（危險警告）
+        this.towerSprite.setTint(0xff0000);
+      } else {
+        // 血量 > 33%：恢復原色
+        this.towerSprite.clearTint();
+      }
+    }
   }
   
   /**
    * 創建血條
    */
   createHealthBar() {
-    this.healthBar = this.scene.add.rectangle(0, -60, 40, 4, 0x00ff00);
+    // 🆕 血條背景（黑色邊框）
+    this.healthBarBg = this.scene.add.rectangle(0, -60, 52, 10, 0x000000);
+    this.healthBarBg.setOrigin(0.5, 0.5);
+    this.healthBarBg.setDepth(999);
+    this.add(this.healthBarBg);
+    
+    // 🆕 增大血條尺寸：從 40x4 改為 50x8
+    this.healthBar = this.scene.add.rectangle(0, -60, 50, 8, 0x00ff00);
     this.healthBar.setOrigin(0.5, 0.5);
     this.healthBar.setDepth(1000);
     this.add(this.healthBar);
+    
+    // 🆕 HP數字顯示（默認隱藏，悬停时显示）
+    this.healthText = this.scene.add.text(0, -60, `${this.health}/${this.maxHealth}`, {
+      fontSize: '11px',
+      fill: '#ffffff',
+      fontWeight: 'bold',
+      stroke: '#000000',
+      strokeThickness: 2
+    });
+    this.healthText.setOrigin(0.5);
+    this.healthText.setDepth(1001);
+    this.healthText.setVisible(false); // 默認隱藏
+    this.add(this.healthText);
   }
   
   /**
@@ -242,6 +296,9 @@ export class BaseTower extends Phaser.GameObjects.Container {
     
     // 等級指示器
     this.createLevelIndicator();
+    
+    // 🆕 血條
+    this.createHealthBar();
   }
 
   /**
@@ -330,6 +387,22 @@ export class BaseTower extends Phaser.GameObjects.Container {
 
   /**
    * 創建等級指示器
+   * 
+   * 📌 功能狀態：暫時禁用
+   * 原因：等級升級功能暫未完全開發完成
+   * 
+   * 相關功能：
+   *   - upgrade() 方法 - 升級塔的功能（已實現）
+   *   - updateVisualForLevel() 方法 - 更新等級視覺效果（已實現）
+   *   - getUpgradeCost() 方法 - 獲取升級成本（已實現）
+   * 
+   * 🔧 如需啟用：
+   *   1. 將下方 setVisible(false) 改為 setVisible(true)
+   *   2. 確保 upgrade() 方法已完整實現
+   *   3. 在 UI 中添加升級按鈕（待開發）
+   *   4. 測試升級功能是否正常運作
+   * 
+   * 最後修改：2024年（功能已完成但暫時隱藏）
    */
   createLevelIndicator() {
     this.levelIndicator = this.scene.add.text(-30, -30, this.level.toString(), {
@@ -341,6 +414,10 @@ export class BaseTower extends Phaser.GameObjects.Container {
     });
     this.levelIndicator.setOrigin(0.5);
     this.add(this.levelIndicator);
+    
+    // 🚫 暫時隱藏等級指示器（等級升級功能UI未開發完成）
+    // TODO: 當升級系統UI完成後，設置為 true 以顯示等級
+    this.levelIndicator.setVisible(false);
   }
 
   /**
@@ -434,18 +511,38 @@ export class BaseTower extends Phaser.GameObjects.Container {
    * 塔懸停處理
    */
   onTowerHover() {
+    // 🆕 懸停時只顯示射程和放大效果，不顯示tooltip
+    // tooltip只在點擊時顯示
     this.showRange(true);
     this.setScale(1.1);
+    
+    // 🆕 創建信息面板容器（如果不存在）
+    // 只創建不顯示，等點擊時才顯示
+    if (!this.infoPanel) {
+      this.infoPanel = this.scene.add.text(0, -90, '', {
+        fontSize: '14px',
+        fill: '#ffffff',
+        backgroundColor: '#000000',
+        padding: { x: 10, y: 6 },
+        align: 'center'
+      });
+      this.infoPanel.setOrigin(0.5);
+      this.infoPanel.setDepth(1002);
+      this.infoPanel.setVisible(false); // 默認隱藏
+      this.add(this.infoPanel);
+    }
   }
 
   /**
    * 塔移出處理
    */
   onTowerOut() {
+    // 如果未被選中，恢復原始狀態
     if (!this.isSelected) {
       this.showRange(false);
       this.setScale(1.0);
     }
+    // 注意：如果已選中，保持放大和射程顯示，tooltip繼續顯示直到自動隱藏或點擊其他地方
   }
 
   /**
@@ -463,9 +560,38 @@ export class BaseTower extends Phaser.GameObjects.Container {
     this.showRange(true);
     this.setScale(1.1);
     
+    // 🆕 選中時顯示簡化的tooltip（只顯示名稱和HP）
+    if (this.infoPanel) {
+      // 炮塔名稱映射
+      const towerNames = {
+        basic: 'Gatling',
+        cannon: 'Striker',
+        laser: 'Railgun',
+        ice: 'Frost'
+      };
+      const displayName = towerNames[this.towerType] || this.towerType;
+      
+      // 🆕 簡化顯示：只顯示名稱和HP
+      this.infoPanel.setText(
+        `${displayName}\n` +
+        `HP: ${Math.ceil(this.health)}/${this.maxHealth}`
+      );
+      this.infoPanel.setVisible(true);
+      
+      // 🆕 5秒後自動隱藏tooltip
+      if (this.hideInfoTimer) {
+        this.hideInfoTimer.remove();
+      }
+      this.hideInfoTimer = this.scene.time.delayedCall(5000, () => {
+        if (this.isSelected) {
+          this.deselectTower();
+        }
+      });
+    }
+    
     // 發送選中事件
     this.eventEmitter.emit('towerSelected', this);
-    this.scene.events.emit('towerSelected', this);
+    // this.scene.events.emit('towerSelected', this); // 🚫 注釋掉避免與炮塔卡片選擇衝突（會導致"金錢不足"提示）
     
     console.log(`選中${this.towerType}塔`);
   }
@@ -477,6 +603,21 @@ export class BaseTower extends Phaser.GameObjects.Container {
     this.isSelected = false;
     this.showRange(false);
     this.setScale(1.0);
+    
+    // 🆕 取消選中時隱藏HP文本和信息面板
+    if (this.healthText) {
+      this.healthText.setVisible(false);
+    }
+    
+    if (this.infoPanel) {
+      this.infoPanel.setVisible(false);
+    }
+    
+    // 🆕 清理自動隱藏計時器
+    if (this.hideInfoTimer) {
+      this.hideInfoTimer.remove();
+      this.hideInfoTimer = null;
+    }
     
     // 發送取消選中事件
     this.eventEmitter.emit('towerDeselected', this);

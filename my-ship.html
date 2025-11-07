@@ -403,6 +403,44 @@
             overflow: hidden;
         }
 
+        /* 装备要求提示 */
+        .equipment-requirement {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.95rem;
+            color: #00ffff;
+            margin-bottom: 15px;
+            padding: 8px 15px;
+            background: rgba(0, 159, 185, 0.1);
+            border-left: 3px solid #00ffff;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .equipment-requirement.warning {
+            color: #ff6600;
+            border-left-color: #ff6600;
+            background: rgba(255, 102, 0, 0.1);
+        }
+
+        .equipment-requirement.valid {
+            color: #00ff88;
+            border-left-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .start-game-btn:disabled {
+            background: rgba(100, 100, 100, 0.5);
+            cursor: not-allowed;
+            opacity: 0.5;
+            box-shadow: none;
+        }
+
+        .start-game-btn:disabled:hover {
+            transform: none;
+            background: rgba(100, 100, 100, 0.5);
+            box-shadow: none;
+        }
+
         /* 槽位網格 - 2行x4列 */
         .slots-grid {
             display: grid;
@@ -1316,6 +1354,9 @@
         <!-- 左下區 - MY DEFEND TOWER -->
         <div class="tower-section">
             <h1 class="section-title">MY DEFEND TOWER</h1>
+            <div class="equipment-requirement" id="tower-requirement">
+                已裝備: <span id="tower-count">0</span> / 4 (最少4種)
+            </div>
             <div class="slots-grid" id="tower-loadout">
                 <!-- 8 個槽位將由 JS 生成 -->
             </div>
@@ -1324,6 +1365,9 @@
         <!-- 右下區 - MY WEAPONS -->
         <div class="weapons-section">
             <h1 class="section-title">MY WEAPONS</h1>
+            <div class="equipment-requirement" id="weapon-requirement">
+                已裝備: <span id="weapon-count">0</span> / 3 (最少3種)
+            </div>
             <div class="slots-grid" id="weapon-loadout">
                 <!-- 8 個槽位將由 JS 生成 -->
                     </div>
@@ -1331,7 +1375,7 @@
 
         <!-- 開始遊戲按鈕 -->
         <div class="start-game-container">
-            <button class="start-game-btn" onclick="startGame()">
+            <button class="start-game-btn" onclick="startGame()" disabled>
                 🎮 開始遊戲
             </button>
         </div>
@@ -1468,6 +1512,7 @@
             renderWeaponLoadout();
             renderTowerLoadout();
             loadPlayerData();
+            checkEquipmentRequirements();  // 🆕 檢查裝備要求
         }
 
         // ===== 🆕 初始化升級數據 =====
@@ -1665,6 +1710,9 @@
                     container.innerHTML += emptySlotHTML;
                 }
             }
+            
+            // 🆕 渲染完成後檢查裝備
+            checkEquipmentRequirements();
         }
 
         // ===== 渲染炮塔裝備槽（8個） =====
@@ -1716,6 +1764,9 @@
                     container.innerHTML += emptySlotHTML;
                 }
             }
+            
+            // 🆕 渲染完成後檢查裝備
+            checkEquipmentRequirements();
         }
 
         // ===== 讀取保存的配置 =====
@@ -2159,9 +2210,90 @@
             }
         });
 
+        // ===== 🆕 檢查裝備要求 =====
+        function checkEquipmentRequirements() {
+            const weaponCount = currentLoadout.weapons.filter(w => w).length;
+            const towerCount = currentLoadout.towers.filter(t => t).length;
+            
+            const minWeapons = 3;
+            const minTowers = 4;
+            
+            // 更新武器計數顯示
+            const weaponCountEl = document.getElementById('weapon-count');
+            const weaponReqEl = document.getElementById('weapon-requirement');
+            if (weaponCountEl) {
+                weaponCountEl.textContent = weaponCount;
+            }
+            if (weaponReqEl) {
+                weaponReqEl.classList.remove('warning', 'valid');
+                if (weaponCount < minWeapons) {
+                    weaponReqEl.classList.add('warning');
+                } else {
+                    weaponReqEl.classList.add('valid');
+                }
+            }
+            
+            // 更新炮塔計數顯示
+            const towerCountEl = document.getElementById('tower-count');
+            const towerReqEl = document.getElementById('tower-requirement');
+            if (towerCountEl) {
+                towerCountEl.textContent = towerCount;
+            }
+            if (towerReqEl) {
+                towerReqEl.classList.remove('warning', 'valid');
+                if (towerCount < minTowers) {
+                    towerReqEl.classList.add('warning');
+                } else {
+                    towerReqEl.classList.add('valid');
+                }
+            }
+            
+            // 更新開始遊戲按鈕狀態
+            const startBtn = document.querySelector('.start-game-btn');
+            const canStart = weaponCount >= minWeapons && towerCount >= minTowers;
+            
+            if (startBtn) {
+                startBtn.disabled = !canStart;
+                if (!canStart) {
+                    startBtn.title = `需要至少 ${minWeapons} 種武器和 ${minTowers} 種炮塔才能開始遊戲`;
+                } else {
+                    startBtn.title = '點擊開始遊戲';
+                }
+            }
+            
+            return {
+                canStart,
+                weaponCount,
+                towerCount,
+                minWeapons,
+                minTowers
+            };
+        }
+
         // ===== 開始遊戲 =====
         function startGame() {
-            // 跳轉到遊戲頁面
+            const requirements = checkEquipmentRequirements();
+            
+            if (!requirements.canStart) {
+                let message = '裝備不足，無法開始遊戲！\n\n';
+                
+                if (requirements.weaponCount < requirements.minWeapons) {
+                    message += `⚠️ 武器: ${requirements.weaponCount}/${requirements.minWeapons} (還需 ${requirements.minWeapons - requirements.weaponCount} 種)\n`;
+                } else {
+                    message += `✅ 武器: ${requirements.weaponCount}/${requirements.minWeapons}\n`;
+                }
+                
+                if (requirements.towerCount < requirements.minTowers) {
+                    message += `⚠️ 炮塔: ${requirements.towerCount}/${requirements.minTowers} (還需 ${requirements.minTowers - requirements.towerCount} 種)\n`;
+                } else {
+                    message += `✅ 炮塔: ${requirements.towerCount}/${requirements.minTowers}\n`;
+                }
+                
+                alert(message);
+                return;
+            }
+            
+            // 裝備足夠，開始遊戲
             window.location.href = 'index.html';
         }
 

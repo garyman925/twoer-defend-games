@@ -419,6 +419,41 @@ export class GameplayScene extends BaseScene {
     // 監聽建造事件
     this.events.on('buildingStarted', this.onBuildingStarted, this);
     this.events.on('buildingCancelled', this.onBuildingCancelled, this);
+    
+    // 🆕 添加背景點擊監聽：點擊空位時取消炮塔選擇
+    this.input.on('pointerdown', (pointer) => {
+      // 只處理左鍵點擊
+      if (pointer.button !== 0) return;
+      
+      // 獲取世界坐標
+      const worldX = pointer.worldX;
+      const worldY = pointer.worldY;
+      
+      // 檢查是否點擊了炮塔
+      let clickedTower = false;
+      if (this.towers && this.towers.children) {
+        this.towers.children.entries.forEach(tower => {
+          if (!tower.active) return;
+          
+          // 計算距離
+          const distance = Phaser.Math.Distance.Between(worldX, worldY, tower.x, tower.y);
+          
+          // 如果點擊在炮塔範圍內（半徑約50像素）
+          if (distance < 50) {
+            clickedTower = true;
+          }
+        });
+      }
+      
+      // 如果沒有點擊炮塔，取消所有選中
+      if (!clickedTower && this.towers && this.towers.children) {
+        this.towers.children.entries.forEach(tower => {
+          if (tower.isSelected && typeof tower.deselectTower === 'function') {
+            tower.deselectTower();
+          }
+        });
+      }
+    });
   }
 
   /**
